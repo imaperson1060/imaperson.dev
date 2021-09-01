@@ -17,6 +17,10 @@ module.exports = (app, cors, database, isReachable, md5, rateLimit, urlExists) =
         });
     });
 
+    app.get("/short/go/:url", cors(), (req, res) => {
+        res.redirect("/short");
+    });
+
     app.get("/short/go/:url/:id/", cors(), (req, res) => {
         database.query(`SELECT * FROM \`short\` WHERE id="${req.params.id}"`, function (error, result, fields) {
             if (result[0]) {
@@ -105,7 +109,7 @@ module.exports = (app, cors, database, isReachable, md5, rateLimit, urlExists) =
                 function generateURL() {
                     var randomString = characters[Math.floor(Math.random() * characters.length)] + characters[Math.floor(Math.random() * characters.length)] + characters[Math.floor(Math.random() * characters.length)] + characters[Math.floor(Math.random() * characters.length)] + characters[Math.floor(Math.random() * characters.length)];
                     
-                    database.query(`SELECT * FROM \`short\` WHERE id="${req.params.customid}"`, function (error, result, fields) {
+                    database.query(`SELECT * FROM \`short\` WHERE id="${req.params.randomString}"`, function (error, result, fields) {
                         if (result[0]) {
                             generateURL();
                         } else {
