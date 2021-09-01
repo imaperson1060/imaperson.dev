@@ -5,15 +5,6 @@ module.exports = (app, cors, database, mail, md5, rateLimit) => {
         message: { "success": false, "message": "Only one account can be created every 15 minutes." }
     });
 
-
-    app.get("/signup.html", cors(), (req, res) => {
-        res.sendFile("./static/accounts/signup.html", { root: __dirname });
-    });
-
-    app.get("/forgot.html", cors(), (req, res) => {
-        res.sendFile("./static/accounts/forgot.html", { root: __dirname });
-    });
-
     app.get("/signup/:name/:username/:email/:password", accountLimiter, cors(), async (req, res) => {
         if (req.params.username.length > 32) {
             return res.json({ "success": false, "message": `Username "${req.params.username}" is too long.` });
@@ -114,7 +105,7 @@ module.exports = (app, cors, database, mail, md5, rateLimit) => {
 
                     await mail(info.email, "Password Reset", `<h1>Hi, ${info.name}!</h1> <h2>Your password was just reset to "${newPassword}" about a minute ago. Just thought you should know in case it wasn't you!</h2> <style>* { font-family: sans-serif }</style>`);
 
-                    database.query(`UPDATE \`accounts\` SET password="${newPassword}" WHERE username="${req.params.username}"`);
+                    database.query(`UPDATE \`accounts\` SET password="${md5(newPassword)}" WHERE username="${req.params.username}"`);
 
                     res.json({ "success": true, "new": newPassword });
                 } else {
