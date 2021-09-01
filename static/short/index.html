@@ -180,22 +180,22 @@
                                 expires = "2147483647";
                                 break;
                             case "12h":
-                                expires = Math.round(new Date().getTime() / 1000) + 3600;
+                                expires = Math.round(new Date().getTime() / 1000) + 43200;
                                 break;
                             case "1d":
                                 expires = Math.round(new Date().getTime() / 1000) + 86400;
                                 break;
                             case "1w":
-                                expires = Math.round(new Date().getTime() / 1000) + 86400;
+                                expires = Math.round(new Date().getTime() / 1000) + 604800;
                                 break;
                             case "1m":
-                                expires = Math.round(new Date().getTime() / 1000) + 86400;
+                                expires = Math.round(new Date().getTime() / 1000) + 2419200;
                                 break;
                             case "6m":
-                                expires = Math.round(new Date().getTime() / 1000) + 86400;
+                                expires = Math.round(new Date().getTime() / 1000) + 14515200;
                                 break;
                             case "1y":
-                                expires = Math.round(new Date().getTime() / 1000) + 86400;
+                                expires = Math.round(new Date().getTime() / 1000) + 31536000;
                         }
                         
                         return shorten(expires);
