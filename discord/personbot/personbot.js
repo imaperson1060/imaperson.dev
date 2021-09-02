@@ -151,35 +151,6 @@ module.exports = (query) => {
                     })();
 
                     break;
-                case "ytsearch":
-                    (async function () {
-                        await interaction.deferReply({ ephemeral: false });
-
-                        const resultsEmbed = new MessageEmbed()
-                            .setColor("#0099ff")
-                            .setTitle("a")
-                            .setURL("https://youtube.com")
-                            .setAuthor("PersonBot", "https://cdn.discordapp.com/app-icons/882471379910426664/3a4d36c555b824240128072238f828e0.png?size=256", "https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=2147483648&scope=bot%20applications.commands")
-                            .setDescription("A")
-                            .setThumbnail(`https://api.arimeisels.com/favicon.png`)
-                            .addFields(
-                                { name: '\u200B', value: '\u200B' },
-                                { name: "Video URL", value: `[Download the video](https://arimeisels.com) (link expires in 6 hours)` }
-                            )
-                            .setTimestamp()
-                            .setFooter("PersonBot by imaperson#1060", "https://api.arimeisels.com/favicon.png");
-                        const buttons = new MessageActionRow()
-                            .addComponents(
-                                new MessageButton()
-                                    .setCustomId("primary")
-                                    .setLabel("Primary")
-					                .setStyle("PRIMARY"),
-                            )
-
-                        await interaction.editReply({ components: [ buttons ], embeds: [ resultsEmbed ] });
-                    })();
-
-                    break;
                 case "about":
                     (async function () {
                         await interaction.deferReply({ ephemeral: true });
