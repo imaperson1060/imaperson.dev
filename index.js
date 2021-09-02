@@ -83,7 +83,9 @@ app.get("/troll/", cors(), (req, res) => {
 });
 
 app.post("/restart/", (req, res) => {
-    console.log((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653))
+    if ((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653)) {
+        process.exit();
+    }
 });
 
 server.listen(process.env.PORT, () => {
