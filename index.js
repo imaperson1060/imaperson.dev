@@ -66,6 +66,12 @@ app.get("/up/", cors(), (req, res) => {
     res.json({ "success": true });
 });
 
+app.post("/restart/", (req, res) => {
+    if ((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653)) {
+        process.exit();
+    }
+});
+
 
 app.get("/troll/", cors(), (req, res) => {
     app.set("json spaces", 0);
@@ -80,12 +86,6 @@ app.get("/troll/", cors(), (req, res) => {
     let minutes = date_ob.getMinutes();
     let seconds = date_ob.getSeconds();
     console.log(year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
-});
-
-app.post("/restart/", (req, res) => {
-    if ((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653)) {
-        process.exit();
-    }
 });
 
 server.listen(process.env.PORT, () => {
