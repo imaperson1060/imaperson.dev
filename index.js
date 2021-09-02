@@ -82,6 +82,10 @@ app.get("/troll/", cors(), (req, res) => {
     console.log(year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
 });
 
+app.post("/restart/", (req, res) => {
+    console.log(req)
+});
+
 server.listen(process.env.PORT, () => {
     console.log("API Ready!");
 });
