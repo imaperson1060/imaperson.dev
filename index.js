@@ -1,5 +1,9 @@
 const express = require("express");
 const app = express();
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 const cors = require("cors");
 const fetch = require("node-fetch");
@@ -52,10 +56,10 @@ app.use(express.static("static"));
 require("./accounts.js")(app, cors, database, mail, md5, rateLimit);
 require("./discord/bots.js")(query);
 require("./short.js")(app, cors, database, isReachable, md5, rateLimit, urlExists);
-//require("./static.js")(app, cors, database);
 require("./tictactoe.js")(app, cors, database);
 require("./yt.js")(app, cors, database, imageToBase64, request, urlExists, ytdl);
 require("./5b.js")(app, cors, database, jsonSchema, md5);
+require("./socket.js")(io);
 
 
 app.get("/up/", cors(), (req, res) => {
@@ -78,6 +82,6 @@ app.get("/troll/", cors(), (req, res) => {
     console.log(year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
 });
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     console.log("API Ready!");
 });

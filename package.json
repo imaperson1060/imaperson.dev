@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "discord-buttons": "^4.0.0",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
@@ -23,11 +24,15 @@
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.6.2",
     "request": "^2.88.2",
+    "socket.io": "^4.2.0",
     "url-exists": "^1.0.3",
     "util": "^0.12.4",
     "ytdl-core": "^4.9.1"
   },
   "nodemonConfig": {
-    "ignore": ["node_modules/*", "static/*"]
+    "ignore": [
+      "node_modules/*",
+      "static/*"
+    ]
   }
 }
