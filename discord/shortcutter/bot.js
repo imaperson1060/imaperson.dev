@@ -20,7 +20,7 @@ client.on("messageCreate", (message) => {
 
 	if (message.content == ">help") {
 		message.reply({
-			"embed": {
+			embeds: [{
 				"color": "#7289DA",
 				"author": {
 					"name": "Shortcutter",
@@ -39,7 +39,7 @@ client.on("messageCreate", (message) => {
 				"footer": {
 					"text": "© imaperson"
 				}
-			}
+			}]
 		});
 	}
 });
