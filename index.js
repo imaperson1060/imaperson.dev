@@ -64,7 +64,11 @@ app.get("/up/", cors(), (req, res) => {
 
 app.post("/restart/", (req, res) => {
     if ((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653)) {
+        res.json({ success: true });
+
         process.exit();
+    } else {
+        res.redirect("https://youtu.be/dQw4w9WgXcQ");
     }
 });
 
