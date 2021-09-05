@@ -6,6 +6,8 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
     });
 
     app.get("/short/:id", cors(), async (req, res) => {
+        deleteExpired();
+
         const result = (await query("SELECT * FROM `short` WHERE id=?", [req.params.id]))[0];
         if (result) {
             res.json({ success: true, url: result.longurl });
@@ -19,16 +21,11 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
     });
 
     app.get("/short/go/:domain/:id/", cors(), async (req, res) => {
-        const result = (await query("SELECT * FROM `short` WHERE id=?", [req.params.id]))[0];
-        if (result) {
-            if (result.expiration < Math.round(new Date().getTime() / 1000)) {
-                await query("DELETE FROM `short` WHERE id=?", [req.params.id]);
+        deleteExpired();
 
-                res.redirect("/short/");
-            } else {
-                const result = (await query("SELECT * FROM `short` WHERE id=? AND domain=?", [req.params.id, req.params.domain]))[0];
-                res.redirect(result ? result.longurl : "/short/");
-            }
+        if ((await query("SELECT * FROM `short` WHERE id=?", [req.params.id]))[0]) {
+            const result = (await query("SELECT * FROM `short` WHERE id=? AND domain=?", [req.params.id, req.params.domain]))[0];
+            res.redirect(result ? result.longurl : "/short/");
         } else {
             res.redirect("/short/");
         }
@@ -42,7 +39,7 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
                 if (account.password == md5(req.params.password)) {
                     await query("DELETE FROM `short` WHERE id=", [req.params.id]);
                     
-                    res.json({ success: true, message: `id "${result[0].id}" has been deleted.` });
+                    res.json({ success: true, message: `id "${result.id}" has been deleted.` });
                 } else {
                     res.json({ success: false, message: `The password is incorrect.` });
                 }
@@ -55,6 +52,8 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
     });
 
     app.get("/short/:url/:customid?/:domain/:username/:expires/", shortenLimiter, async (req, res) => {
+        deleteExpired();
+
         var url = decodeURIComponent(req.params.url);
         url = ((await isReachable(`https://${url}`)) ? `https://${url}` : `http://${url}`);
 
@@ -91,4 +90,11 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
         var http = await isReachable(`http://${decodeURIComponent(req.params.url)}`);
         res.json({ "https": https, "http": http });
     });
+
+    async function deleteExpired() {
+        const expired = await query("SELECT * from `short` WHERE expiration<?", [Math.round(new Date().getTime() / 1000)]);
+        expired.forEach(async (x) => {
+            await query("DELETE FROM `short` WHERE id=?", [x.id]);
+        });
+    }
 }
