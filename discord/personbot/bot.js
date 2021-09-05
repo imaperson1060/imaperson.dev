@@ -9,6 +9,8 @@ const isReachable = require("is-reachable");
 const ytdl = require("ytdl-core");
 
 client.on("ready", async () => {
+    client.user.setActivity("being a person.");
+
     console.log("PersonBot ready!");
 });
 
