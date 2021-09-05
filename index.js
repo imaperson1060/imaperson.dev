@@ -63,11 +63,7 @@ app.get("/up/", cors(), (req, res) => {
     res.json({ "success": true });
 });
 
-app.post("/restart/", verifyGitHook, (req, res, next) => {
-    process.exit();
-});
-
-function verifyGitHook(req, res, next) {
+app.post("/restart/", (req, res) => {
     const expectedSignature = "sha1=" +
         crypto.createHmac("sha1", process.env.PASSWORD)
             .update(JSON.stringify(req.body))
@@ -75,9 +71,9 @@ function verifyGitHook(req, res, next) {
 
     const signature = req.headers["x-hub-signature"];
     if (signature == expectedSignature) {
-        return next();
+        prcess.exit();
     }
-}
+});
 
 
 server.listen(process.env.PORT, () => {
