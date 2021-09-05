@@ -1,4 +1,4 @@
-const { Client, Collection, MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { Client, Collection } = require("discord.js");
 const client = new Client({ "intents": ["GUILDS", "GUILD_MESSAGES"] });
 
 require("fs").readdirSync("./discord/personbot/events/").forEach(file => {
