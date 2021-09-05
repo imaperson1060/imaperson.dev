@@ -70,10 +70,10 @@ app.post("/restart/", verifyGitHook, (req, res, next) => {
 function verifyGitHook(req, res, next) {
     const expectedSignature = "sha1=" +
         crypto.createHmac("sha1", process.env.PASSWORD)
-            .update(JSON.stringify(request.body))
+            .update(JSON.stringify(req.body))
             .digest("hex");
 
-    const signature = request.headers["x-hub-signature"];
+    const signature = req.headers["x-hub-signature"];
     if (signature == expectedSignature) {
         return next();
     }
