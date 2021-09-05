@@ -7,7 +7,6 @@ const io = new Server(server);
 
 const cors = require("cors");
 const fetch = require("node-fetch");
-const request = require("request");
 const imageToBase64 = require("image-to-base64");
 const isReachable = require("is-reachable");
 const jsonSchema = require("jsonschema");
@@ -15,9 +14,8 @@ const md5 = require("md5");
 const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const url = require("url");
+const urlexists = require("url-exists");
 const util = require("util");
-const urlExists = require("url-exists");
 const ytdl = require("ytdl-core");
 
 app.set("json spaces", 4);
@@ -30,6 +28,8 @@ require("dotenv").config();
 const mysqlLogin = JSON.parse(process.env.MYSQL);
 var database = mysql.createPool(mysqlLogin);
 var query = util.promisify(database.query).bind(database);
+
+var urlExists = util.promisify(urlexists).bind(urlexists);
 
 async function mail(to, subject, html) {
     const mailLogin = JSON.parse(process.env.MAIL);
@@ -51,9 +51,9 @@ async function mail(to, subject, html) {
 }
 
 
-require("./accounts.js")(app, cors, database, mail, md5, rateLimit);
-require("./short.js")(app, cors, database, isReachable, md5, rateLimit, urlExists);
-require("./yt.js")(app, cors, database, imageToBase64, request, urlExists, ytdl);
+require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
+require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
+require("./yt.js")(app, cors, fetch, imageToBase64, query, urlExists, ytdl);
 
 require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
 

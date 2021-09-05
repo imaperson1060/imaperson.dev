@@ -1,4 +1,4 @@
-module.exports = (app, cors, database, imageToBase64, request, urlExists, ytdl) => {
+module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
     function findObjectByKey(array, key, value) {
         for (var i = 0; i < array.length; i++) {
             if (array[i][key] === value) {
@@ -8,357 +8,108 @@ module.exports = (app, cors, database, imageToBase64, request, urlExists, ytdl) 
         return null;
     }
 
-    async function getVideoDetails(id, callback) {
-        var videoInfo = await ytdl.getInfo(id);
-        try {
-            let hd = findObjectByKey(videoInfo.formats, "itag", 22).url;
-            let sd = findObjectByKey(videoInfo.formats, "itag", 18).url;
-        
-            if (!sd || !hd) {
-                var a = undefined;
-                var b = a.b.c;
-            }
-
-            callback({ "success": true, "url": hd, "author": videoInfo.videoDetails.author.name, "title": videoInfo.videoDetails.title, "description": videoInfo.videoDetails.description, "thumbnail": `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
-        } catch(err) {
-            try {
-                let sd = findObjectByKey(videoInfo.formats, "itag", 18).url;
-
-                callback({ "success": true, "url": sd, "author": videoInfo.videoDetails.author.name, "title": videoInfo.videoDetails.title, "description": videoInfo.videoDetails.description, "thumbnail": `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
-            } catch(err) {
-                callback({ "success": false, "message": err.message })
-            }
+    async function getVideoDetails(id) {
+        const db = (await query("SELECT * FROM `yt` WHERE id=?", [id]))[0];
+        if (db && db.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {
+            return { success: true, formats: JSON.parse(db.formats), author: decodeURIComponent(db.author), title: decodeURIComponent(db.title), description: decodeURIComponent(db.description), thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
         }
-        // RIP
-        /*request.post({ "url": `https://youtubei.googleapis.com/youtubei/v1/player?key=${process.env.INNERTUBE}`, json: { "context": { "client": { "hl": "en", "clientName": "WEB", "clientVersion": "2.20210721.00.00" } }, "videoId": id } },  (err, response, body) => {
-            
-            if (err) { return console.log(err); }
 
-            try {
-                let hd = findObjectByKey(body.streamingData.formats, "itag", 22).url;
-                let sd = findObjectByKey(body.streamingData.formats, "itag", 18).url;
-                
-                if (!sd || !hd) {
-                    var a = undefined;
-                    var b = a.b.c;
-                }
+        const videoInfo = await ytdl.getInfo(id);
 
-                callback({ "success": true, "url": hd, "author": body.videoDetails.author, "title": body.videoDetails.title, "description": body.videoDetails.shortDescription, "thumbnail": `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
-            } catch(err) {
-                try {
-                    let sd = findObjectByKey(body.streamingData.formats, "itag", 18).url;
+        var hd;
+        try { hd = findObjectByKey(videoInfo.formats, "itag", 22).url; } catch (e) {}
+        var sd = findObjectByKey(videoInfo.formats, "itag", 18).url;
+        var audio = findObjectByKey(videoInfo.formats, "itag", 140).url;
+        var formats = { hd: hd, sd: sd, audio: audio };
 
-                    if (!sd) {
-                        request(`https://maadhav-ytdl.herokuapp.com/video_info.php?url=https://www.youtube.com/watch?v=${id}`, (err, response, body2) => {
-                            if (err) { return console.log(err); }
-                
-                            sd = JSON.parse(body2).links[0];
-    
-                            callback({ "success": true, "url": sd, "author": body.videoDetails.author, "title": body.videoDetails.title, "description": body.videoDetails.shortDescription, "thumbnail": `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
-                        });
-                    } else {
-                        callback({ "success": true, "url": sd, "author": body.videoDetails.author, "title": body.videoDetails.title, "description": body.videoDetails.shortDescription, "thumbnail": `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
-                    }
-                } catch(err) {
-                    callback({ "success": false, "message": err.message })
-                    //callback({ "success": false, "message": `${Buffer.from(err.message).toString("base64")}` });
-                }
-            }
-        });*/
+        if ((await query("SELECT * FROM `yt` WHERE id=?", [id]))[0]) {
+            await query("UPDATE `yt` SET author=?, title=?, description=?, formats=?, timestamp=? WHERE id=?", [encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description), JSON.stringify(formats), Math.round(new Date().getTime() / 1000), id]);
+        } else {
+            await query("INSERT INTO `yt` VALUES (?,?,?,?,?,?)", [id, videoInfo.videoDetails.author.name, videoInfo.videoDetails.title, videoInfo.videoDetails.description, JSON.stringify(formats), Math.round(new Date().getTime() / 1000)])
+        }
+
+        return { success: true, formats: formats, author: videoInfo.videoDetails.author.name, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
     }
 
-    app.get("/yt/", (req, res) => {
-        res.sendFile("./static/yt/yt.html", { root: __dirname });
+    app.get("/yt/validate/:id/", cors(), async (req, res) => {
+        res.json({ success: (await urlExists(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${req.params.id}`)) });
     });
 
-    app.get("/yt/search/", (req, res) => {
-        res.sendFile("./static/yt/search.html", { root: __dirname });
+    app.get("/yt/watch/:id", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
+
+        if (video.success) return res.redirect(video.formats.hd ? video.formats.hd : video.formats.sd);
+
+        res.redirect("/yt/");
     });
 
-    app.get("/yt/validate/:id/", cors(), (req, res) => {
-        urlExists(`https://i.ytimg.com/vi/${req.params.id}/mqdefault.jpg`, function (err, exists) {
-            res.json({ "success": exists });
-        });
+    app.get("/yt/getInfo/all/:id/", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
+
+        res.json({ success: true, formats: video.formats, author: video.author, title: video.title, description: video.description });
     });
 
-    app.get("/yt/watch/:id", cors(), (req, res) => {
-        getVideoDetails(req.params.id, function (responseJSON) {
-            if (responseJSON.success) {
-                database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                    if (result && (result[0])) {
-                        database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                    } else {
-                        database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                    }
-                            
-                    res.redirect(responseJSON.url);
-                });
-            } else {
-                res.redirect("https://arimeisels.com/yt/");
-            }
-        });
+    app.get("/yt/getInfo/url/:id/", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
+
+        res.json({ success: true, formats: video.formats });
     });
 
-    app.get("/yt/getInfo/all/:id/", cors(), (req, res) => {
-        database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-            if ((result) && (result[0])) {
-                if (result[0].timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {
-                    res.json({ "success": true, "url": result[0].videoURL, "author": decodeURIComponent(result[0].author), "title": decodeURIComponent(result[0].title), "description": decodeURIComponent(result[0].description), "lastUpdate": result[0].timestamp });
-                }
-            }
+    app.get("/yt/getInfo/author/:id/", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
 
-            getVideoDetails(req.params.id, function (responseJSON) {
-                if (responseJSON.success) {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (result && (result[0])) {
-                            database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                        } else {
-                            database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                        }
-
-                        if (!result || !result[0] || result[0].timestamp + 21600 < Math.round(new Date().getTime() / 1000)) {
-                            res.json({ "success": true, "url": responseJSON.url, "author": responseJSON.author, "title": responseJSON.title, "description": responseJSON.description, "lastUpdate": Math.round(new Date().getTime() / 1000) });
-                        }
-                    });
-                } else {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (!result[0]) {
-                            res.json({ "success": false, "code": responseJSON.message });
-                        }
-                    });
-                }
-            });
-        });
+        res.json({ success: true, author: video.author });
     });
 
-    app.get("/yt/getInfo/url/:id/", cors(), (req, res) => {
-        database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-            if (result && (result[0])) {
-                if (result[0].timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {
-                    res.json({ "success": true, "url": result[0].videoURL, "lastUpdate": result[0].timestamp });
-                }
-            }
+    app.get("/yt/getInfo/title/:id/", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
 
-            getVideoDetails(req.params.id, function (responseJSON) {
-                if (responseJSON.success) {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (result && (result[0])) {
-                            database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                        } else {
-                            database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                        }
-                        
-                        if (!result[0] || result[0].timestamp + 21600 < Math.round(new Date().getTime() / 1000)) {
-                            res.json({ "success": true, "url": responseJSON.url, "lastUpdate": Math.round(new Date().getTime() / 1000) });
-                        }
-                    });
-                } else {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (!result[0]) {
-                            res.json({ "success": false, "code": responseJSON.message });
-                        }
-                    });
-                }
-            });
-        });
-    });
-
-    app.get("/yt/getInfo/author/:id/", cors(), (req, res) => {
-        database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-            if (result && (result[0])) {
-                res.json({ "success": true, "author": decodeURIComponent(result[0].author), "lastUpdate": result[0].timestamp });
-            }
-            
-            getVideoDetails(req.params.id, function (responseJSON) {
-                if (responseJSON.success) {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (result && (result[0])) {
-                            database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                        } else {
-                            database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                            
-                            res.json({"success": true, "author": responseJSON.author, "lastUpdate": Math.round(new Date().getTime() / 1000)});
-                        }
-                    });
-                } else {    
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (!result[0]) {
-                            res.json({ "success": false, "code": responseJSON.message });
-                        }
-                    });
-                }
-            });
-        });
-    });
-
-    app.get("/yt/getInfo/title/:id/", cors(), (req, res) => {
-        database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-            if (result && (result[0])) {
-                res.json({ "success": true, "title": decodeURIComponent(result[0].title), "lastUpdate": result[0].timestamp });
-            }
-
-            getVideoDetails(req.params.id, function (responseJSON) {
-                if (responseJSON.success) {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (result && (result[0])) {
-                            database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                        } else {
-                            database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                                    
-                            res.json({ "success": true, "title": responseJSON.title, "lastUpdate": Math.round(new Date().getTime() / 1000) });
-                        }
-                    });
-                } else {    
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (!result[0]) {
-                            res.json({ "success": false, "code": responseJSON.message });
-                        }
-                    });
-                }
-            });
-        });
+        res.json({ success: true, title: video.title });
     });
     
-    app.get("/yt/getInfo/description/:id/", cors(), (req, res) => {
-        database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-            if (result && (result[0])) {
-                res.json({ "success": true, "description": decodeURIComponent(result[0].description), "lastUpdate": result[0].timestamp });
-            }
+    app.get("/yt/getInfo/description/:id/", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id);
 
-            getVideoDetails(req.params.id, function (responseJSON) {
-                if (responseJSON.success) {
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (result && (result[0])) {
-                            database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                        } else {
-                            database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                                    
-                            res.json({ "success": true, "title": responseJSON.description, "lastUpdate": Math.round(new Date().getTime() / 1000) });
-                        }
-                    });
-                } else {    
-                    database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                        if (!result[0]) {
-                            res.json({ "success": false, "code": responseJSON.message });
-                        }
-                    });
-                }
-            });
-        });
+        res.json({ success: true, description: video.description });
     });
 
-    app.get("/yt/getInfo/thumb/:id/", cors(), (req, res) => {
-        res.json({ "success": true, "thumb": `https://i.ytimg.com/vi/${req.params.id}/mqdefault.jpg` });
-
-        getVideoDetails(req.params.id, function (responseJSON) {
-            if (responseJSON.success) {
-                database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                    if (result && (result[0])) {
-                        database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                    } else {
-                        database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                                    
-                        res.json({ "success": true, "thumb": `https://i.ytimg.com/vi/${req.params.id}/mqdefault.jpg` });
-                    }
-                });
-            } else {
-                database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                    if (!result[0]) {
-                        res.json({ "success": false, "code": responseJSON.message });
-                    }
-                });
-            }
-        });
+    app.get("/yt/getInfo/thumb/:id/", cors(), async (req, res) => {
+        res.json({ "success": true, "thumb": `https://i.ytimg.com/vi/${req.params.id}/hqdefault.jpg` });
     });
 
     app.get("/yt/getInfo/thumb/:id/view/", cors(), (req, res) => {
-        getVideoDetails(req.params.id, function (responseJSON) {
-            if (responseJSON.success) {
-                imageToBase64(responseJSON.thumbnail)
-                    .then((thumb) => {
-                        res.end(new Buffer(thumb, "base64"));
-                    });
+        imageToBase64(`https://i.ytimg.com/vi/${req.params.id}/hqdefault.jpg`).then((thumb) => {
+            res.end(new Buffer.from(thumb, "base64"));
+        });
+    });
 
-                database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                    if (result && (result[0])) {
-                        database.query(`UPDATE \`yt\` SET \`author\`="${encodeURIComponent(responseJSON.author)}", \`title\`="${encodeURIComponent(responseJSON.title)}", \`description\`="${encodeURIComponent(responseJSON.description)}", \`videoURL\`="${responseJSON.url}", \`timestamp\`=${Math.round(new Date().getTime() / 1000)} WHERE id="${req.params.id}"`);
-                    } else {
-                        database.query(`INSERT INTO \`yt\` VALUES ("${req.params.id}", "${encodeURIComponent(responseJSON.author)}", "${encodeURIComponent(responseJSON.title)}", "${encodeURIComponent(responseJSON.description)}", "${responseJSON.URL}", ${Math.round(new Date().getTime() / 1000)})`);
-                    }
-                });
+    app.get("/yt/search/:query/:page?", cors(), async (req, res) => {
+        const result = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${process.env.GOOGLEAPI}&max_results=25&type=video&q=${decodeURIComponent(req.params.query)}${req.params.page ? `&page_token=${req.params.page}` : ""}`);
+        const body = await result.json();
+
+        function checkQuota() {
+            if (body.error && body.error.message == "The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.") {
+                return "quota"
             } else {
-                database.query(`SELECT * FROM \`yt\` WHERE id="${req.params.id}"`, function (error, result, fields) {
-                    if (!result[0]) {
-                        res.json({ "success": false, "code": responseJSON.message });
-                    }
-                });
+                return "forbidden"
             }
-        });
-    });
+        }
 
-    app.get("/yt/search/:query/", cors(), (req, res) => {
-        request(`https://www.googleapis.com/youtube/v3/search?key=${process.env.GOOGLEAPI}&max_results=25&type=video&q=${decodeURIComponent(req.params.query)}`, (err, response, body) => {
-            if (err) { return console.log(err); }
+        const ytErrors = {
+            400: "badRequest",
+            401: "unauthorized",
+            403: checkQuota(),
+            404: "not found"
+        };
 
-            body = JSON.parse(body);
+        if (body.error) { return res.json({ "success": false, "reason": ytErrors[body.error.code], "message": body.error.message }); }
 
-            function checkQuota() {
-                if (body.error && body.error.message == "The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.") {
-                    return "quota"
-                } else {
-                    return "forbidden"
-                }
-            }
+        var videoIds = new Array(24);
 
-            const ytErrors = {
-                400: "badRequest",
-                401: "unauthorized",
-                403: checkQuota(),
-                404: "not found"
-            };
+        for (var i = 0; i < body.items.length; i++) {
+            videoIds[i] = body.items[i].id.videoId;
+        }
 
-            if (body.error) { return res.json({ "success": false, "reason": ytErrors[body.error.code], "message": body.error.message }); }
-
-            var videoIds = new Array(24);
-
-            for (var i = 0; i < body.items.length; i++) {
-                videoIds[i] = body.items[i].id.videoId;
-            }
-
-            res.json({ "success": true, "next": body.nextPageToken, "back": body.prevPageToken, "results": videoIds });
-        });
-    });
-
-    app.get("/yt/search/:query/:page/", cors(), (req, res) => {
-        request(`https://www.googleapis.com/youtube/v3/search?key=${process.env.GOOGLEAPI}&max_results=25&type=video&q=${decodeURIComponent(req.params.query)}&page_token=${req.params.page}`, (err, response, body) => {
-            if (err) { return console.log(err); }
-
-            body = JSON.parse(body);
-
-            function checkQuota() {
-                if (body.error && body.error.message == "The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.") {
-                    return "quota"
-                } else {
-                    return "forbidden"
-                }
-            }
-
-            const ytErrors = {
-                400: "badRequest",
-                401: "unauthorized",
-                403: checkQuota(),
-                404: "not found"
-            };
-
-            if (body.error) { return res.json({ "success": false, "reason": ytErrors[body.error.code], "message": body.error.message }); }
-
-            var videoIds = new Array(24);
-
-            for (var i = 0; i < body.items.length; i++) {
-                videoIds[i] = body.items[i].id.videoId;
-            }
-
-            res.json({ "success": true, "next": body.nextPageToken, "back": body.prevPageToken, "results": videoIds });
-        });
+        res.json({ "success": true, "next": body.nextPageToken, "back": body.prevPageToken, "results": videoIds });
     });
 }
