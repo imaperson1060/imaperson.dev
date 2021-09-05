@@ -14,11 +14,11 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
         }
     });
 
-    app.get("/short/go/:url", cors(), (req, res) => {
+    app.get("/short/go/:id", cors(), (req, res) => {
         res.redirect("/short/");
     });
 
-    app.get("/short/go/:url/:id/", cors(), async (req, res) => {
+    app.get("/short/go/:domain/:id/", cors(), async (req, res) => {
         const result = (await query("SELECT * FROM `short` WHERE id=?", [req.params.id]))[0];
         if (result) {
             if (result.expiration < Math.round(new Date().getTime() / 1000)) {
@@ -27,7 +27,7 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
                 res.redirect("/short/");
             } else {
                 const result = (await query("SELECT * FROM `short` WHERE id=? AND domain=?", [req.params.id, req.params.domain]))[0];
-                res.redirect(result ? result[0].longurl : "/short/");
+                res.redirect(result ? result.longurl : "/short/");
             }
         } else {
             res.redirect("/short/");
