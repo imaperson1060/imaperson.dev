@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 const cors = require("cors");
+const crypto = require("crypto");
 const fetch = require("node-fetch");
 const imageToBase64 = require("image-to-base64");
 const isReachable = require("is-reachable");
@@ -62,15 +63,24 @@ app.get("/up/", cors(), (req, res) => {
     res.json({ "success": true });
 });
 
-app.post("/restart/", (req, res) => {
-    if ((req.body.repository.id == 372995811) && (req.body.sender.id == 68653653)) {
-        res.json({ success: true });
-
-        process.exit();
-    } else {
-        res.redirect("https://youtu.be/dQw4w9WgXcQ");
-    }
+app.post("/restart/", verifyGitHook, (req, res, next) => {
+    process.exit();
 });
+
+function verifyGitHook(req, res, next) {
+    if (!req.rawBody) {
+        return next("Request body empty")
+    }
+  
+    const sig = Buffer.from(req.get(sigHeaderName) || "", "utf8")
+    const hmac = crypto.createHmac(sigHashAlg, secret)
+    const digest = Buffer.from(sigHashAlg + "=" + hmac.update(req.rawBody).digest("hex"), "utf8")
+    if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
+        return next(`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`)
+    }
+  
+    return next()
+}
 
 
 server.listen(process.env.PORT, () => {
