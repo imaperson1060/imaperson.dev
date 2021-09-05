@@ -25,7 +25,11 @@
             
             <button id="submit" class="btn btn-primary" value="Submit" disabled>
                 <div id="loadingCircle" class="" role="status"></div>
-                Play!
+                Video
+            </button>
+            <button id="submitAudio" class="btn btn-secondary" value="Submit" disabled>
+                <div id="loadingCircleAudio" class="" role="status"></div>
+                Audio
             </button>
             
             <br>
@@ -36,9 +40,9 @@
 
             <br>
             
-            <div>
+            <!--<div>
                 <h3><a href="/yt/docs/" target="_blank">Use the API on your own site!</a></h3>
-            </div>
+            </div>-->
         </div>
         
         <style>
@@ -66,6 +70,7 @@
                 if (!getId(document.getElementById("url").value)) {
                     $("#warnings").html("");
                     $("#submit").attr("disabled", false);
+                    $("#submitAudio").attr("disabled", false);
                     return;
                 };
 
@@ -75,9 +80,11 @@
                 if (valid.success) {
                     $("#warnings").html("");
                     $("#submit").attr("disabled", false);
+                    $("#submitAudio").attr("disabled", false);
                 } else {
                     $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
                     $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
                 }
             });
 
@@ -90,11 +97,31 @@
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
 
                 if (url.success) {
-                    if (url.url) return window.open(url.url);
+                    if (url.formats.hd) return window.open(url.formats.hd);
+                    if (url.formats.sd) return window.open(url.formats.sd);
                     $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
                 } else {
                     $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
                     $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
+                }
+            });
+
+            document.getElementById("submitAudio").addEventListener("click", async function () {
+                $("#loadingCircleAudio").addClass("spinner-border spinner-border-sm text-light");
+
+                var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}/`);
+                url = await url.json();
+
+                $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
+
+                if (url.success) {
+                    if (url.formats.audio) return window.open(url.formats.audio);
+                    $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
+                } else {
+                    $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
                 }
             });
 
