@@ -1,3 +1,4 @@
 node_modules/*
+concepts/*
 .env
 run.bat

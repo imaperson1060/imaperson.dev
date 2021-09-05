@@ -54,12 +54,10 @@ app.use(express.static("static"));
 
 
 require("./accounts.js")(app, cors, database, mail, md5, rateLimit);
-require("./discord/bots.js")(query);
 require("./short.js")(app, cors, database, isReachable, md5, rateLimit, urlExists);
-require("./tictactoe.js")(app, cors, database);
 require("./yt.js")(app, cors, database, imageToBase64, request, urlExists, ytdl);
-require("./5b.js")(app, cors, database, jsonSchema, md5);
-require("./socket.js")(io);
+
+require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
 
 
 app.get("/up/", cors(), (req, res) => {
