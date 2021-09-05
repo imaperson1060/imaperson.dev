@@ -23,7 +23,7 @@ const ytdl = require("ytdl-core");
 app.set("json spaces", 4);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static("static"));
 
 require("dotenv").config();
 
@@ -49,8 +49,6 @@ async function mail(to, subject, html) {
         html: html
     });
 }
-
-app.use(express.static("static"));
 
 
 require("./accounts.js")(app, cors, database, mail, md5, rateLimit);
