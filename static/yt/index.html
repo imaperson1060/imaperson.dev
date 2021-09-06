@@ -69,8 +69,8 @@
             $("#url").on("input", async function() {
                 if (!getId(document.getElementById("url").value)) {
                     $("#warnings").html("");
-                    $("#submit").attr("disabled", false);
-                    $("#submitAudio").attr("disabled", false);
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
                     return;
                 };
 
