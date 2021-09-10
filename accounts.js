@@ -6,9 +6,10 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
     });
 
     app.get("/signup/:name/:username/:email/:password", accountLimiter, cors(), async (req, res) => {
-        if (req.params.username.length > 32) return res.json({ "success": false, "message": "long" });
+        if (req.params.username.length > 32) return res.json({ success: false, message: "long" });
         if (("_! @#$%^&*,".indexOf(req.params.username) != -1) || req.params.username.startsWith("-")) return res.json({ "success": false, "message": "invalidchar" });
         if (["api", "5beam", "sql"].indexOf(req.params.username) != -1) return res.json({ success: false, message: "reserved" });
+        if (/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(req.params.email.toLowerCase())) return res.json({ success: false, message: "invalidemail" });
         
         function capitalize(str) {
             return str.replace(/\w\S*/g, function(txt) {
