@@ -24,6 +24,7 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
         
         await mail(req.params.email, "Welcome", `<h1>Hey, ${capitalize(req.params.name)}! Thanks for creating an account on my website!</h1> <h2>If you have any questions, feel free to <a href="mailto:me@arimeisels.com">shoot me an email</a>!</h3> <style>* { font-family: sans-serif }</style>`);
         
+        await query("ALTER TABLE `accounts` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `accounts`"))[0].max]);
         await query("INSERT INTO `accounts`(`username`, `name`, `email`, `password`, `timestamp`) VALUES (?,?,?,?,?)", [req.params.username, capitalize(req.params.name), req.params.email, md5(req.params.password), timestamp]);
 
         res.json({ success: true });
