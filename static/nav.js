@@ -24,10 +24,27 @@
 })();
 
 async function login() {
+    const errors = (err) => {
+        switch (err) {
+            case "ratelimit": return "Only one account can be created every 15 minutes.";
+            case "long": return `Username "${$("#login-username").val()}" is too long.`;
+            case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
+            case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
+            case "reserved": return `Username "${$("#login-username").val()}" is reserved.`;
+            case "taken": return `Username "${$("#login-username").val()}" has been taken.`;
+            case "emailused": return `Email "${$("#login-email").val()}" is already linked to an account.`;
+            case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
+            case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
+            case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
+            case "wrongcode": return "Access code incorrect.";
+        }
+    };
+        
     const response = await fetch(`/login/${$("#login-username").val()}/${MD5($("#login-password").val())}`);
-    const responseJSON = await response.json();
+    const res = await response.json();
+
     
-    if (responseJSON.success) {
+    if (res.success) {
         localStorage.setItem("auth", `{ "username": "${document.getElementById("login-username").value}", "password": "${MD5($("#login-password").val())}" }`);
         
         $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Logged in as ${$("#login-username").val()}.</div>`);
@@ -47,7 +64,7 @@ async function login() {
             location.reload();
         });
     } else {
-        $("#response").html(`<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${responseJSON.message}</div>`);
+        $("#response").html(`<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${errors(res.message)}</div>`);
     }
 };
 

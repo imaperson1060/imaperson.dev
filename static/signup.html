@@ -59,18 +59,20 @@
                 return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
             }
 
-            const errors = {
-                ratelimit: "Only one account can be created every 15 minutes.",
-                long: `Username "${$("#login-username").val()}" is too long.`,
-                invalidchar: `Username "${$("#login-username").val()}" contains invalid characters.`,
-                invalidemail: `Email "${$("#login-email").val()}" is invalid.`,
-                reserved: `Username "${$("#login-username").val()}" is reserved.`,
-                taken: `Username "${$("#login-username").val()}" has been taken.`,
-                emailused: `Email "${$("#login-email").val()}" is already linked to an account.`,
-                noaccount: `Username "${$("#login-username").val()}" does not exist.`,
-                wrongpass: `Password "${$("#login-password").val()}" is incorrect.`,
-                noaccountlinked: `Email "${$("#login-email").val()}" not linked to any account.`,
-                wrongcode: "Access code incorrect."
+            const errors = (err) => {
+                switch (err) {
+                    case "ratelimit": return "Only one account can be created every 15 minutes.";
+                    case "long": return `Username "${$("#login-username").val()}" is too long.`;
+                    case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
+                    case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
+                    case "reserved": return `Username "${$("#login-username").val()}" is reserved.`;
+                    case "taken": return `Username "${$("#login-username").val()}" has been taken.`;
+                    case "emailused": return `Email "${$("#login-email").val()}" is already linked to an account.`;
+                    case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
+                    case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
+                    case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
+                    case "wrongcode": return "Access code incorrect.";
+                }
             };
             
             (async function () {
@@ -105,7 +107,7 @@
                 var res = await response.json();
                 
                 if (!res.success) {
-                    $("#response").html(HTMLError(errors[res.message]));
+                    $("#response").html(HTMLError(errors(res.message)));
                 } else {
                     localStorage.setItem("auth", `{ "username": "${document.getElementById("login-username").value}", "password": "${document.getElementById("login-password").value}" }`);
 

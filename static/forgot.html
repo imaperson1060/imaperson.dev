@@ -45,9 +45,21 @@
             }
             
             $("#forgotBtn").on("click", async function () {
-                const errors = {
-                    noaccountlinked: `Email "${$("#email").val()}" not linked to any account.`
-                }
+                const errors = (err) => {
+                    switch (err) {
+                        case "ratelimit": return "Only one account can be created every 15 minutes.";
+                        case "long": return `Username "${$("#login-username").val()}" is too long.`;
+                        case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
+                        case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
+                        case "reserved": return `Username "${$("#login-username").val()}" is reserved.`;
+                        case "taken": return `Username "${$("#login-username").val()}" has been taken.`;
+                        case "emailused": return `Email "${$("#login-email").val()}" is already linked to an account.`;
+                        case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
+                        case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
+                        case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
+                        case "wrongcode": return "Access code incorrect.";
+                    }
+                };
 
                 if (!$("#email").val()) return $("#response").html(HTMLError("You must enter the email linked to your account."));
 
@@ -55,7 +67,7 @@
                 var res = await response.json();
                 
                 if (!res.success) {
-                    $("#response").html(HTMLError(errors[res.message]));
+                    $("#response").html(HTMLError(errors(res.message)));
                 } else {
                     $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Check your email for the reset link! </div>`);
                 }

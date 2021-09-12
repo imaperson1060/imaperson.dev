@@ -8,8 +8,8 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
     app.get("/signup/:name/:username/:email/:password", accountLimiter, cors(), async (req, res) => {
         if (req.params.username.length > 32) return res.json({ success: false, message: "long" });
         if (("_! @#$%^&*,".indexOf(req.params.username) != -1) || req.params.username.startsWith("-")) return res.json({ "success": false, "message": "invalidchar" });
-        if (["api", "5beam", "sql"].indexOf(req.params.username) != -1) return res.json({ success: false, message: "reserved" });
-        if (/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(req.params.email.toLowerCase())) return res.json({ success: false, message: "invalidemail" });
+        if (JSON.parse(process.env.RESERVED).indexOf(req.params.username) != -1) return res.json({ success: false, message: "reserved" });
+        if (!/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(req.params.email.toLowerCase())) return res.json({ success: false, message: "invalidemail" });
         
         function capitalize(str) {
             return str.replace(/\w\S*/g, function(txt) {
@@ -22,11 +22,9 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
         
         var timestamp = Math.round(new Date().getTime() / 1000);
         
-        var highestId = (await query("SELECT MAX(id) AS highestId FROM `accounts` LIMIT 1"))[0].highestId || 0;
-        
         await mail(req.params.email, "Welcome", `<h1>Hey, ${capitalize(req.params.name)}! Thanks for creating an account on my website!</h1> <h2>If you have any questions, feel free to <a href="mailto:me@arimeisels.com">shoot me an email</a>!</h3> <style>* { font-family: sans-serif }</style>`);
         
-        await query("INSERT INTO `accounts`(`id`, `username`, `name`, `email`, `password`, `timestamp`) VALUES (?,?,?,?,?,?)", [highestId + 1, req.params.username, capitalize(req.params.name), req.params.email, md5(req.params.password), timestamp]);
+        await query("INSERT INTO `accounts`(`username`, `name`, `email`, `password`, `timestamp`) VALUES (?,?,?,?,?)", [req.params.username, capitalize(req.params.name), req.params.email, md5(req.params.password), timestamp]);
         
         require("child_process").execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
 

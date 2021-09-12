@@ -67,10 +67,21 @@
             });
 
             $("#resetBtn").on("click", async function () {
-                const errors = {
-                    noaccount: `Username "${$("#username").val()}" does not exist.`,
-                    wrongcode: "Access code incorrect."
-                }
+                const errors = (err) => {
+                    switch (err) {
+                        case "ratelimit": return "Only one account can be created every 15 minutes.";
+                        case "long": return `Username "${$("#login-username").val()}" is too long.`;
+                        case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
+                        case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
+                        case "reserved": return `Username "${$("#login-username").val()}" is reserved.`;
+                        case "taken": return `Username "${$("#login-username").val()}" has been taken.`;
+                        case "emailused": return `Email "${$("#login-email").val()}" is already linked to an account.`;
+                        case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
+                        case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
+                        case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
+                        case "wrongcode": return "Access code incorrect.";
+                    }
+                };
 
                 if (!$("#username").val()) return $("#response").html(HTMLError("You must enter the username linked to your account."));
 
@@ -78,7 +89,7 @@
                 var res = await response.json();
                 
                 if (!res.success) {
-                    $("#response").html(HTMLError(errors[res.message]));
+                    $("#response").html(HTMLError(errors(res.message)));
                 } else {
                     $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your new password is ${res.password}. </div>`);
                 }
