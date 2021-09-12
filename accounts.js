@@ -25,10 +25,10 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
         await mail(req.params.email, "Welcome", `<h1>Hey, ${capitalize(req.params.name)}! Thanks for creating an account on my website!</h1> <h2>If you have any questions, feel free to <a href="mailto:me@arimeisels.com">shoot me an email</a>!</h3> <style>* { font-family: sans-serif }</style>`);
         
         await query("INSERT INTO `accounts`(`username`, `name`, `email`, `password`, `timestamp`) VALUES (?,?,?,?,?)", [req.params.username, capitalize(req.params.name), req.params.email, md5(req.params.password), timestamp]);
-        
-        require("child_process").execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
 
         res.json({ success: true });
+        
+        require("child_process").execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
     });
 
     app.get("/login/:username/:password", cors(), async (req, res) => {
