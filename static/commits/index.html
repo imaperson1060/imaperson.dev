@@ -29,7 +29,7 @@
 
         <script>
             (async () => {
-                var commits = await fetch("https://api.github.com/repos/meisels/arimeisels.com/commits", {
+                var commits = await fetch("https://api.github.com/repos/meisels/arimeisels.com/commits?per_page=100", {
                     headers: {
                         "Authorization": "Basic"
                     }
