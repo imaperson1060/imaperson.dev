@@ -1,0 +1,8 @@
+reallysmall {
+    font-size: x-small;
+}
+
+a.disabled {
+    color: gray;
+    pointer-events: none;
+}
