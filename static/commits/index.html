@@ -32,7 +32,11 @@
 
         <script>
             (async () => {
-                var commits = await fetch("/get_commits/");
+                var commits = await fetch("https://api.github.com/repos/meisels/arimeisels.com/commits?per_page=100", {
+                    headers: {
+                        "Authorization": `Basic ${btoa("meisels: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")}` // Please don't abuse this, thanks :) (it only has read perms anyways)
+                    }
+                });
                 commits = await commits.json();
 
                 var amount = 0;
@@ -112,7 +116,11 @@
                             footer.appendChild(footerText);
 
 
-                            var moreInfo = (await (await fetch(`/get_commit_info/${data.sha}`)).json());
+                            var moreInfo = (await (await fetch(data.url, {
+                                headers: {
+                                    "Authorization": `Basic ${btoa("meisels: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")}` // Please don't abuse this, thanks :) (it only has read perms anyways)
+                                }
+                            })).json());
 
 
                             var changes = document.createElement("div");
