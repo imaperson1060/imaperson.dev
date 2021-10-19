@@ -54,6 +54,7 @@ async function mail(to, subject, html) {
 
 
 require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
+require("./count.js")(app, query);
 require("./github.js")(app, cors, fetch);
 require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
 require("./yt.js")(app, cors, fetch, imageToBase64, query, urlExists, yt.dl);
