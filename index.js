@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
+const archiver = require("archiver");
 const cors = require("cors");
 const crypto = require("crypto");
 const fetch = require("node-fetch");
@@ -17,7 +18,7 @@ const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const urlexists = require("url-exists");
 const util = require("util");
-const ytdl = require("ytdl-core");
+const yt = { dl: require("ytdl-core"), pl: require("ytpl"), sr: require("ytsr") };
 
 app.set("json spaces", 4);
 app.use(express.json());
@@ -55,7 +56,8 @@ async function mail(to, subject, html) {
 require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
 require("./github.js")(app, cors, fetch);
 require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
-require("./yt.js")(app, cors, fetch, imageToBase64, query, urlExists, ytdl);
+require("./yt.js")(app, cors, fetch, imageToBase64, query, urlExists, yt.dl);
+//require("./yt.js")(app, archiver, cors, fetch, imageToBase64, query, urlExists, util, yt);
 
 require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
 
@@ -79,5 +81,5 @@ app.post("/restart/", (req, res) => {
 
 
 server.listen(process.env.PORT, () => {
-    console.log("API Ready!");
+    console.log(`API Ready! (${process.env.PORT})`);
 });

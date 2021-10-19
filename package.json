@@ -12,6 +12,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "archiver": "^5.3.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "discord-api-types": "^0.22.0",
@@ -31,7 +32,9 @@
     "socket.io": "^4.2.0",
     "url-exists": "^1.0.3",
     "util": "^0.12.4",
-    "ytdl-core": "^4.9.1"
+    "ytdl-core": "^4.9.1",
+    "ytpl": "^2.2.3",
+    "ytsr": "^3.5.3"
   },
   "nodemonConfig": {
     "ignore": [
