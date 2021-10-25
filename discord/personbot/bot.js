@@ -34,5 +34,5 @@ const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
 		Routes.applicationCommands("882471379910426664"), { body: commands },
 	);
 })();
-    
+
 client.login(process.env.PERSONBOT_TOKEN);
