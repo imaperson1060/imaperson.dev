@@ -7,7 +7,6 @@ const io = new Server(server);
 
 const archiver = require("archiver");
 const cors = require("cors");
-const crypto = require("crypto");
 const fetch = require("node-fetch");
 const imageToBase64 = require("image-to-base64");
 const isReachable = require("is-reachable");
@@ -54,7 +53,7 @@ async function mail(to, subject, html) {
 
 
 require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
-require("./github.js")(app, cors, fetch);
+require("./github.js")(app, cors, require("crypto"), fetch);
 require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
 require("./yt.js")(app, cors, imageToBase64, query, urlExists, yt);
 
@@ -63,19 +62,6 @@ require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.
 
 app.get("/up/", cors(), (req, res) => {
     res.json({ "success": true });
-});
-
-app.post("/restart/", (req, res) => {
-    const expectedSignature = "sha1=" +
-        crypto.createHmac("sha1", process.env.PASSWORD)
-            .update(JSON.stringify(req.body))
-            .digest("hex");
-
-    const signature = req.headers["x-hub-signature"];
-    if (signature == expectedSignature) {
-        res.sendStatus(200);
-        process.exit();
-    }
 });
 
 
