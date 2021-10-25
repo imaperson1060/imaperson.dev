@@ -2,7 +2,7 @@ module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
     const shortenLimiter = rateLimit({
         windowMs: 1 * 60 * 1000, // 1 minute
         max: 5, // limit each IP to 1 request per windowMs
-        message: { "success": false, "message": "Only 5 URLs can be shortened per minute." }
+        message: { success: false, message: "Only 5 URLs can be shortened per minute." }
     });
 
     app.get("/short/:id", cors(), async (req, res) => {

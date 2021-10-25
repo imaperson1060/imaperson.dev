@@ -55,7 +55,7 @@ async function mail(to, subject, html) {
 require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
 require("./github.js")(app, cors, require("crypto"), fetch);
 require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
-require("./yt.js")(app, cors, imageToBase64, query, urlExists, yt);
+require("./yt.js")(app, cors, query, urlExists, yt);
 
 require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
 

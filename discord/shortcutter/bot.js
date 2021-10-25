@@ -44,7 +44,7 @@ client.on("interactionCreate", interaction => {
 						{ name: "Invite it here:", value: "[https://discord.com/api/oauth2/authorize?client_id=838967702872916000&permissions=2147483648&scope=applications.commands%20bot](https://discord.com/api/oauth2/authorize?client_id=838967702872916000&permissions=2147483648&scope=applications.commands%20bot)" }
                     )
                     .setTimestamp()
-                    .setFooter("© imaperson#1060", "https://api.arimeisels.com/favicon.png");
+                    .setFooter("© imaperson#1060", "https://arimeisels.com/favicon.png");
 
 				interaction.editReply({ embeds: [ help ] });
 			})();

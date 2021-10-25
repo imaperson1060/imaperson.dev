@@ -2,7 +2,7 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
     const accountLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 1 minute
         max: 1,
-        message: { "success": false, "message": "ratelimit" }
+        message: { success: false, message: "ratelimit" }
     });
 
     app.get("/signup/:name/:username/:email/:password", accountLimiter, cors(), async (req, res) => {
