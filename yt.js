@@ -1,4 +1,4 @@
-module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
+module.exports = (app, cors, imageToBase64, query, urlExists, yt) => {
     function findObjectByKey(array, key, value) {
         for (var i = 0; i < array.length; i++) {
             if (array[i][key] === value) {
@@ -11,10 +11,10 @@ module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
     async function getVideoDetails(id) {
         const db = (await query("SELECT * FROM `yt` WHERE id=?", [id]))[0];
         if (db && db.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {
-            return { success: true, formats: JSON.parse(db.formats), author: decodeURIComponent(db.author), title: decodeURIComponent(db.title), description: decodeURIComponent(db.description), thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
+            return { success: true, formats: JSON.parse(decodeURIComponent(db.formats)), author: decodeURIComponent(db.author), title: decodeURIComponent(db.title), description: decodeURIComponent(db.description), thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
         }
 
-        const videoInfo = await ytdl.getInfo(id);
+        const videoInfo = await yt.dl.getInfo(id);
 
         var hd;
         try { hd = findObjectByKey(videoInfo.formats, "itag", 22).url; } catch (e) {}
@@ -25,7 +25,7 @@ module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
         if ((await query("SELECT * FROM `yt` WHERE id=?", [id]))[0]) {
             await query("UPDATE `yt` SET author=?, title=?, description=?, formats=?, timestamp=? WHERE id=?", [encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description), JSON.stringify(formats), Math.round(new Date().getTime() / 1000), id]);
         } else {
-            await query("INSERT INTO `yt` VALUES (?,?,?,?,?,?)", [id, videoInfo.videoDetails.author.name, videoInfo.videoDetails.title, videoInfo.videoDetails.description, JSON.stringify(formats), Math.round(new Date().getTime() / 1000)])
+            await query("INSERT INTO `yt` VALUES (?,?,?,?,?,?)", [id, encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description) || "", JSON.stringify(formats), Math.round(new Date().getTime() / 1000)])
         }
 
         return { success: true, formats: formats, author: videoInfo.videoDetails.author.name, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
@@ -33,6 +33,10 @@ module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
 
     app.get("/yt/validate/:id/", cors(), async (req, res) => {
         res.json({ success: (await urlExists(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${req.params.id}`)) });
+    });
+
+    app.get("/yt/validate/playlist/:id/", cors(), async (req, res) => {
+        res.json({ success: (await urlExists(`https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${req.params.id}`)) });
     });
 
     app.get("/yt/watch/:id", cors(), async (req, res) => {
@@ -83,33 +87,134 @@ module.exports = (app, cors, fetch, imageToBase64, query, urlExists, ytdl) => {
         });
     });
 
-    app.get("/yt/search/:query/:page?", cors(), async (req, res) => {
-        const result = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${process.env.GOOGLEAPI}&max_results=25&type=video&q=${decodeURIComponent(req.params.query)}${req.params.page ? `&page_token=${req.params.page}` : ""}`);
-        const body = await result.json();
+    /*app.get("/yt/playlist/:id/:short?", async (req, res) => {
+        var result = await yt.pl(req.params.id);
 
-        function checkQuota() {
-            if (body.error && body.error.message == "The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.") {
-                return "quota"
-            } else {
-                return "forbidden"
-            }
+        if (req.params.short == "true") {
+            var tempResult = new Array(result.items.length);
+            result.items.forEach((x, i) => {
+                tempResult[i] = x.id;
+            });
+            result = tempResult;
         }
 
-        const ytErrors = {
-            400: "badRequest",
-            401: "unauthorized",
-            403: checkQuota(),
-            404: "not found"
-        };
-
-        if (body.error) { return res.json({ "success": false, "reason": ytErrors[body.error.code], "message": body.error.message }); }
-
-        var videoIds = new Array(24);
-
-        for (var i = 0; i < body.items.length; i++) {
-            videoIds[i] = body.items[i].id.videoId;
-        }
-
-        res.json({ "success": true, "next": body.nextPageToken, "back": body.prevPageToken, "results": videoIds });
+        res.json(result);
     });
+
+    app.all("/yt/search/:query?/:short?", cors(), async (req, res) => {
+        if (!req.body.continuation && req.params.query) {
+
+            var results = await yt.sr((await (await yt.sr.getFilters(req.params.query)).get("Type").get("Video")).url, { pages: 1 });
+            delete results.refinements;
+
+            if (req.params.short == "true") {
+                var tempResult = new Array(results.items.length);
+                results.items.forEach((x, i) => {
+                    tempResult[i] = x.id;
+                });
+                results = { items: tempResult, continuation: results.continuation };
+            }
+
+            return res.json(results);
+        } else if (req.body.continuation) {
+            var results = await yt.sr.continueReq(req.body.continuation);
+            delete results.refinements;
+
+            if (req.body.short == "true" || req.body.short == true) {
+                var tempResult = new Array(results.items.length);
+                results.items.forEach((x, i) => {
+                    tempResult[i] = x.id;
+                });
+                results = { items: tempResult, continuation: results.continuation };
+            }
+
+            return res.json(results);
+        }
+
+        res.json({ success: false });
+    });
+
+    // (async() => console.log(await yt.sr("minecraft")))();
+
+    // await yt.pl("id")
+
+    /*app.get("/yt/bulk/playlist/:pid/:password", (req, res) => {
+        if (req.params.password != process.env.PASSWORD) return res.sendStatus(401);
+
+        var playlist = { "results": [] };
+
+        (async function plist() {
+            const playlistData = await getPlaylist(req.params.pid, playlist.next ? playlist.next : undefined);
+            
+            if (!playlistData.success) res.json(playlistData);
+
+            playlistData.results.forEach(x => playlist.results.push(x));
+
+            playlist.info = playlistData.info || playlist.info;
+
+            if (playlistData.next) {
+                playlist.next = playlistData.next;
+                return plist();
+            }
+            
+            delete playlist.next;
+
+            playlist.success = true;
+
+            res.send(playlist);
+
+            /*var archive = archiver("zip");
+            res.attachment(`${playlist.info.title}.zip`);
+            archive.pipe(res);
+
+            var upto = 1;
+
+            playlist.results.forEach(async (x, i) => {
+                const video = await getVideoDetails(x);
+                await archive.append(await (await fetch(video.formats.hd ? video.formats.hd : video.formats.sd)).buffer(), { name: `${video.title.replace(/[\\\/:\*\?"<>\|]/g, "_")}.mp4` });
+
+                if (upto == playlist.results.length) archive.finalize();
+
+                upto++;
+            });*/
+        /*})();
+    });*/
+
+    /*app.get("/yt/bulk/list/:listjson/:password", (req, res) => {
+        if (req.params.password != process.env.PASSWORD) return res.sendStatus(401);
+
+        var videos= [];
+
+        (async function plist() {
+            const playlistData = await getPlaylist(req.params.pid, playlist.next ? playlist.next : undefined);
+            
+            if (!playlistData.success) res.json(playlistData);
+
+            playlistData.results.forEach(x => playlist.results.push(x));
+
+            playlist.info = playlistData.info || playlist.info;
+
+            if (playlistData.next) {
+                playlist.next = playlistData.next;
+                return plist();
+            }
+            
+            delete playlist.next;
+
+            var archive = archiver("zip");
+            res.attachment(`${playlist.info.title}.zip`);
+            archive.pipe(res);
+
+            var upto = 1;
+
+            playlist.results.forEach(async (x, i) => {
+                const video = await getVideoDetails(x);
+                await archive.append(await (await fetch(video.formats.hd ? video.formats.hd : video.formats.sd)).buffer(), { name: `${video.title.replace(/[\\\/:\*\?"<>\|]/g, "_")}.mp4` });
+
+                if (upto == playlist.results.length) archive.finalize();
+
+                upto++;
+            });
+        })();
+    });*/
 }

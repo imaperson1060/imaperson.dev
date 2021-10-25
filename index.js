@@ -57,8 +57,7 @@ require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
 require("./count.js")(app, cors, query);
 require("./github.js")(app, cors, fetch);
 require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
-require("./yt.js")(app, cors, fetch, imageToBase64, query, urlExists, yt.dl);
-//require("./yt.js")(app, archiver, cors, fetch, imageToBase64, query, urlExists, util, yt);
+require("./yt.js")(app, cors, imageToBase64, query, urlExists, yt);
 
 require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
 

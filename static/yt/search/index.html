@@ -40,101 +40,78 @@
             <div id="videos" class="row">
             </div>
         </div>
-        
-        <style>
-            code {
-                background-color: lightgray;
-            }
-        </style>
 
         <script>
             var page = 0;
-            var next = "";
+            var continuation;
             var search;
-
-            function httpGet(path, callback) {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open("GET", path, true);
-                xmlHttp.send(null);
-                xmlHttp.onload = function() {
-                    callback(xmlHttp.responseText);
-                }
-            }
 
             function HTMLError(text) {
                 return "<div class='alert alert-danger alert-dismissible fade show' role='alert'> <strong>Error!</strong> " + text + " <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button> </div>";
             }
-            
-            function HTMLWarn(text) {
-                return "<div class='alert alert-warning alert-dismissible fade show' role='alert'> <strong>Warning!</strong> " + text + " <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button> </div>";
-            }
-            
-            function HTMLSuccess(text) {
-                return "<div class='alert alert-success alert-dismissible fade show' role='alert'> <strong>Success!</strong> " + text + " <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button> </div>";
-            }
 
             function buildCard(data) {
-               var grid = document.createElement("div");
-               grid.setAttribute("class", "col-sm-6");
-               grid.setAttribute("style", "width: 30% !important");
-               var card = document.createElement("div");
-               card.setAttribute("class", "card");
-               card.setAttribute("style", "width: 18rem");
-               var image = document.createElement("img");
-               image.setAttribute("src", `https://i.ytimg.com/vi/${data.id}/hqdefault.jpg`);
-               image.setAttribute("class", "card-img-top");
-               image.setAttribute("alt", decodeURIComponent(data.title));
-               var body = document.createElement("div");
-               body.setAttribute("class", "card-body");
-               var title = document.createElement("h5");
-               title.setAttribute("class", "card-title")
-               title.setAttribute("title", decodeURIComponent(data.title));
-               var titleText = document.createTextNode(decodeURIComponent(data.title));
-               title.appendChild(titleText);
-               var author = document.createElement("p");
-               author.setAttribute("class", "card-text");
-               author.setAttribute("title", decodeURIComponent(data.author));
-               var authorText = document.createTextNode(decodeURIComponent(data.author));
-               author.appendChild(authorText);
-               var description = document.createElement("p");
-               description.setAttribute("class", "card-text");
-               description.setAttribute("title", decodeURIComponent(data.description));
-               description.setAttribute("style", "font-size: x-small");
-               var descriptionText = document.createTextNode(decodeURIComponent(data.description));
-               description.appendChild(descriptionText)
-               var url = document.createElement("a");
-               url.setAttribute("href", data.url);
-               url.setAttribute("class", "btn btn-primary");
-               url.setAttribute("target", "_blank");
-               var urlText = document.createTextNode("Watch");
-               url.appendChild(urlText);
-               var yturl = document.createElement("a");
-               yturl.setAttribute("href", `https://youtu.be/${data.id}/`);
-               yturl.setAttribute("class", "btn btn-secondary");
-               yturl.setAttribute("style", "float: right");
-               yturl.setAttribute("target", "_blank");
-               yturlText = document.createTextNode("Open in YouTube");
-               yturl.appendChild(yturlText);
-               body.appendChild(title);
-               body.appendChild(author);
-               body.appendChild(description);
-               body.appendChild(url);
-               body.appendChild(yturl);
-               card.appendChild(image);
-               card.appendChild(body);
-               grid.appendChild(card);
-               document.getElementById("videos").appendChild(grid);
+                var grid = document.createElement("div");
+                grid.setAttribute("class", "col-sm-6");
+                grid.setAttribute("style", "width: 30% !important");
+                var card = document.createElement("div");
+                card.setAttribute("class", "card");
+                card.setAttribute("style", "width: 18rem");
+                var image = document.createElement("img");
+                image.setAttribute("src", `https://i.ytimg.com/vi/${data.id}/hqdefault.jpg`);
+                image.setAttribute("class", "card-img-top");
+                image.setAttribute("alt", decodeURIComponent(data.title));
+                var body = document.createElement("div");
+                body.setAttribute("class", "card-body");
+                var title = document.createElement("h5");
+                title.setAttribute("class", "card-title")
+                title.setAttribute("title", decodeURIComponent(data.title));
+                var titleText = document.createTextNode(decodeURIComponent(data.title));
+                title.appendChild(titleText);
+                var author = document.createElement("p");
+                author.setAttribute("class", "card-text");
+                author.setAttribute("title", decodeURIComponent(data.author));
+                var authorText = document.createTextNode(decodeURIComponent(data.author));
+                author.appendChild(authorText);
+                var description = document.createElement("p");
+                description.setAttribute("class", "card-text");
+                description.setAttribute("title", decodeURIComponent(data.description));
+                description.setAttribute("style", "font-size: x-small");
+                var descriptionText = document.createTextNode(decodeURIComponent(data.description));
+                description.appendChild(descriptionText)
+                var url = document.createElement("a");
+                url.setAttribute("href", data.url);
+                url.setAttribute("class", "btn btn-primary");
+                url.setAttribute("target", "_blank");
+                var urlText = document.createTextNode("Watch");
+                url.appendChild(urlText);
+                var yturl = document.createElement("a");
+                yturl.setAttribute("href", `https://youtu.be/${data.id}/`);
+                yturl.setAttribute("class", "btn btn-secondary");
+                yturl.setAttribute("style", "float: right");
+                yturl.setAttribute("target", "_blank");
+                yturlText = document.createTextNode("Open in YouTube");
+                yturl.appendChild(yturlText);
+                body.appendChild(title);
+                body.appendChild(author);
+                body.appendChild(description);
+                body.appendChild(url);
+                body.appendChild(yturl);
+                card.appendChild(image);
+                card.appendChild(body);
+                grid.appendChild(card);
+                document.getElementById("videos").appendChild(grid);
             }
 
             $("#search").on("input", function() {
-                if (document.getElementById("search").value) {
-                    document.getElementById("submit").disabled = false;
+                if ($("#search").val()) {
+                    $("#submit").attr("disabled", false);
                 } else {
-                    document.getElementById("submit").disabled = true;
+                    $("submit").attr("disabled", true)
                 }
             });
 
-            document.getElementById("submit").addEventListener("click", function () {
+            $("#submit").on("click", function () {
                 search = document.getElementById("search").value;
                 $.blockUI();
                 document.getElementById("body").style.overflow = "hidden";
@@ -144,60 +121,76 @@
 
                 document.getElementById("videos").innerHTML = "";
 
-                httpGet(`/yt/search/${document.getElementById("search").value}/`, function (res) {
-                    res = JSON.parse(res);
+                (async () => {
+                    const results = await (await fetch(`/yt/search/${$("#search").val()}/true`)).json();
 
-                    if (res.success) {
-                        var results = res.results;
-
-                        next = res.next || "";
-
-                        for (var i = 0; i < 25; i++) {
-                            (function(i) {
-                                httpGet(`/yt/getInfo/all/${results[i]}/`, function (res) {
-                                    if ((i == 24) || !(results[i + 1])) {
-                                        document.getElementById("loadingCircle").className = "";
-                                        document.getElementById("submit").disabled = false;
-                                        $.unblockUI();
-                                        document.getElementById("body").style.overflow = "visible";
-                                        return;
-                                    } else {
-                                        res = JSON.parse(res);
-                                        if (res.title.length > 45) {
-                                            res.title = res.title.substr(0, 45) + "...";
-                                        }
-
-                                        if (res.author.length > 32) {
-                                            res.author = res.author.substr(0, 32) + "...";
-                                        }
-                                        
-                                        if (res.description.length > 100) {
-                                            res.description = res.description.substr(0, 100) + "...";
-                                        }
-
-                                        buildCard({ "id": results[i], "url": res.url, "author": res.author, "title": res.title, "description": res.description, "thumb": res.thumb});
-                                    }
-                                });
-                            })(i);
-                        }
-
-                        page++;
-                    } else {
-                        document.getElementById("warnings").innerHTML = HTMLWarn("Because of stupid quotas on YouTube, this search thingy will not work for the rest of the day. Sorry!");
-                        document.getElementById("submit").disabled = true;
+                    for (var i = 0; i < results.items.length; i++) {
+                        (async (i) => {
+                            var res = await (await fetch(`/yt/getInfo/all/${results.items[i]}`)).json();
+                            
+                            if (res.title.length > 45) res.title = res.title.substr(0, 45) + "...";
+                            if (res.author.length > 32) res.author = res.author.substr(0, 32) + "...";
+                            if (res.description.length > 100) res.description = res.description.substr(0, 100) + "...";
+                            
+                            buildCard({ id: results.items[i], url: res.formats.hd || res.formats.sd, author: res.author, title: res.title, description: res.description, thumb: res.thumb});
+                        })(i);
                     }
-                });
+
+                    document.getElementById("loadingCircle").className = "";
+                    document.getElementById("submit").disabled = false;
+                    $.unblockUI();
+                    document.getElementById("body").style.overflow = "visible";
+
+                    continuation = results.continuation;
+                })();
             });
 
             $(document).keypress(function(event) {
                 if ((event.keyCode ? event.keyCode : event.which) == "13") {
-                    document.getElementById("submit").click();
+                    $("#submit").click();
                 }
             });
 
             $(window).scroll(function() {
                 if ($(window).scrollTop() + $(window).height() == $(document).height()) {
                     $.blockUI();
+                    document.getElementById("body").style.overflow = "hidden";
+
+                    document.getElementById("loadingCircle").className = "spinner-border spinner-border-sm text-light";
+                    document.getElementById("submit").disabled = true;
+
+                    document.getElementById("videos").innerHTML = "";
+
+                    (async () => {
+                        const results = await (await fetch(`/yt/search`, {
+                            method: "POST",
+                            body: {
+                                continuation,
+                                short: true
+                            }
+                        })).json();
+
+                        for (var i = 0; i < results.length; i++) {
+                            (async (i) => {
+                                var res = await (await fetch(`/yt/getInfo/all/${results[i]}`)).json();
+                                
+                                if (res.title.length > 45) res.title = res.title.substr(0, 45) + "...";
+                                if (res.author.length > 32) res.author = res.author.substr(0, 32) + "...";
+                                if (res.description.length > 100) res.description = res.description.substr(0, 100) + "...";
+
+                                buildCard({ id: results[i], url: res.url, author: res.author, title: res.title, description: res.description, thumb: res.thumb});
+                            })(i);
+                        }
+
+                        document.getElementById("loadingCircle").className = "";
+                        document.getElementById("submit").disabled = false;
+                        $.unblockUI();
+                        document.getElementById("body").style.overflow = "visible";
+                    })();
+
+
+
+                    /*$.blockUI();
                     document.getElementById("body").style.overflow = "hidden";
 
                     document.getElementById("loadingCircle").className = "spinner-border spinner-border-sm text-light";
@@ -245,7 +238,7 @@
                             document.getElementById("warnings").innerHTML = HTMLWarn("Because of stupid quotas on YouTube, this search thingy will not work for the rest of the day. Sorry!");
                             document.getElementById("submit").disabled = true;
                         }
-                    });
+                    });*/
                 }
             });
         </script>
