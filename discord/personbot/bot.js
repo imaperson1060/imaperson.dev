@@ -31,7 +31,7 @@ export default function () {
     const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
 
     (async function setCmds () {
-        if (commands.length != fs.readdirSync("./discord/personbot/application/").length) return setTimeout(() => setCmds(), 100);
+        if (commands.length != fs.readdirSync("./discord/personbot/commands/").length) return setTimeout(() => setCmds(), 100);
 
         await rest.put(
             Routes.applicationCommands("882471379910426664"), { body: commands },
