@@ -1,4 +1,4 @@
-module.exports = (app, cors, query, urlExists, yt) => {
+export default function (app, cors, query, urlExists, yt) {
     async function getVideoDetails(id) {
         const db = (await query("SELECT * FROM `yt` WHERE id=?", [id]))[0];
         if (db && db.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {

@@ -1,4 +1,4 @@
-exports.run = async (client, interaction, options) => {
+export default async function (client, interaction, options) {
     function findObjectByKey(array, key, value) {
         for (var i = 0; i < array.length; i++) {
             if (array[i][key] === value) {

@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-exports.data = new SlashCommandBuilder()
+export let data = new SlashCommandBuilder()
 	.setName("ytdownload")
 	.setDescription("Enter a YouTube video link (not id) for it to be converted to an mp4!")
 	.addStringOption(option =>

@@ -1,4 +1,4 @@
-exports.run = async (client, interaction, options) => {
+export default async function (client, interaction, options) {
     const isReachable = require("is-reachable");
     const ytdl = require("ytdl-core");
 

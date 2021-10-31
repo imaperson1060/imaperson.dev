@@ -1,4 +1,4 @@
-module.exports = (app, cors, mail, md5, query, rateLimit) => {
+export default function (app, cors, mail, md5, query, rateLimit) {
     const accountLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 1 minute
         max: 1,
@@ -29,7 +29,7 @@ module.exports = (app, cors, mail, md5, query, rateLimit) => {
 
         res.json({ success: true });
         
-        require("child_process").execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
+        (await import("child_process")).execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
     });
 
     app.get("/login/:username/:password", cors(), async (req, res) => {

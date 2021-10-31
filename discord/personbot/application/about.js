@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-exports.data = new SlashCommandBuilder()
+export let data = new SlashCommandBuilder()
 	.setName("about")
 	.setDescription("Information about the bot.")

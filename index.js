@@ -1,30 +1,30 @@
-const express = require("express");
+import express from "express";
 const app = express();
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 
-const archiver = require("archiver");
-const cors = require("cors");
-const fetch = require("node-fetch");
-const imageToBase64 = require("image-to-base64");
-const isReachable = require("is-reachable");
-const jsonSchema = require("jsonschema");
-const md5 = require("md5");
-const mysql = require("mysql");
-const nodemailer = require("nodemailer");
-const rateLimit = require("express-rate-limit");
-const urlexists = require("url-exists");
-const util = require("util");
-const yt = { dl: require("ytdl-core"), pl: require("ytpl"), sr: require("ytsr") };
+import cors from "cors";
+import fetch from "node-fetch";
+import fs from "fs";
+import isReachable from "is-reachable";
+import md5 from "md5";
+import mysql from "mysql";
+import nodemailer from "nodemailer";
+import ratelimit from "express-rate-limit";
+import sha1 from "sha1";
+import urlexists from "url-exists";
+import util from "util";
+
+import ytdl from "ytdl-core";
+import ytpl from "ytpl";
+import ytsr from "ytsr";
+const ytSuite = { dl: ytdl, pl: ytpl, sr: ytsr };
 
 app.set("json spaces", 4);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("static"));
 
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
 const mysqlLogin = JSON.parse(process.env.MYSQL);
 var database = mysql.createPool(mysqlLogin);
@@ -51,13 +51,17 @@ async function mail(to, subject, html) {
     });
 }
 
+import accounts from "./accounts.js";
+import github from "./github.js";
+import short from "./short.js";
+import yt from "./yt.js";
 
-require("./accounts.js")(app, cors, mail, md5, query, rateLimit);
-require("./github.js")(app, cors, require("crypto"), fetch);
-require("./short.js")(app, cors, isReachable, md5, query, rateLimit, urlExists);
-require("./yt.js")(app, cors, query, urlExists, yt);
+accounts(app, cors, mail, md5, query, ratelimit);
+github(app, cors, fetch, sha1);
+short(app, cors, isReachable, md5, query, ratelimit, urlExists);
+yt(app, cors, query, urlExists, ytSuite);
 
-require("fs").readdirSync("./discord").forEach(x => require(`./discord/${x}/bot.js`));
+fs.readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
 
 
 app.get("/up/", cors(), (req, res) => {
@@ -65,6 +69,6 @@ app.get("/up/", cors(), (req, res) => {
 });
 
 
-server.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
     console.log(`API Ready! (${process.env.PORT})`);
 });

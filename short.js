@@ -1,4 +1,4 @@
-module.exports = (app, cors, isReachable, md5, query, rateLimit, urlExists) => {
+export default function (app, cors, isReachable, md5, query, rateLimit, urlExists) {
     const shortenLimiter = rateLimit({
         windowMs: 1 * 60 * 1000, // 1 minute
         max: 5, // limit each IP to 1 request per windowMs
