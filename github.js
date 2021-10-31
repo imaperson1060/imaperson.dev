@@ -18,6 +18,7 @@ export default function (app, cors, fetch, sha1) {
     });
 
     app.post("/restart/", (req, res) => {
+        console.log(req.headers["x-hub-signature"])
         if (req.headers["x-hub-signature"] == sha1(process.env.PASSWORD)) {
             res.sendStatus(200);
             process.exit();
