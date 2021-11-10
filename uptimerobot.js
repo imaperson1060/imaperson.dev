@@ -11,7 +11,7 @@ export default function (app, fetch) {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    api_key: req.params.UPTIMEROBOT,
+                    api_key: process.env.UPTIMEROBOT,
                     id: x,
                     status
                 })
