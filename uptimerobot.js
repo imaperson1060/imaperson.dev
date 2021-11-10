@@ -24,7 +24,7 @@ export default function (app, fetch) {
 
         await changeStatus(0);
         res.sendStatus(200);
-        process.exit();
+        process.exit(1);
     });
 
     app.post("/restart/", async (req, res) => {
