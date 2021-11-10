@@ -16,13 +16,14 @@ export default function (app, fetch) {
                     status
                 })
             });
+console.log(await response.json())
          });
     }
 
     app.get("/stop/:password", async (req, res) => {
         if (req.params.password != process.env.PASSWORD) return;
 
-        await changeStatus(0);
+        await changeStatus("0");
         res.sendStatus(200);
         process.exit(1);
     });
@@ -35,11 +36,11 @@ export default function (app, fetch) {
     
         const signature = req.headers["x-hub-signature"];
         if (signature == expectedSignature) {
-            await changeStatus(0);
+            await changeStatus("0");
             res.sendStatus(200);
             process.exit();
         }
     });
 
-    changeStatus(1);
+    changeStatus("1");
 }
