@@ -24,7 +24,7 @@ export default function (app, fetch) {
 
         await changeStatus("0");
         res.sendStatus(200);
-        process.exit(1);
+        setTimeout(() => { process.exit(1) }, 1000);
     });
 
     app.post("/restart/", async (req, res) => {
@@ -37,7 +37,7 @@ export default function (app, fetch) {
         if (signature == expectedSignature) {
             await changeStatus("0");
             res.sendStatus(200);
-            process.exit();
+            setTimeout(() => { process.exit() }, 1000);
         }
     });
 
