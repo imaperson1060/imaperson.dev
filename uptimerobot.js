@@ -16,7 +16,6 @@ export default function (app, fetch) {
                     status
                 })
             });
-console.log(await response.json())
          });
     }
 
