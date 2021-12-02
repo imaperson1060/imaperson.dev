@@ -127,7 +127,12 @@
             });
 
             $("#paste").on("click", async () => {
-                $("#url").val(await navigator.clipboard.readText());
+                const clipboard = await navigator.clipboard.readText();
+
+                if (!getId(clipboard)) return;
+
+                $("#url").val(clipboard);
+                $("#url").trigger("input");
             });
 
             $(document).keypress(function(event) {
