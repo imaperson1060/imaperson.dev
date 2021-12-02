@@ -68,7 +68,7 @@
             }
 
             $("#url").on("input", async function() {
-                if (!getId(document.getElementById("url").value)) {
+                if (!getId($("#url").val())) {
                     $("#warnings").html("");
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
@@ -89,7 +89,7 @@
                 }
             });
 
-            document.getElementById("submit").addEventListener("click", async function () {
+            $("#submit").on("click", async () => {
                 $("#loadingCircle").addClass("spinner-border spinner-border-sm text-light");
 
                 var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}/`);
@@ -108,7 +108,7 @@
                 }
             });
 
-            document.getElementById("submitAudio").addEventListener("click", async function () {
+            $("#submitAudio").on("click", async () => {
                 $("#loadingCircleAudio").addClass("spinner-border spinner-border-sm text-light");
 
                 var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}/`);
