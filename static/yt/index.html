@@ -129,7 +129,7 @@
             $("#paste").on("click", async () => {
                 const clipboard = await navigator.clipboard.readText();
 
-                if (!getId(clipboard)) return;
+                if (!getId(clipboard)) return $("#warnings").html(HTMLWarn("The contents of your clipboard are not a valid YouTube video link."));;
 
                 $("#url").val(clipboard);
                 $("#url").trigger("input");
