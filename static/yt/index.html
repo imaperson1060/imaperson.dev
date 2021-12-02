@@ -35,6 +35,9 @@
                 <div id="loadingCircleAudio" class="" role="status"></div>
                 Audio
             </button>
+            <button id="paste" class="btn btn-info">
+                Paste
+            </button>
             
             <br>
             <br>
@@ -121,6 +124,10 @@
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
+            });
+
+            $("#paste").on("click", async () => {
+                $("#url").val(await navigator.clipboard.readText());
             });
 
             $(document).keypress(function(event) {
