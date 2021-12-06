@@ -48,14 +48,14 @@ export default function (app, cors, query, urlExists, yt) {
         res.redirect("/yt/");
     });
 
-    app.get("/yt/getInfo/all/:id/:cookie?", cors(), async (req, res) => {
-        const video = await getVideoDetails(req.params.id, req.params.cookie ? decodeURIComponent(req.params.cookie) : undefined);
+    app.get("/yt/getInfo/all/:id", cors(), async (req, res) => {
+        const video = await getVideoDetails(req.params.id, req.headers.authorization);
 
         res.json(video);
     });
 
-    app.get("/yt/getInfo/url/:id/:cookie?", cors(), async (req, res) => {
-        var video = await getVideoDetails(req.params.id, req.params.cookie ? decodeURIComponent(req.params.cookie) : undefined);
+    app.get("/yt/getInfo/url/:id", cors(), async (req, res) => {
+        var video = await getVideoDetails(req.params.id, req.headers.authorization.replace("Bearer ", ""));
 
         delete video.info;
 
