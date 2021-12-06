@@ -26,7 +26,12 @@
                 <label for="url" class="form-label">Video URL <span style="color: #ff2825">*</span></label>
                 <input id="url" class="form-control" maxlength="2000" placeholder="Video Link...">
             </div>
-            
+
+            <div id="cookieInput" class="mb-3" style="display:none;">
+                <label for="cookie" class="form-label">Account Cookie <span style="color: #ff2825">*</span></label>
+                <input id="cookie" class="form-control" placeholder="Account Cookie...">
+            </div>
+
             <button id="submit" class="btn btn-primary" value="Submit" disabled>
                 <div id="loadingCircle" class="" role="status"></div>
                 Video
@@ -67,7 +72,7 @@
                 return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
             }
 
-            $("#url").on("input", async function() {
+            $("#url").on("input", async () => {
                 if (!getId($("#url").val())) {
                     $("#warnings").html("");
                     $("#submit").attr("disabled", true);
@@ -89,10 +94,20 @@
                 }
             });
 
+            $("#cookie").on("input", () => {
+                $("#warnings").html("");
+                $("#submit").attr("disabled", false);
+                $("#submitAudio").attr("disabled", false);
+            });
+
             $("#submit").on("click", async () => {
                 $("#loadingCircle").addClass("spinner-border spinner-border-sm text-light");
 
-                var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}/`);
+                var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}`, $("#cookie").val() ? {
+                    headers: {
+                        Authorization: $("#cookie").val()
+                    }
+                } : undefined);
                 url = await url.json();
 
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
@@ -101,6 +116,11 @@
                     if (url.formats.hd) return window.open(url.formats.hd);
                     if (url.formats.sd) return window.open(url.formats.sd);
                     $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
+                } else if (url.code == 410) {
+                    $("#cookieInput").show();
+                    $("#warnings").html(HTMLWarn("This video is not visible to the public (age restricted, private, premium, etc.). To view it, you will have to provide the cookies for an account that has access."));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
                 } else {
                     $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
                     $("#submit").attr("disabled", true);

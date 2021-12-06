@@ -12,7 +12,7 @@ export default function (app, cors, query, urlExists, yt) {
             try {
                 videoInfo = await yt.dl.getInfo(id);
             } catch (e) {
-                if (e.statusCode == 410) return { success: false, message: "cookies_required" };
+                if (e.statusCode == 410) return { success: false, message: "cookies_required", code: 410 };
                 return { success: false, e };
             }
         }
@@ -55,7 +55,8 @@ export default function (app, cors, query, urlExists, yt) {
     });
 
     app.get("/yt/getInfo/url/:id", cors(), async (req, res) => {
-        var video = await getVideoDetails(req.params.id, req.headers.authorization.replace("Bearer ", ""));
+        console.log(req.headers.authorization)
+        var video = await getVideoDetails(req.params.id, req.headers.authorization);
 
         delete video.info;
 
