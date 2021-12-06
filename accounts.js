@@ -8,7 +8,7 @@ export default function (app, cors, mail, md5, query, rateLimit) {
     app.get("/signup/:name/:username/:email/:password", accountLimiter, cors(), async (req, res) => {
         if (req.params.username.length > 32) return res.json({ success: false, message: "long" });
         if (("_! @#$%^&*,".indexOf(req.params.username) != -1) || req.params.username.startsWith("-")) return res.json({ "success": false, "message": "invalidchar" });
-        if (JSON.parse(process.env.RESERVED).indexOf(req.params.username) != -1) return res.json({ success: false, message: "reserved" });
+        // if (JSON.parse(process.env.RESERVED).indexOf(req.params.username) != -1) return res.json({ success: false, message: "reserved" }); // also dumb lol
         if (!/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(req.params.email.toLowerCase())) return res.json({ success: false, message: "invalidemail" });
         
         function capitalize(str) {
@@ -29,7 +29,7 @@ export default function (app, cors, mail, md5, query, rateLimit) {
 
         res.json({ success: true });
         
-        (await import("child_process")).execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`);
+        //(await import("child_process")).execSync(`pktriot tunnel http add --domain ${req.params.username}.arimeisels.com --destination localhost --http 8000 --letsencrypt && taskkill.exe /f /im pktriot.exe`); // ahaha this was sooo dumb
     });
 
     app.get("/login/:username/:password", cors(), async (req, res) => {
