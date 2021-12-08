@@ -72,6 +72,13 @@
                 return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
             }
 
+            function showCookieBox() {
+                $("#cookieInput").show();
+                $("#warnings").html(HTMLWarn("This video is not visible to the public (age restricted, private, premium, etc.). To view it, you will have to provide the cookies for an account that has access. <a href='/yt/getcookies' target='blank'>Need help?</a>"));
+                $("#submit").attr("disabled", true);
+                $("#submitAudio").attr("disabled", true);
+            }
+
             $("#url").on("input", async () => {
                 if (!getId($("#url").val())) {
                     $("#warnings").html("");
@@ -88,7 +95,7 @@
                     $("#submit").attr("disabled", false);
                     $("#submitAudio").attr("disabled", false);
                 } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
+                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
@@ -117,12 +124,13 @@
                     if (url.formats.sd) return window.open(url.formats.sd);
                     $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
                 } else if (url.code == 410) {
-                    $("#cookieInput").show();
-                    $("#warnings").html(HTMLWarn("This video is not visible to the public (age restricted, private, premium, etc.). To view it, you will have to provide the cookies for an account that has access."));
+                    showCookieBox();
+                } else if (url.code == 403) {
+                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
+                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
@@ -139,8 +147,14 @@
                 if (url.success) {
                     if (url.formats.audio) return window.open(url.formats.audio);
                     $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
+                } else if (url.code == 410) {
+                    showCookieBox();
+                } else if (url.code == 403) {
+                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
                 } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist. If you are sure that it does, please contact me so I can fix this bug."));
+                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox()'>Click here if you have a cookie string.</a>"));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }

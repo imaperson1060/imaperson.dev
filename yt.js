@@ -7,7 +7,11 @@ export default function (app, cors, query, urlExists, yt) {
 
         var videoInfo;
         if (cookie) {
-            videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie } } });
+            try {
+                videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie } } });
+            } catch (e) {
+                return { success: false, message: "invalid_cookie", code: 403 };
+            }
         } else {
             try {
                 videoInfo = await yt.dl.getInfo(id);
@@ -22,11 +26,11 @@ export default function (app, cors, query, urlExists, yt) {
         var sd = videoInfo.formats.find(x => x.itag == 18).url;
         var audio = videoInfo.formats.find(x => x.itag == 140).url;
         var formats = { hd, sd, audio };
-
+        
         if ((await query("SELECT * FROM `yt` WHERE id=?", [id]))[0]) {
-            await query("UPDATE `yt` SET author=?, title=?, description=?, formats=?, timestamp=? WHERE id=?", [encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description), JSON.stringify(formats), Math.round(new Date().getTime() / 1000), id]);
+            if (!videoInfo.videoDetails.isPrivate) await query("UPDATE `yt` SET author=?, title=?, description=?, formats=?, timestamp=? WHERE id=?", [encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description), JSON.stringify(formats), Math.round(new Date().getTime() / 1000), id]);
         } else {
-            await query("INSERT INTO `yt` VALUES (?,?,?,?,?,?)", [id, encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description) || "", JSON.stringify(formats), Math.round(new Date().getTime() / 1000)])
+            if (!videoInfo.videoDetails.isPrivate) await query("INSERT INTO `yt` VALUES (?,?,?,?,?,?)", [id, encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description) || "", JSON.stringify(formats), Math.round(new Date().getTime() / 1000)])
         }
 
         return { success: true, formats: formats, info: { author: videoInfo.videoDetails.author.name, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` } };
@@ -55,7 +59,6 @@ export default function (app, cors, query, urlExists, yt) {
     });
 
     app.get("/yt/getInfo/url/:id", cors(), async (req, res) => {
-        console.log(req.headers.authorization)
         var video = await getVideoDetails(req.params.id, req.headers.authorization);
 
         delete video.info;
