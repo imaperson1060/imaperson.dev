@@ -2,3 +2,4 @@ node_modules/*
 concepts/*
 .env
 run.bat
+package-lock.json
