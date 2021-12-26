@@ -138,7 +138,7 @@
                 }
                 
                 if (validURL($("#url").val())) {
-                    const protocol = await fetch(`/short/check/${encodeURIComponent($("#url").val())}/`);
+                    const protocol = await fetch("https://bot.arimeisels.com/url", { method: "POST", body: { website: $("#url").val() } });
                     res = await protocol.json();
                     if (res.https) {
                         $("#url").val($("#url").val().replace("https://", ""));

@@ -85,12 +85,6 @@ export default function (app, cors, isReachable, md5, query, rateLimit, urlExist
         }
     });
 
-    app.get("/short/check/:url/", async (req, res) => {
-        var https = await isReachable(`https://${decodeURIComponent(req.params.url)}`);
-        var http = await isReachable(`http://${decodeURIComponent(req.params.url)}`);
-        res.json({ "https": https, "http": http });
-    });
-
     async function deleteExpired() {
         const expired = await query("SELECT * from `short` WHERE expiration<?", [Math.round(new Date().getTime() / 1000)]);
         expired.forEach(async (x) => {
