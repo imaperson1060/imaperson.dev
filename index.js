@@ -65,8 +65,8 @@ yt(app, cors, query, urlExists, ytSuite);
 fs.readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
 
 
-app.get("/up/", cors(), (req, res) => {
-    res.json({ "success": true });
+app.get("/teapot/", cors(), (req, res) => {
+    res.sendStatus(418);
 });
 
 
