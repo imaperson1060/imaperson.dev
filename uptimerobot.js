@@ -24,7 +24,7 @@ export default function (app, fetch) {
 
         await changeStatus("0");
         res.sendStatus(200);
-        setTimeout(() => { process.exit(console.log("Shutting down API...")) }, 1000);
+        setTimeout(() => { process.exit(2) }, 1000);
     });
 
     app.post("/restart/", async (req, res) => {
