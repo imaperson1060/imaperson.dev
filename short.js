@@ -63,7 +63,7 @@ export default function (app, cors, isReachable, md5, query, rateLimit, urlExist
                 if (result) {
                     res.json({ success: false, message: `The id "${req.params.customid}" was already taken.` });
                 } else {
-                    await query("INSERT INTO `short` VALUES (?,?,?,?,?)", [req.params.customid, url, req.params.domain, req.params.username, req.params.expires]);
+                    await query("INSERT INTO `short`(`id`, `longurl`, `domain`, `username`, `expiration`) VALUES (?,?,?,?,?)", [req.params.customid, url, req.params.domain, req.params.username, req.params.expires]);
 
                     res.json({ success: true, message: req.params.customid });
                 }
@@ -75,7 +75,7 @@ export default function (app, cors, isReachable, md5, query, rateLimit, urlExist
 
                     if ((await query("SELECT * FROM `short` WHERE id=?", [randomString]))[0]) return generateURL();
 
-                    await query("INSERT INTO `short` VALUES (?,?,?,?,?)", [randomString, url, req.params.domain, req.params.username, req.params.expires]);
+                    await query("INSERT INTO `short`(`id`, `longurl`, `domain`, `username`, `expiration`) VALUES (?,?,?,?,?)", [randomString, url, req.params.domain, req.params.username, req.params.expires]);
 
                     res.json({ success: true, message: randomString });
                 })();
