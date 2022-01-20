@@ -53,7 +53,7 @@ export default async (io, socket, args) => {
     if (!args[0] || !args[0].id) return socket.emit("yt-getInfo-url", { success: false, message: "invalidargs", args });
 
     var video = await getVideoDetails(args[0].id, args[0].authorization);
-console.log(video)
+
     if (!video.success) return socket.emit("yt-getInfo-url", { success: false, message: video.message, code: video.code, args });
 
     delete video.info;
