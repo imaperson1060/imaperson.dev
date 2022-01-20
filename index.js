@@ -16,7 +16,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import fs from "fs";
-//fs.readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
+fs.readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
 
 
 app.get("/short/go/:domain/:id", async (req, res) => (await import("./socket/short/go.js")).default(req, res));
