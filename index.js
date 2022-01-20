@@ -55,7 +55,6 @@ import short from "./short.js";
 import yt from "./yt.js";
 
 accounts(app, cors, mail, md5, query, ratelimit);
-github(app, cors, fetch, sha1);
 short(app, cors, isReachable, md5, query, ratelimit, urlExists);
 yt(app, cors, query, urlExists, ytSuite);
 
