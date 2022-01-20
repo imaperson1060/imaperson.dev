@@ -98,7 +98,7 @@
                         authorLink.setAttribute("href", data.author.html_url);
                         authorLink.setAttribute("class", "btn btn-primary");
                         authorLink.setAttribute("target", "_blank");
-                        var authorText = document.createTextNode(data.commit.author.name);
+                        var authorText = document.createTextNode(data.author.login);
                         authorLink.appendChild(authorText);
                         author.appendChild(authorLink);
 
