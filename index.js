@@ -51,7 +51,6 @@ async function mail(to, subject, html) {
 }
 
 import accounts from "./accounts.js";
-import github from "./github.js";
 import short from "./short.js";
 import yt from "./yt.js";
 
