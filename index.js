@@ -53,7 +53,6 @@ async function mail(to, subject, html) {
 import accounts from "./accounts.js";
 import github from "./github.js";
 import short from "./short.js";
-import uptimerobot from "./uptimerobot.js";
 import yt from "./yt.js";
 
 accounts(app, cors, mail, md5, query, ratelimit);
@@ -72,5 +71,5 @@ app.get("/teapot/", cors(), (req, res) => {
 app.listen(process.env.PORT, async () => {
     console.log(`API Ready! (${process.env.PORT})`);
 
-    uptimerobot(app, fetch);
+    (await import("./uptimerobot.js")).default(app);
 });
