@@ -76,44 +76,28 @@
                 </div>
             </div>
         </div>
+        
+        <script src="/socket.io/socket.io.js"></script>
 
         <script>
+            const socket = new io();
+
             (async function () {
                 if (localStorage.getItem("auth")) {
                     $("#warnings").html("");
                 }
             })();            
 
-            function HTMLError(text) {
-                return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
-            
-            function HTMLWarn(text) {
-                return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
             
             async function shorten(expires) {
-                var user = "Guest";
+                var creator = undefined;
 
                 if (localStorage.getItem("auth")) {
-                    user = JSON.parse(localStorage.getItem("auth")).username;
+                    creator = JSON.parse(localStorage.getItem("auth")).username;
                 }
 
-                let req = `/short/${encodeURIComponent($("#url").val())}/${$("#customurl").val()}/${$("#domain").val()}/${user}/${expires}/`;
-            
-                if (!$("#customurl").val()) {
-                    req = `/short/${encodeURIComponent($("#url").val())}/${$("#domain").val()}/${user}/${expires}/`;
-                }
-                
-                const response = await fetch(req);
-                
-                var responseJSON = await response.json();
-                
-                if (responseJSON.success) {
-                    warnings.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://ariurls.${$("#domain").val()}/${responseJSON.message}" target="_blank">ariurls.${$("#domain").val()}/${responseJSON.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-                } else {
-                    warnings.innerHTML = HTMLError(`Our servers returned the following error: ${responseJSON.message}`);
-                }
+                socket.emit("short", "new", { url: encodeURIComponent($("#url").val()), customid: !!$("#customurl").val() ? $("#customurl").val() : undefined, domain: $("#domain").val(), expires, creator });
             }
             
             $("#url").on("input", async function() {
@@ -231,6 +215,14 @@
                 }
             });
             
+            socket.on("short-new", (data) => {
+                if (data.success) {
+                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://ariurls.${$("#domain").val()}/${data.message}" target="_blank">ariurls.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`);
+                } else {
+                    $("#warnings").html(HTMLError(`Our servers returned the following error: ${data.message}`));
+                }
+            });
+
             $(document).keypress(function(event) {
                 if ((event.keyCode ? event.keyCode : event.which) == "13") {
                     $("#submit").click();

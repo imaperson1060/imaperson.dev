@@ -18,6 +18,10 @@
     </head>
     
     <body>
+        <div id="navbar" class="mb-4"></div>
+        
+        <script src="/nav.js"></script>
+        
         <div class="container">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -45,7 +49,11 @@
             </div>
         </div>
         
+        <script src="/socket.io/socket.io.js"></script>
+        
         <script>
+            const socket = io();
+
             var params = new URLSearchParams(window.location.search);
 
             if (params.get("u")) $("#username").val(params.get("u"));
@@ -54,13 +62,7 @@
             if (!params.get("c")) $("#code").attr("disabled", false);
             if (!params.get("u") || !params.get("c")) $("#resetBtn").attr("disabled", true); 
 
-            function HTMLError(text) {
-                return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
-            
-            function HTMLWarn(text) {
-                return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
             
             $("#username").on("input", function () {
                 $("#resetBtn").attr("disabled", true);
@@ -75,29 +77,22 @@
             $("#resetBtn").on("click", async function () {
                 const errors = (err) => {
                     switch (err) {
-                        case "ratelimit": return "Only one account can be created every 15 minutes.";
-                        case "long": return `Username "${$("#login-username").val()}" is too long.`;
-                        case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
-                        case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
-                        case "reserved": return `Username "${$("#login-username").val()}" is reserved.`;
-                        case "taken": return `Username "${$("#login-username").val()}" has been taken.`;
-                        case "emailused": return `Email "${$("#login-email").val()}" is already linked to an account.`;
+                        case "invalidargs": return "Invalid arguments were provided.";
                         case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
-                        case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
-                        case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
                         case "wrongcode": return "Access code incorrect.";
                     }
                 };
 
                 if (!$("#username").val()) return $("#response").html(HTMLError("You must enter the username linked to your account."));
 
-                var response = await fetch(`/reset/${$("#username").val()}/${$("#code").val()}/`);
-                var res = await response.json();
-                
-                if (!res.success) {
+                socket.emit("accounts", "reset", { username: $("#username").val(), code: $("#code").val() });
+            });
+
+            socket.on("accounts-reset", (data) => {
+                if (!data.success) {
                     $("#response").html(HTMLError(errors(res.message)));
                 } else {
-                    $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your new password is ${res.password}. </div>`);
+                    $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your new password is ${data.message}. </div>`);
                 }
             });
 

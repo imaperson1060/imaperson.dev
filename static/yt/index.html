@@ -49,28 +49,22 @@
 
             <div id="warnings" role="alert">
             </div>
-
-            <br>
-            
-            <!--<div>
-                <h3><a href="/yt/docs/" target="_blank">Use the API on your own site!</a></h3>
-            </div>-->
         </div>
 
+        <script src="/socket.io/socket.io.js"></script>
+
         <script>
+            const socket = io();
+
             function getId(url) {
                 var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
                 var match = url.match(regExp);
                 return (match && match[7].length == 11) ? match[7] : false;
             }
 
-            function HTMLError(text) {
-                return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
             
-            function HTMLWarn(text) {
-                return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            function HTMLWarn(text) { return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
 
             function showCookieBox() {
                 $("#cookieInput").show();
@@ -87,18 +81,7 @@
                     return;
                 };
 
-                var valid = await fetch(`/yt/validate/${getId($("#url").val())}/`);
-                valid = await valid.json();
-
-                if (valid.success) {
-                    $("#warnings").html("");
-                    $("#submit").attr("disabled", false);
-                    $("#submitAudio").attr("disabled", false);
-                } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                }
+                socket.emit("yt", "validate", { id: getId($("#url").val()) });
             });
 
             $("#cookie").on("input", () => {
@@ -110,54 +93,13 @@
             $("#submit").on("click", async () => {
                 $("#loadingCircle").addClass("spinner-border spinner-border-sm text-light");
 
-                var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}`, $("#cookie").val() ? {
-                    headers: {
-                        Authorization: $("#cookie").val()
-                    }
-                } : undefined);
-                url = await url.json();
-
-                $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
-
-                if (url.success) {
-                    if (url.formats.hd) return window.open(url.formats.hd);
-                    if (url.formats.sd) return window.open(url.formats.sd);
-                    $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
-                } else if (url.code == 410) {
-                    showCookieBox();
-                } else if (url.code == 403) {
-                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                }
+                socket.emit("yt", "getInfo/url", { id: getId($("#url").val()), authorization: $("#cookie").val() || undefined, downloadType: "video" });
             });
 
             $("#submitAudio").on("click", async () => {
                 $("#loadingCircleAudio").addClass("spinner-border spinner-border-sm text-light");
 
-                var url = await fetch(`/yt/getInfo/url/${getId($("#url").val())}/`);
-                url = await url.json();
-
-                $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
-
-                if (url.success) {
-                    if (url.formats.audio) return window.open(url.formats.audio);
-                    $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
-                } else if (url.code == 410) {
-                    showCookieBox();
-                } else if (url.code == 403) {
-                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox()'>Click here if you have a cookie string.</a>"));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                }
+                socket.emit("yt", "getInfo/url", { id: getId($("#url").val()), authorization: $("#cookie").val() || undefined, downloadType: "audio" });
             });
 
             $("#paste").on("click", async () => {
@@ -167,6 +109,40 @@
 
                 $("#url").val(clipboard);
                 $("#url").trigger("input");
+            });
+
+            socket.on("yt-validate", (data) => {
+                if (data.success) {
+                    $("#warnings").html("");
+                    $("#submit").attr("disabled", false);
+                    $("#submitAudio").attr("disabled", false);
+                } else {
+                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
+                }
+            });
+
+            socket.on("yt-getInfo-url", (data) => {
+                $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
+                $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
+
+                if (data.success) {
+                    if (data.args[0].downloadType == "audio") return window.open(data.video.formats.audio);
+                    if (data.video.formats.hd) return window.open(data.video.formats.hd);
+                    if (data.video.formats.sd) return window.open(data.video.formats.sd);
+                    $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
+                } else if (data.code == 410) {
+                    showCookieBox();
+                } else if (data.code == 403) {
+                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
+                } else {
+                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
+                    $("#submit").attr("disabled", true);
+                    $("#submitAudio").attr("disabled", true);
+                }
             });
 
             $(document).keypress(function(event) {

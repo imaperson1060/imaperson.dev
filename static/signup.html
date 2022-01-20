@@ -54,18 +54,19 @@
             </div>
         </div>
         
+        <script src="/socket.io/socket.io.js"></script>
+
         <script>
-            function HTMLError(text) {
-                return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            const socket = io();
             
-            function HTMLWarn(text) {
-                return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`;
-            }
+            function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
+            
+            function HTMLWarn(text) { return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
 
             const errors = (err) => {
                 switch (err) {
                     case "ratelimit": return "Only one account can be created every 15 minutes.";
+                    case "invalidargs": return "Invalid arguments were provided.";
                     case "long": return `Username "${$("#login-username").val()}" is too long.`;
                     case "invalidchar": return `Username "${$("#login-username").val()}" contains invalid characters.`;
                     case "invalidemail": return `Email "${$("#login-email").val()}" is invalid.`;
@@ -75,28 +76,14 @@
                     case "noaccount": return `Username "${$("#login-username").val()}" does not exist.`;
                     case "wrongpass": return `Password "${$("#login-password").val()}" is incorrect.`;
                     case "noaccountlinked": return `Email "${$("#login-email").val()}" not linked to any account.`;
-                    case "wrongcode": return "Access code incorrect.";
                 }
             };
             
-            (async function () {
-                var auth;
-                
-                if (localStorage.getItem("auth")) {
-                    auth = JSON.parse(localStorage.getItem("auth"));
+            if (localStorage.getItem("auth")) {
+                var auth = JSON.parse(localStorage.getItem("auth"));
                     
-                    var response = await fetch(`/login/${auth.username}/${auth.password}/`);
-                    var res = await response.json();
-
-                    if (!res.success) {
-                        localStorage.removeItem("auth");
-                        location.reload();
-                    } else {
-                        document.getElementById("response").innerHTML = HTMLError("You already have an account!");
-                        document.getElementById("signUpBtn").disabled = true;
-                    }
-                }
-            })();
+                socket.emit("accounts", "login", { username: auth.username, password: auth.password });
+            }
             
             $("#signUpBtn").on("click", async function () {
                 if (!$("#login-name").val()) return $("#response").html(HTMLError("You must enter your name."));
@@ -107,13 +94,24 @@
 
                 if (!$("#login-password").val()) return $("#response").html(HTMLError("You must enter a password."));
 
-                var response = await fetch(`/signup/${$("#login-name").val()}/${$("#login-username").val()}/${$("#login-email").val()}/${$("#login-password").val()}`);
-                var res = await response.json();
-                
-                if (!res.success) {
-                    $("#response").html(HTMLError(errors(res.message)));
+                socket.emit("accounts", "signup", { name: $("#login-name").val(), email: $("#login-email").val(), username: $("#login-username").val(), password: $("#login-password").val() });
+            });
+
+            socket.on("accounts-login", (data) => {
+                if (!data.success) {
+                    localStorage.removeItem("auth");
+                    location.reload();
                 } else {
-                    localStorage.setItem("auth", `{ "username": "${document.getElementById("login-username").value}", "password": "${document.getElementById("login-password").value}" }`);
+                    $("#response").html(HTMLError("You already have an account!"));
+                    $("#signUpBtn").attr("disabled", true);
+                }
+            });
+
+            socket.on("accounts-signup", (data) => {
+                if (!data.success) {
+                    $("#response").html(HTMLError(errors(data.message)));
+                } else {
+                    localStorage.setItem("auth", `{ "username": "${$("#login-username").val()}", "password": "${$("login-password").val()}" }`);
 
                     $("#response").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Signed up as ${$("#login-username").val()} </div>`);
                 }

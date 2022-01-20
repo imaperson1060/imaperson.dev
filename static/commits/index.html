@@ -31,15 +31,17 @@
             </div>
         </div>
 
+        <script src="/socket.io/socket.io.js"></script>
+
         <script>
-            (async () => {
-                var commits = await fetch("/get_commits/");
-                commits = await commits.json();
+            const socket = io();
 
-                var amount = 0;
-                commits.forEach((x, i) => { if (parseInt(moment(x.commit.author.date).format("X")) >= Math.round(moment().subtract(7, "d").format("X"))) amount++; });
+            socket.emit("github", "commits");
 
-                $("#recent").html(amount);
+            socket.on("github-commits", async (commits) => {
+                commits = commits.commits;
+
+                $("#recent").html(commits.length);
 
                 $("#then").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
                 $("#now").html(moment().format("MM/DD/YYYY"));
@@ -48,139 +50,134 @@
 
                 for (var i = 0; i < commits.length; i++) {
                     (async (data, i) => {
-                        if (parseInt(moment(data.commit.author.date).format("X")) >= Math.round(moment().subtract(7, "d").format("X"))) {
-                            var card = document.createElement("div");
-                            card.setAttribute("class", "card mb-3");
-                            card.setAttribute("style", "max-width: 540px;");
+                        var card = document.createElement("div");
+                        card.setAttribute("class", "card mb-3");
+                        card.setAttribute("style", "max-width: 540px;");
 
-                            var grid = document.createElement("div");
-                            grid.setAttribute("class", "row g-0");
+                        var grid = document.createElement("div");
+                        grid.setAttribute("class", "row g-0");
 
-                            var imageFrame = document.createElement("div");
-                            imageFrame.setAttribute("class", "col-md-4");
+                        var imageFrame = document.createElement("div");
+                        imageFrame.setAttribute("class", "col-md-4");
 
-                            var image = document.createElement("img");
-                            image.setAttribute("src", data.author.avatar_url);
-                            image.setAttribute("class", "card-img-top");
-                            image.setAttribute("alt", data.commit.author.name);
+                        var image = document.createElement("img");
+                        image.setAttribute("src", data.author.avatar_url);
+                        image.setAttribute("class", "card-img-top");
+                        image.setAttribute("alt", data.commit.author.name);
 
-                            imageFrame.appendChild(image);
-                            grid.appendChild(imageFrame);
+                        imageFrame.appendChild(image);
+                        grid.appendChild(imageFrame);
 
-                            var commitInfo = document.createElement("div");
-                            commitInfo.setAttribute("class", "col-md-8");
+                        var commitInfo = document.createElement("div");
+                        commitInfo.setAttribute("class", "col-md-8");
 
-                            var body = document.createElement("div");
-                            body.setAttribute("class", "card-body");
+                        var body = document.createElement("div");
+                        body.setAttribute("class", "card-body");
 
-                            var title = document.createElement("h5");
-                            title.setAttribute("class", "card-header");
-                            title.setAttribute("title", data.commit.message);
-                            title.setAttribute("style", "margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;");
-                            var titleText = document.createElement("a");
-                            titleText.setAttribute("href", data.html_url);
-                            titleText.setAttribute("target", "_blank");
-                            var titleTextNode = document.createTextNode(data.commit.message.split("\n")[0]);
-                            titleText.appendChild(titleTextNode);
-                            title.appendChild(titleText);
+                        var title = document.createElement("h5");
+                        title.setAttribute("class", "card-header");
+                        title.setAttribute("title", data.commit.message);
+                        title.setAttribute("style", "margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;");
+                        var titleText = document.createElement("a");
+                        titleText.setAttribute("href", data.html_url);
+                        titleText.setAttribute("target", "_blank");
+                        var titleTextNode = document.createTextNode(data.commit.message.split("\n")[0]);
+                        titleText.appendChild(titleTextNode);
+                        title.appendChild(titleText);
 
-                            body.appendChild(title);
-
-
-                            var author = document.createElement("div");
-                            author.setAttribute("class", "btn-group");
-                            author.setAttribute("style", "margin-bottom: 1px !important");
-                            var authorIcon = document.createElement("label");
-                            authorIcon.setAttribute("class", "input-group-text bi bi-person-circle");
-                            author.appendChild(authorIcon);
-                            var authorLink = document.createElement("a");
-                            authorLink.setAttribute("href", data.author.html_url);
-                            authorLink.setAttribute("class", "btn btn-primary");
-                            authorLink.setAttribute("target", "_blank");
-                            var authorText = document.createTextNode(data.commit.author.name);
-                            authorLink.appendChild(authorText);
-                            author.appendChild(authorLink);
-
-                            var forceNewLine = document.createElement("br");
-
-                            body.appendChild(author);
-                            body.appendChild(forceNewLine);
+                        body.appendChild(title);
 
 
-                            var footer = document.createElement("div");
-                            footer.setAttribute("class", "card-footer");
-                            var footerText = document.createTextNode(moment(data.commit.author.date).format("dddd, MMMM Do YYYY, h:mm:ss a"));
-                            footer.appendChild(footerText);
+                        var author = document.createElement("div");
+                        author.setAttribute("class", "btn-group");
+                        author.setAttribute("style", "margin-bottom: 1px !important");
+                        var authorIcon = document.createElement("label");
+                        authorIcon.setAttribute("class", "input-group-text bi bi-person-circle");
+                        author.appendChild(authorIcon);
+                        var authorLink = document.createElement("a");
+                        authorLink.setAttribute("href", data.author.html_url);
+                        authorLink.setAttribute("class", "btn btn-primary");
+                        authorLink.setAttribute("target", "_blank");
+                        var authorText = document.createTextNode(data.commit.author.name);
+                        authorLink.appendChild(authorText);
+                        author.appendChild(authorLink);
+
+                        var forceNewLine = document.createElement("br");
+
+                        body.appendChild(author);
+                        body.appendChild(forceNewLine);
 
 
-                            var moreInfo = (await (await fetch(`/get_commit_info/${data.sha}`)).json());
+                        var footer = document.createElement("div");
+                        footer.setAttribute("class", "card-footer");
+                        var footerText = document.createTextNode(moment(data.commit.author.date).format("dddd, MMMM Do YYYY, h:mm:ss a"));
+                        footer.appendChild(footerText);
 
 
-                            var changes = document.createElement("div");
-                            changes.setAttribute("class", "btn-group");
-                            changes.setAttribute("style", "margin-bottom: 1px !important");
-                            var changesIcon = document.createElement("label");
-                            changesIcon.setAttribute("class", "input-group-text");
-                            changesSvg = document.createElement("img");
-                            changesSvg.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/1/1c/Octicons-diff.svg");
-                            changesSvg.setAttribute("width", 14.5);
-                            changesSvg.setAttribute("height", 16);
-                            changesIcon.appendChild(changesSvg);
-                            changes.appendChild(changesIcon);
-                            var changesLink = document.createElement("button");
-                            changesLink.setAttribute("class", "btn btn-warning");
-                            changesLink.setAttribute("disabled", true);
-                            var changesText = document.createTextNode(moreInfo.stats.total);
-                            changesLink.appendChild(changesText);
-                            changes.appendChild(changesLink);
+                        var changes = document.createElement("div");
+                        changes.setAttribute("class", "btn-group");
+                        changes.setAttribute("style", "margin-bottom: 1px !important");
+                        var changesIcon = document.createElement("label");
+                        changesIcon.setAttribute("class", "input-group-text");
+                        changesSvg = document.createElement("img");
+                        changesSvg.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/1/1c/Octicons-diff.svg");
+                        changesSvg.setAttribute("width", 14.5);
+                        changesSvg.setAttribute("height", 16);
+                        changesIcon.appendChild(changesSvg);
+                        changes.appendChild(changesIcon);
+                        var changesLink = document.createElement("button");
+                        changesLink.setAttribute("class", "btn btn-warning");
+                        changesLink.setAttribute("disabled", true);
+                        var changesText = document.createTextNode(data.stats.total);
+                        changesLink.appendChild(changesText);
+                        changes.appendChild(changesLink);
 
-                            var nbsp = document.createTextNode("\xa0");
+                        var nbsp = document.createTextNode("\xa0");
 
-                            body.appendChild(changes);
-                            body.appendChild(nbsp);
-
-
-                            var additions = document.createElement("div");
-                            additions.setAttribute("class", "btn-group");
-                            additions.setAttribute("style", "margin-bottom: 1px !important");
-                            var additionsIcon = document.createElement("label");
-                            additionsIcon.setAttribute("class", "input-group-text bi bi-plus");
-                            additions.appendChild(additionsIcon);
-                            var additionsLink = document.createElement("button");
-                            additionsLink.setAttribute("class", "btn btn-success");
-                            additionsLink.setAttribute("disabled", true);
-                            var additionsText = document.createTextNode(moreInfo.stats.additions);
-                            additionsLink.appendChild(additionsText);
-                            additions.appendChild(additionsLink);
-
-                            var nbsp = document.createTextNode("\xa0");
-
-                            body.appendChild(additions);
-                            body.appendChild(nbsp);
+                        body.appendChild(changes);
+                        body.appendChild(nbsp);
 
 
-                            var deletions = document.createElement("div");
-                            deletions.setAttribute("class", "btn-group");
-                            deletions.setAttribute("style", "margin-bottom: 1px !important");
-                            var deletionsIcon = document.createElement("label");
-                            deletionsIcon.setAttribute("class", "input-group-text bi bi-dash");
-                            deletions.appendChild(deletionsIcon);
-                            var deletionsLink = document.createElement("button");
-                            deletionsLink.setAttribute("class", "btn btn-danger");
-                            deletionsLink.setAttribute("disabled", true);
-                            var deletionsText = document.createTextNode(moreInfo.stats.deletions);
-                            deletionsLink.appendChild(deletionsText);
-                            deletions.appendChild(deletionsLink);
+                        var additions = document.createElement("div");
+                        additions.setAttribute("class", "btn-group");
+                        additions.setAttribute("style", "margin-bottom: 1px !important");
+                        var additionsIcon = document.createElement("label");
+                        additionsIcon.setAttribute("class", "input-group-text bi bi-plus");
+                        additions.appendChild(additionsIcon);
+                        var additionsLink = document.createElement("button");
+                        additionsLink.setAttribute("class", "btn btn-success");
+                        additionsLink.setAttribute("disabled", true);
+                        var additionsText = document.createTextNode(data.stats.additions);
+                        additionsLink.appendChild(additionsText);
+                        additions.appendChild(additionsLink);
 
-                            body.appendChild(deletions);
+                        var nbsp = document.createTextNode("\xa0");
+
+                        body.appendChild(additions);
+                        body.appendChild(nbsp);
 
 
-                            commitInfo.appendChild(body);
-                            grid.appendChild(commitInfo);
-                            card.appendChild(grid);
-                            card.appendChild(footer);
-                            cards[i] = card;
-                        }
+                        var deletions = document.createElement("div");
+                        deletions.setAttribute("class", "btn-group");
+                        deletions.setAttribute("style", "margin-bottom: 1px !important");
+                        var deletionsIcon = document.createElement("label");
+                        deletionsIcon.setAttribute("class", "input-group-text bi bi-dash");
+                        deletions.appendChild(deletionsIcon);
+                        var deletionsLink = document.createElement("button");
+                        deletionsLink.setAttribute("class", "btn btn-danger");
+                        deletionsLink.setAttribute("disabled", true);
+                        var deletionsText = document.createTextNode(data.stats.deletions);
+                        deletionsLink.appendChild(deletionsText);
+                        deletions.appendChild(deletionsLink);
+
+                        body.appendChild(deletions);
+
+
+                        commitInfo.appendChild(body);
+                        grid.appendChild(commitInfo);
+                        card.appendChild(grid);
+                        card.appendChild(footer);
+                        cards[i] = card;
                     })(commits[i], i);
                 }
 
@@ -192,12 +189,12 @@
                     }
                 }
 
-                waitFor(() => amount - cards.filter(function(x, i){ return true }).length == 0, () => {
+                waitFor(() => commits.length - cards.filter(function(x, i){ return true }).length == 0, () => {
                     cards.forEach(card => {
                         document.getElementById("commits").appendChild(card);
                     });
                 });
-            })();
+            });
         </script>
     </body>
 </html>
