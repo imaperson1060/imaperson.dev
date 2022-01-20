@@ -2,7 +2,6 @@ import express from "express";
 const app = express();
 
 import cors from "cors";
-import fetch from "node-fetch";
 import fs from "fs";
 import isReachable from "is-reachable";
 import md5 from "md5";

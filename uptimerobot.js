@@ -1,6 +1,7 @@
 import crypto from "crypto";
+import fetch from "node-fetch";
 
-export default function (app, fetch) {
+export default function (app) {
     function changeStatus(status) {
         const monitors = [ 789169806 ];
 
