@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("static"));
+app.use(express.static("private"));
 
 import dotenv from "dotenv";
 dotenv.config();
