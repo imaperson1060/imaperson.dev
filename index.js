@@ -31,4 +31,5 @@ server.listen(process.env.PORT, async () => {
     console.log(`API Ready! (${process.env.PORT})`);
 
     (await import("./uptimerobot.js")).default(app);
+    io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
 });
