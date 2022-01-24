@@ -4,7 +4,12 @@ const app = express();
 const server = http.createServer(app);
 import { Server } from "socket.io";
 const io = new Server(server, {
-    cors: "https://arimeisels.com"
+    cors: {
+        origin: [
+            "https://arimeisels.com",
+            "https://api.arimeisels.com"
+        ]
+    }
 });
 
 io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
