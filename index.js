@@ -3,13 +3,7 @@ import http from "http";
 const app = express();
 const server = http.createServer(app);
 import { Server } from "socket.io";
-const io = new Server(server, {
-    cors: {
-        origin: "https://arimeisels.com"
-    }
-});
-
-io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
+const io = new Server(server, { cors: { origin: "*" } });
 
 app.set("json spaces", 4);
 app.use((req, res, next) => {
