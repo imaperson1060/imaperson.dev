@@ -10,7 +10,7 @@
     <body>
         <script>
             (async () => {
-                if (await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`).ok) {
+                if ((await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`)).ok) {
                     window.location.assign(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
                 }
             })();
