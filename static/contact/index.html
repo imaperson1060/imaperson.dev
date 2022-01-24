@@ -31,10 +31,9 @@
             <reallysmall>To be clear, I know perfectly well how to make a contact form, the reason I'm not is pure laziness.</reallysmall>
         </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-
+        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
         <script>
-            const socket = io();
+            const socket = io.connect("https://api.arimeisels.com");
         </script>
     </body>
 </html>

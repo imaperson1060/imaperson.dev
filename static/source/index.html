@@ -28,10 +28,9 @@
             <p class="fs-3"><a href="//github.com/meisels/arimeisels.com/blob/main/short.js" title="URL Shortener" target="_blank">URL Shortener</a></p>
         </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-
+        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
         <script>
-            const socket = io();
+            const socket = io.connect("https://api.arimeisels.com");
         </script>
     </body>
 </html>

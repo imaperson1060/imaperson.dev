@@ -27,10 +27,9 @@
             <p class="fs-3"><a href="/commits/" title="Commit History">Commit History</a></p>
         </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-
+        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
         <script>
-            const socket = io();
+            const socket = io.connect("https://api.arimeisels.com");
         </script>
     </body>
 </html>

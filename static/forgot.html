@@ -39,10 +39,9 @@
             </div>
         </div>
         
-        <script src="/socket.io/socket.io.js"></script>
-        
+        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
         <script>
-            const socket = io();
+            const socket = io.connect("https://api.arimeisels.com");
 
             function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }            
             const errors = (err) => {
