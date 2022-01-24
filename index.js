@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 const io = new Server(server);
 
 io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
+io.set("transports", [ "websocket" ]);
 
 app.set("json spaces", 4);
 app.use(express.json());
