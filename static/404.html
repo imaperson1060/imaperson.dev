@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en" id="html">
     <head>
         <meta charset="utf-8">
         <title>404</title>
         <meta name="description" content="40444444444444444444444444444444444">
         <meta name="author" content="Ari Meisels">
         <link rel="icon" href="/favicon.ico">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body>
         <script>
+            $("#html").css("display", "none");
             (async () => {
                 if ((await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`)).ok) {
                     window.location.assign(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
+                } else {
+                    $("#html").css("display", "block");
                 }
             })();
         </script>
