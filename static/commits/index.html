@@ -21,8 +21,8 @@
         <script src="/nav.js"></script>
         
         <div class="container">
-            <h1>Recent Commits (<span id="recent">...</span>) - <a href="//github.com/meisels/arimeisels.com/" target="_blank">View Repository</a></h1>
-            <p class="lead">From <span id="then">...</span> to <span id="now">...</span></p>
+            <h1>Recent Commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/meisels/arimeisels.com/" target="_blank">View Repository</a></h1>
+            <p class="lead">From <span id="then"> &nbsp; <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> &nbsp; </span> to <span id="now"> &nbsp; <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span></p>
 
             <br>
             <br>
@@ -196,5 +196,54 @@
                 });
             });
         </script>
+
+        <style>
+            /* Originally supposed to be https://codepen.io/nzbin/pen/GGrXbp, but that's not inline so I used https://codepen.io/arthak/pen/rmqvgo, but that's not inline either >:( Am I just doing something wrong? So I just yoinked it from StackOverflow lol https://stackoverflow.com/questions/47214419/jumping-dots-animation*/
+
+            .dot {
+                width: 6px;
+                height: 6px;
+                background: #22303e;
+                display: inline-block;
+                border-radius: 50%;
+                right: 0px;
+                bottom: 0px;
+                margin: 0px -2px;
+                position: relative;
+            }
+
+            .dots-cont > .dot {
+                position: relative;
+                bottom: 0px;
+                animation-name: jump;
+                animation-duration: .3s;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-timing-function: ease;
+            }
+
+            .dots-cont .dot-1 {
+                -webkit-animation-delay: 100ms;
+                animation-delay: 100ms;
+            }
+
+            .dots-cont .dot-2 {
+                -webkit-animation-delay: 200ms;
+                animation-delay: 200ms;
+            }
+
+            .dots-cont .dot-3 {
+                -webkit-animation-delay: 300ms;
+                animation-delay: 300ms;
+            }
+            @keyframes jump {
+                from {bottom: 0px}
+                to {bottom: 20px}
+            }
+            @-webkit-keyframes jump {
+                from {bottom: 0px}
+                to {bottom: 10px}
+            }
+        </style>
     </body>
 </html>
