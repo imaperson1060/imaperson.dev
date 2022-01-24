@@ -22,7 +22,7 @@
         
         <div class="container">
             <h1>Recent Commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/meisels/arimeisels.com/" target="_blank">View Repository</a></h1>
-            <p class="lead">From <span id="then"> &nbsp; <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> &nbsp; </span> to <span id="now"> &nbsp; <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span></p>
+            <p class="lead">From <span id="then"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="now"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span></p>
 
             <br>
             <br>
@@ -210,6 +210,17 @@
             .dot {
                 width: 6px;
                 height: 6px;
+                background: #22303e;
+                display: inline-block;
+                border-radius: 50%;
+                right: 0px;
+                bottom: 0px;
+                margin: 0px -2px;
+                position: relative;
+            }
+            .dot-lead {
+                width: 3px !important;
+                height: 3px !important;
                 background: #22303e;
                 display: inline-block;
                 border-radius: 50%;
