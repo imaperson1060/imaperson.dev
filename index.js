@@ -3,10 +3,11 @@ import http from "http";
 const app = express();
 const server = http.createServer(app);
 import { Server } from "socket.io";
-const io = new Server(server);
+const io = new Server(server, {
+    cors: "https://arimeisels.com"
+});
 
 io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
-io.set("transports", [ "websocket" ]);
 
 app.set("json spaces", 4);
 app.use(express.json());
