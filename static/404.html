@@ -14,7 +14,7 @@
             $("#html").css("display", "none");
             (async () => {
                 if ((await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`)).ok) {
-                    window.location.assign(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
+                    window.location.replace(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
                 } else {
                     $("#html").css("display", "block");
                 }
