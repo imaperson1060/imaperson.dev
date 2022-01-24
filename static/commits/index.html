@@ -76,17 +76,17 @@
 
                         var title = document.createElement("h5");
                         title.setAttribute("class", "card-header");
-                        title.setAttribute("title", data.commit.message);
-                        title.setAttribute("style", "margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;");
-                        var titleText = document.createElement("a");
-                        titleText.setAttribute("href", data.html_url);
-                        titleText.setAttribute("target", "_blank");
                         const emojis = [ ];
                         data.commit.message.replace(/:([^:]+):/g, async x => emojis.push(x));
                         var newMessage = data.commit.message;
                         for await (const x of emojis) {
-                            newMessage = newMessage.replaceAll(x, `<img src="https://github.githubassets.com/images/icons/emoji/unicode/${(await (await fetch(`https://www.emojidex.com/api/v1/emoji/${x.slice(1, -1)}`)).json()).unicode}.png" width="20px" height="20px">`)
+                            newMessage = newMessage.replaceAll(x, (await (await fetch(`https://www.emojidex.com/api/v1/emoji/${x.slice(1, -1)}`)).json()).moji);
                         };
+                        title.setAttribute("title", newMessage);
+                        title.setAttribute("style", "margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;");
+                        var titleText = document.createElement("a");
+                        titleText.setAttribute("href", data.html_url);
+                        titleText.setAttribute("target", "_blank");
                         var titleTextBox = document.createElement("span");
                         titleTextBox.innerHTML = newMessage.split("\n")[0];
                         titleText.appendChild(titleTextBox);
