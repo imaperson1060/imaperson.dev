@@ -12,14 +12,14 @@ const io = new Server(server, {
 io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
 
 app.set("json spaces", 4);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("static"));
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("static"));
 
 import dotenv from "dotenv";
 dotenv.config();
