@@ -46,9 +46,9 @@
             }
 
             function moveDateForward() {
-                if (moment().unix() < moment($("#now").html()).add(7, "d").unix()) return;
-                $("#then").html(moment($("#then").html()).add(7, "d").format("MM/DD/YYYY"));
-                $("#now").html(moment($("#now").html()).add(7, "d").format("MM/DD/YYYY"));
+                if (moment().unix() < moment($("#now").html()).add(8, "d").unix()) return;
+                $("#then").html(moment($("#then").html()).add(8, "d").format("MM/DD/YYYY"));
+                $("#now").html(moment($("#now").html()).add(8, "d").format("MM/DD/YYYY"));
                 socket.emit("github", "commits", { since: moment($("#then").html()).toISOString(), until: moment($("#now").html()).toISOString() });
             }
 
