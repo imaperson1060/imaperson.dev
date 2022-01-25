@@ -40,8 +40,8 @@
             $("#now").html(moment().format("MM/DD/YYYY"));
 
             function moveDateBack() {
-                $("#then").html(moment($("#then").html()).subtract(7, "d").format("MM/DD/YYYY"));
-                $("#now").html(moment($("#now").html()).subtract(7, "d").format("MM/DD/YYYY"));
+                $("#then").html(moment($("#then").html()).subtract(8, "d").format("MM/DD/YYYY"));
+                $("#now").html(moment($("#now").html()).subtract(8, "d").format("MM/DD/YYYY"));
                 socket.emit("github", "commits", { since: moment($("#then").html()).toISOString(), until: moment($("#now").html()).toISOString() });
             }
 
