@@ -17,7 +17,7 @@ export default function (app) {
                     status
                 })
             });
-         });
+        });
     }
 
     app.get("/stop/:password", async (req, res) => {
