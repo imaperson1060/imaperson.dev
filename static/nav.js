@@ -1,6 +1,8 @@
 (async function () {
-    const nav = await fetch("/nav.html");
-    const navbarHTML = await nav.text();
+    const navbar = document.createElement("div");
+    navbar.setAttribute("id", "navbar");
+    navbar.setAttribute("class", "mb-4");
+    navbar.innerHTML = (await (await fetch("/nav.html")).text());
 
-    $("#navbar").html(navbarHTML);
+    $(document.body).prepend(navbar);
 })();

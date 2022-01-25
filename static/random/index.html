@@ -10,6 +10,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="/style.css">
+
+        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
+        <script src="/script.js"></script>
+
+        <script src="/nav.js"></script>
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
@@ -17,20 +22,10 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
-        <div id="navbar" class="mb-4"></div>
-        
-        <script src="/nav.js"></script>
-        
         <div class="container text-center">
             <h1>Random <strike>Junk</strike> Stuff</h1>
             <br>
             <p class="fs-3"><a href="/commits/" title="Commit History">Commit History</a></p>
         </div>
-
-        <script src="https://api.arimeisels.com/socket.io/socket.io.js"></script>
-        
-        <script>
-            const socket = io.connect("https://api.arimeisels.com");
-        </script>
     </body>
 </html>
