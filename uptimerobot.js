@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 export default function (app) {
     function changeStatus(status) {
-        const monitors = [ 789169806 ];
+        const monitors = [ 790456436 ];
 
         monitors.forEach(async x => {
             const response = await fetch("https://api.uptimerobot.com/v2/editMonitor", {
