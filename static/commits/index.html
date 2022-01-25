@@ -22,7 +22,7 @@
         
         <div class="container">
             <h1>Recent Commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/meisels/arimeisels.com/" target="_blank">View Repository</a></h1>
-            <p class="lead">From <span id="then"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="now"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span></p>
+            <p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="Move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> From <span id="then"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="now"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span> <i class="bi bi-arrow-right-short" title="Move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>
 
             <br>
             <br>
@@ -36,15 +36,36 @@
         <script>
             const socket = io.connect("https://api.arimeisels.com");
 
+            $("#then").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
+            $("#now").html(moment().format("MM/DD/YYYY"));
+
+            function moveDateBack() {
+                $("#then").html(moment($("#then").html()).subtract(7, "d").format("MM/DD/YYYY"));
+                $("#now").html(moment($("#now").html()).subtract(7, "d").format("MM/DD/YYYY"));
+                socket.emit("github", "commits", { since: moment($("#then").html()).toISOString(), until: moment($("#now").html()).toISOString() });
+            }
+
+            function moveDateForward() {
+                if (moment().unix() < moment($("#now").html()).add(7, "d").unix()) return;
+                $("#then").html(moment($("#then").html()).add(7, "d").format("MM/DD/YYYY"));
+                $("#now").html(moment($("#now").html()).add(7, "d").format("MM/DD/YYYY"));
+                socket.emit("github", "commits", { since: moment($("#then").html()).toISOString(), until: moment($("#now").html()).toISOString() });
+            }
+
+            function resetDate() {
+                $("#then").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
+                $("#now").html(moment().format("MM/DD/YYYY"));
+                socket.emit("github", "commits", { since: moment($("#then").html()).toISOString(), until: moment($("#now").html()).toISOString() });
+            }
+
             socket.emit("github", "commits");
 
             socket.on("github-commits", async (commits) => {
                 commits = commits.commits;
 
-                $("#recent").html(commits.length);
+                $("#commits").empty();
 
-                $("#then").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
-                $("#now").html(moment().format("MM/DD/YYYY"));
+                $("#recent").html(commits.length);
 
                 var cards = new Array(commits.length);
 
@@ -52,18 +73,21 @@
                     (async (data, i) => {
                         var card = document.createElement("div");
                         card.setAttribute("class", "card mb-3");
-                        card.setAttribute("style", "max-width: 540px;");
+                        card.setAttribute("style", "max-width: 75%;");
 
                         var grid = document.createElement("div");
                         grid.setAttribute("class", "row g-0");
 
                         var imageFrame = document.createElement("div");
                         imageFrame.setAttribute("class", "col-md-4");
+                        imageFrame.setAttribute("style", "max-width: 175px;");
 
                         var image = document.createElement("img");
                         image.setAttribute("src", data.author.avatar_url);
                         image.setAttribute("class", "card-img-top");
                         image.setAttribute("alt", data.commit.author.name);
+                        image.setAttribute("width", "175px");
+                        image.setAttribute("height", "175px");
 
                         imageFrame.appendChild(image);
                         grid.appendChild(imageFrame);
@@ -75,7 +99,7 @@
                         body.setAttribute("class", "card-body");
 
                         var title = document.createElement("h5");
-                        title.setAttribute("class", "card-header");
+                        title.setAttribute("class", "card-title");
                         const emojis = [ ];
                         data.commit.message.replace(/:([^:]+):/g, async x => emojis.push(x));
                         var newMessage = data.commit.message;
@@ -198,7 +222,7 @@
 
                 waitFor(() => commits.length - cards.filter(function(x, i){ return true }).length == 0, () => {
                     cards.forEach(card => {
-                        document.getElementById("commits").appendChild(card);
+                        $("#commits").append(card);
                     });
                 });
             });
