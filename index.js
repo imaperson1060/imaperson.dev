@@ -24,6 +24,7 @@ server.listen(process.env.PORT, async () => {
     app.get("/short/go/:domain/:id", async (req, res) => (await import("./socket/short/go.js")).default(req, res));
     app.get("/yt/watch/:id", async (req, res) => (await import("./socket/yt/watch.js")).default(req, res));
     app.get("/teapot/", (req, res) => res.sendStatus(418));
+    app.get("/up/", (req, res) => res.json({ success: true, uptime: new Date(Math.round(process.uptime()) * 1000).toISOString().slice(11, -5) }));
     (await import("./uptimerobot.js")).default(app);
     (await import("fs")).readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
     
