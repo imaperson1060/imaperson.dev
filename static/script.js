@@ -50,7 +50,10 @@ popupDialog.append(popupContent);
 popup.append(popupDialog);
 
 (async () => {
-    if (!(await fetch("https://api.arimeisels.com/up")).ok) {
+    try {
+        await fetch("https://api.arimeisels.com/up");
+    }
+    catch (e) {
         $(document.body).append(popup);
         $("#serverDownAlert").modal("show");
     }
