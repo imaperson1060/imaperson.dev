@@ -18,7 +18,7 @@ async function deleteExpired() {
 const rateLimiter = new RateLimiterMemory({ points: 1, duration: 60 });
 
 export default async function (client, interaction, options) {
-    await interaction.deferReply({ ephemeral: options.find(x => x.name == "hide") ? options.find(x => x.name == "hide").value == "true" : false });
+    await interaction.deferReply({ ephemeral: options.find(x => x.name == "hide") ? options.find(x => x.name == "hide").value : false });
 
     deleteExpired();
 
