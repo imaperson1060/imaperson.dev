@@ -35,3 +35,8 @@ export let data = new SlashCommandBuilder()
             .setDescription("Leave blank for a random 5 digit ID.")
             .setRequired(false)
         )
+    .addBoolOption(option =>
+        option.setName("hide")
+            .setDescription("Hide the response message from everybody but you.")
+            .setRequired(false)
+        )
