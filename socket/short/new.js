@@ -1,7 +1,5 @@
-import isReachable from "is-reachable";
 import mysql from "mysql";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import urlexists from "url-exists";
 import util from "util";
 
 var mysqlLogin = JSON.parse(process.env.MYSQL);
@@ -18,8 +16,6 @@ async function deleteExpired() {
 
 const rateLimiter = new RateLimiterMemory({ points: 5, duration: 60 });
 
-var urlExists = util.promisify(urlexists).bind(urlexists);
-
 export default async (io, socket, args) => {
     try {
         await rateLimiter.consume(socket.handshake.address);
@@ -28,17 +24,16 @@ export default async (io, socket, args) => {
 
         deleteExpired();
 
-        var url = decodeURIComponent(args[0].url);
-        url = ((await isReachable(`https://${url}`)) ? `https://${url}` : `http://${url}`);
+        const url = await fetch("https://bot.arimeisels.com/url", { method: "POST", body: decodeURIComponent(args[0].url) });
 
-        if (await urlExists(url)) {
+        if (url.https || url.http) {
             if (args[0].customid) {
                 const result = (await query("SELECT * FROM `urls` WHERE name=?", [args[0].customid]))[0];
                 if (result) {
                     socket.emit("short-new", { success: false, message: "idtaken", args });
                 } else {
                     await query("ALTER TABLE `urls` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `urls`"))[0].max]);
-                    await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [args[0].customid, url, args[0].domain, args[0].creator || "Guest", args[0].expires]);
+                    await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [args[0].customid, url.https ? `https://${args[0].url}` : `http://${args[0].url}`, args[0].domain, args[0].creator || "Guest", args[0].expires]);
 
                     socket.emit("short-new", { success: true, message: args[0].customid, args });
                 }
@@ -51,7 +46,7 @@ export default async (io, socket, args) => {
                     if ((await query("SELECT * FROM `urls` WHERE name=?", [randomString]))[0]) return generateURL();
 
                     await query("ALTER TABLE `urls` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `urls`"))[0].max]);
-                    await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [randomString, url, args[0].domain, args[0].creator || "Guest", args[0].expires]);
+                    await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [randomString, url.https ? `https://${args[0].url}` : `http://${args[0].url}`, args[0].domain, args[0].creator || "Guest", args[0].expires]);
 
                     socket.emit("short-new", { success: true, message: randomString, args });
                 })();
@@ -60,7 +55,6 @@ export default async (io, socket, args) => {
             socket.emit("short-new", { success: false, message: "invalidurl", args });
         }
     } catch (rejRes) {
-        console.log(rejRes)
         socket.emit("short-new", { success: false, message: "ratelimit", reset: Math.round(rejRes.msBeforeNext / 1000), args });
     }
 }
