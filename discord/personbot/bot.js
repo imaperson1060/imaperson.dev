@@ -1,5 +1,5 @@
 import { Client, Collection } from "discord.js";
-const client = new Client({ "intents": ["GUILDS", "GUILD_MESSAGES"] });
+const client = new Client({ "intents": ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
 
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
@@ -34,7 +34,7 @@ export default function () {
         if (commands.length != fs.readdirSync("./discord/personbot/commands/").length) return setTimeout(() => setCmds(), 100);
 
         await rest.put(
-            Routes.applicationCommands("882471379910426664"), { body: commands },
+            Routes.applicationCommands(process.env.PERSONBOT_ID), { body: commands },
         );
     })();
 
