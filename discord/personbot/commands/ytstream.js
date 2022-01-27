@@ -68,7 +68,7 @@ export default async function (client, interaction, options) {
     const channel = client.channels.cache.get(options.find(x => x.name == "channel").value);
     if (channel.type != "GUILD_VOICE") return await interaction.editReply("The channel provided is not a voice channel.");
 
-    const videoInfo = await getVideoDetails(id);
+    const songInfo = await getVideoDetails(id);
 
     const connection = joinVoiceChannel({
         channelId: channel.id,
@@ -79,13 +79,13 @@ export default async function (client, interaction, options) {
     const player = createAudioPlayer();
 
     const subscription = await connection.subscribe(player);
-    player.play(createAudioResource(videoInfo.formats.audio));
+    player.play(createAudioResource(songInfo.formats.audio));
 
-    await interaction.editReply(`Playing "${videoInfo.info.title}" in :loud_sound: ${channel.name}`);
+    await interaction.editReply(`Playing "${songInfo.info.title}" in :loud_sound: ${channel.name}`);
 
     setTimeout(() => {
         player.stop();
         subscription.unsubscribe();
         connection.destroy();
-    }, videoInfo.info.length * 1000);
+    }, songInfo.info.length * 1000);
 }
