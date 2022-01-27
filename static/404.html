@@ -13,11 +13,13 @@
         <script>
             $("#html").css("display", "none");
             (async () => {
-                if ((await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`)).ok) {
-                    window.location.replace(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
-                } else {
-                    $("#html").css("display", "block");
-                }
+                try {
+                    if ((await fetch(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`)).ok) {
+                        window.location.replace(`${window.location.protocol}//api.arimeisels.com${window.location.pathname}`);
+                    } else {
+                        $("#html").css("display", "block");
+                    }
+                } catch (e) { }
             })();
         </script>
 
