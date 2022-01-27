@@ -35,6 +35,7 @@ export default function () {
 
         await rest.put(
             Routes.applicationCommands(process.env.PERSONBOT_ID), { body: commands },
+            Routes.applicationGuildCommands(process.env.PERSONBOT_ID, process.env.PERSONBOT_TESTING_GUILD_ID), { body: commands },
         );
     })();
 
