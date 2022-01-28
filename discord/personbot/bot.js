@@ -21,23 +21,11 @@ export default function () {
         client.commands.set(commandName, props);
     });
 
-    const commands = [];
-
-    fs.readdirSync("./discord/personbot/application/").forEach(async file => {
-        let command = await import(`./application/${file}`);
-        commands.push(command.data.toJSON());
-    });
-
-    const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
-
-    (async function setCmds () {
-        if (commands.length != fs.readdirSync("./discord/personbot/commands/").length) return setTimeout(() => setCmds(), 100);
-
+    (async () => {
+        const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
+    
         await rest.put(
-            Routes.applicationCommands(process.env.PERSONBOT_ID), { body: commands },
-        );
-        await rest.put(
-            Routes.applicationGuildCommands(process.env.PERSONBOT_ID, process.env.PERSONBOT_TESTING_GUILD_ID), { body: commands },
+            Routes.applicationCommands(process.env.PERSONBOT_ID), { body: [ (await import(`./application/update.js`)).data.toJSON() ] },
         );
     })();
 

@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 
+export let requires = [ "VIEW_CHANNEL", "CONNECT", "SPEAK" ];
+
 export let data = new SlashCommandBuilder()
 	.setName("ytstream")
 	.setDescription("Enter a YouTube video link (not id) to stream it to an audio channel!")

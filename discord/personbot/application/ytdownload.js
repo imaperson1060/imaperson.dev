@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 
+export let requires = [];
+
 export let data = new SlashCommandBuilder()
 	.setName("ytdownload")
 	.setDescription("Enter a YouTube video link (not id) for it to be converted to an mp4!")

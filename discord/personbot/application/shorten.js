@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 
+export let requires = [];
+
 export let data = new SlashCommandBuilder()
 	.setName("shorten")
 	.setDescription("Shorten a URL quickly and easily!")
