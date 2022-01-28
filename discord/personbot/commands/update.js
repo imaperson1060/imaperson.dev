@@ -29,7 +29,6 @@ export default async function (client, interaction, options) {
 
         return await interaction.editReply(`**Slash commands updated!**\nCommands are:\n${commandNames.join("\n")}`);
     } catch (rejRes) {
-        console.log(rejRes)
         return await interaction.editReply(`You're being ratelimited! Try again in *${Math.round(rejRes.msBeforeNext / 1000)}* seconds.`);
     }
 }
