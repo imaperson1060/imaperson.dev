@@ -65,23 +65,22 @@ export default async function (client, interaction, options) {
     var id = getId(options.find(x => x.name == "song").value);
     if (!(await urlExists(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`))) return await interaction.editReply("The song submitted does not exist.");
     
-    const channel = client.channels.cache.get(options.find(x => x.name == "channel").value);
-    if (channel.type != "GUILD_VOICE") return await interaction.editReply("The channel provided is not a voice channel.");
+    if (!interaction.member.voice.channelId) return await interaction.editReply("You are not in a voice channel.");
 
     const songInfo = await getVideoDetails(id);
 
     const connection = joinVoiceChannel({
-        channelId: channel.id,
+        channelId: interaction.member.voice.channelId,
         guildId: interaction.guildId,
-        adapterCreator: channel.guild.voiceAdapterCreator,
+        adapterCreator: interaction.member.voice.guild.voiceAdapterCreator,
     });
 
     const player = createAudioPlayer();
 
     const subscription = await connection.subscribe(player);
     player.play(createAudioResource(songInfo.formats.audio));
-
-    await interaction.editReply(`Playing "${songInfo.info.title}" in :loud_sound: ${channel.name}`);
+    
+    await interaction.editReply(`Playing "${songInfo.info.title}" in :loud_sound: ${client.channels.cache.get(interaction.member.voice.channelId).name}`);
 
     setTimeout(() => {
         try {
