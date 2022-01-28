@@ -91,7 +91,7 @@ export default async function (client, interaction, options) {
             timestamp: new Date(),
             footer: {
                 icon_url: "https://arimeisels.com/favicon.png",
-                text: "PersonBot by imaperson#1060"
+                text: "PersonBot by imaperson.exe#1060"
             }
         }
 
@@ -120,7 +120,7 @@ export default async function (client, interaction, options) {
             timestamp: new Date(),
             footer: {
                 icon_url: "https://arimeisels.com/favicon.png",
-                text: "PersonBot by imaperson#1060"
+                text: "PersonBot by imaperson.exe#1060"
             }
         }
 
