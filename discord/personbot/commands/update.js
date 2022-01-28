@@ -15,7 +15,7 @@ export default async function (client, interaction, options) {
 
         for await (const file of fs.readdirSync("./discord/personbot/application/")) {
             let command = await import(`../application/${file}`);
-            if (interaction.guild.me.permissions.has(command.requires)) commands.push(command.data.toJSON());
+            if (interaction.guild.me.permissions.has(command.requires) && file != "update.js") commands.push(command.data.toJSON());
         };
 
         const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
