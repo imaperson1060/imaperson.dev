@@ -51,8 +51,10 @@
             <a id="customInvite" href="#" target="_blank"></a>
             <br>
             <button class="btn btn-primary btn-sm" onclick="hideUnused()">Show/Hide Unused Permissions</button>
+            <!--
             <button class="btn btn-primary btn-sm" onclick="enableAll()">Enable All Permissions</button>
             <button class="btn btn-primary btn-sm" onclick="disableAll()">Disable All Permissions</button>
+            -->
             <button class="btn btn-primary btn-sm" onclick="resetAll()">Reset</button>
             <table class="table table-bordered table-striped table-hover">
                 <thead>
@@ -69,8 +71,8 @@
                                 <input id="generalAdministrator" class="form-check-input" type="checkbox" value="8">
                             </div>
                         </th>
-                        <td onclick="$('#generalAdministrator').prop('checked', $('#generalAdministrator').prop('checked') == false);" onselectstart="return false">Administrator</td>
-                        <td onclick="$('#generalAdministrator').prop('checked', $('#generalAdministrator').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalAdministrator').click();" onselectstart="return false">Administrator</td>
+                        <td onclick="$('#generalAdministrator').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -78,8 +80,8 @@
                                 <input id="generalViewAuditLog" class="form-check-input" type="checkbox" value="128">
                             </div>
                         </th>
-                        <td onclick="$('#generalViewAuditLog').prop('checked', $('#generalViewAuditLog').prop('checked') == false);" onselectstart="return false">View Audit Log</td>
-                        <td onclick="$('#generalViewAuditLog').prop('checked', $('#generalViewAuditLog').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalViewAuditLog').click();" onselectstart="return false">View Audit Log</td>
+                        <td onclick="$('#generalViewAuditLog').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -87,8 +89,8 @@
                                 <input id="generalViewGuildInsights" class="form-check-input" type="checkbox" value="524288">
                             </div>
                         </th>
-                        <td onclick="$('#generalViewGuildInsights').prop('checked', $('#generalViewGuildInsights').prop('checked') == false);" onselectstart="return false">View Server Insights</td>
-                        <td onclick="$('#generalViewGuildInsights').prop('checked', $('#generalViewGuildInsights').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalViewGuildInsights').click();" onselectstart="return false">View Server Insights</td>
+                        <td onclick="$('#generalViewGuildInsights').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -96,8 +98,8 @@
                                 <input id="generalManageGuild" class="form-check-input" type="checkbox" value="32">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageGuild').prop('checked', $('#generalManageGuild').prop('checked') == false);" onselectstart="return false">Manage Server</td>
-                        <td onclick="$('#generalManageGuild').prop('checked', $('#generalManageGuild').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageGuild').click();" onselectstart="return false">Manage Server</td>
+                        <td onclick="$('#generalManageGuild').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -105,8 +107,8 @@
                                 <input id="generalManageRoles" class="form-check-input" type="checkbox" value="268435456">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageRoles').prop('checked', $('#generalManageRoles').prop('checked') == false);" onselectstart="return false">Manage Roles</td>
-                        <td onclick="$('#generalManageRoles').prop('checked', $('#generalManageRoles').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageRoles').click();" onselectstart="return false">Manage Roles</td>
+                        <td onclick="$('#generalManageRoles').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -114,8 +116,8 @@
                                 <input id="generalManageChannels" class="form-check-input" type="checkbox" value="16">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageChannels').prop('checked', $('#generalManageChannels').prop('checked') == false);" onselectstart="return false">Manage Channels</td>
-                        <td onclick="$('#generalManageChannels').prop('checked', $('#generalManageChannels').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageChannels').click();" onselectstart="return false">Manage Channels</td>
+                        <td onclick="$('#generalManageChannels').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -123,8 +125,8 @@
                                 <input id="generalKickMembers" class="form-check-input" type="checkbox" value="2">
                             </div>
                         </th>
-                        <td onclick="$('#generalKickMembers').prop('checked', $('#generalKickMembers').prop('checked') == false);" onselectstart="return false">Kick Members</td>
-                        <td onclick="$('#generalKickMembers').prop('checked', $('#generalKickMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalKickMembers').click();" onselectstart="return false">Kick Members</td>
+                        <td onclick="$('#generalKickMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -132,8 +134,8 @@
                                 <input id="generalBanMembers" class="form-check-input" type="checkbox" value="4">
                             </div>
                         </th>
-                        <td onclick="$('#generalBanMembers').prop('checked', $('#generalBanMembers').prop('checked') == false);" onselectstart="return false">Ban Members</td>
-                        <td onclick="$('#generalBanMembers').prop('checked', $('#generalBanMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalBanMembers').click();" onselectstart="return false">Ban Members</td>
+                        <td onclick="$('#generalBanMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -141,8 +143,8 @@
                                 <input id="generalCreateInvite" class="form-check-input" type="checkbox" value="1">
                             </div>
                         </th>
-                        <td onclick="$('#generalCreateInvite').prop('checked', $('#generalCreateInvite').prop('checked') == false);" onselectstart="return false">Create Instant Invite</td>
-                        <td onclick="$('#generalCreateInvite').prop('checked', $('#generalCreateInvite').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalCreateInvite').click();" onselectstart="return false">Create Instant Invite</td>
+                        <td onclick="$('#generalCreateInvite').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -150,8 +152,8 @@
                                 <input id="generalChangeNickname" class="form-check-input" type="checkbox" value="67108864">
                             </div>
                         </th>
-                        <td onclick="$('#generalChangeNickname').prop('checked', $('#generalChangeNickname').prop('checked') == false);" onselectstart="return false">Change Nickname</td>
-                        <td onclick="$('#generalChangeNickname').prop('checked', $('#generalChangeNickname').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalChangeNickname').click();" onselectstart="return false">Change Nickname</td>
+                        <td onclick="$('#generalChangeNickname').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -159,8 +161,8 @@
                                 <input id="generalManageNicknames" class="form-check-input" type="checkbox" value="134217728">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageNicknames').prop('checked', $('#generalManageNicknames').prop('checked') == false);" onselectstart="return false">Manage Nicknames</td>
-                        <td onclick="$('#generalManageNicknames').prop('checked', $('#generalManageNicknames').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageNicknames').click();" onselectstart="return false">Manage Nicknames</td>
+                        <td onclick="$('#generalManageNicknames').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -168,8 +170,8 @@
                                 <input id="generalManageEmojis" class="form-check-input" type="checkbox" value="1073741824">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageEmojis').prop('checked', $('#generalManageEmojis').prop('checked') == false);" onselectstart="return false">Manage Emojis and Stickers</td>
-                        <td onclick="$('#generalManageEmojis').prop('checked', $('#generalManageEmojis').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageEmojis').click();" onselectstart="return false">Manage Emojis and Stickers</td>
+                        <td onclick="$('#generalManageEmojis').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -177,8 +179,8 @@
                                 <input id="generalManageWebhooks" class="form-check-input" type="checkbox" value="536870912">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageWebhooks').prop('checked', $('#generalManageWebhooks').prop('checked') == false);" onselectstart="return false">Manage Webhooks</td>
-                        <td onclick="$('#generalManageWebhooks').prop('checked', $('#generalManageWebhooks').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageWebhooks').click();" onselectstart="return false">Manage Webhooks</td>
+                        <td onclick="$('#generalManageWebhooks').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -186,8 +188,8 @@
                                 <input id="generalViewChannels" class="form-check-input" type="checkbox" value="1024" checked>
                             </div>
                         </th>
-                        <td onclick="$('#generalViewChannels').prop('checked', $('#generalViewChannels').prop('checked') == false);" onselectstart="return false">Read Messages / View Channels</td>
-                        <td onclick="$('#generalViewChannels').prop('checked', $('#generalViewChannels').prop('checked') == false);" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#generalViewChannels').click();" onselectstart="return false">Read Messages / View Channels</td>
+                        <td onclick="$('#generalViewChannels').click();" onselectstart="return false">Required by /ytstream</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -195,8 +197,8 @@
                                 <input id="generalManageEvents" class="form-check-input" type="checkbox" value="8589934592">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageEvents').prop('checked', $('#generalManageEvents').prop('checked') == false);" onselectstart="return false">Manage Events</td>
-                        <td onclick="$('#generalManageEvents').prop('checked', $('#generalManageEvents').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageEvents').click();" onselectstart="return false">Manage Events</td>
+                        <td onclick="$('#generalManageEvents').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -204,8 +206,8 @@
                                 <input id="generalModerateMembers" class="form-check-input" type="checkbox" value="1099511627776">
                             </div>
                         </th>
-                        <td onclick="$('#generalModerateMembers').prop('checked', $('#generalModerateMembers').prop('checked') == false);" onselectstart="return false">Moderate Members</td>
-                        <td onclick="$('#generalModerateMembers').prop('checked', $('#generalModerateMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalModerateMembers').click();" onselectstart="return false">Moderate Members</td>
+                        <td onclick="$('#generalModerateMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -213,8 +215,8 @@
                                 <input id="textSendMessages" class="form-check-input" type="checkbox" value="2048">
                             </div>
                         </th>
-                        <td onclick="$('#textSendMessages').prop('checked', $('#textSendMessages').prop('checked') == false);" onselectstart="return false">Send Messages</td>
-                        <td onclick="$('#textSendMessages').prop('checked', $('#textSendMessages').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendMessages').click();" onselectstart="return false">Send Messages</td>
+                        <td onclick="$('#textSendMessages').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -222,8 +224,8 @@
                                 <input id="textCreatePublicThreads" class="form-check-input" type="checkbox" value="34359738368">
                             </div>
                         </th>
-                        <td onclick="$('#textCreatePublicThreads').prop('checked', $('#textCreatePublicThreads').prop('checked') == false);" onselectstart="return false">Create Public Threads</td>
-                        <td onclick="$('#textCreatePublicThreads').prop('checked', $('#textCreatePublicThreads').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textCreatePublicThreads').click();" onselectstart="return false">Create Public Threads</td>
+                        <td onclick="$('#textCreatePublicThreads').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -231,8 +233,8 @@
                                 <input id="textCreatePrivateThreads" class="form-check-input" type="checkbox" value="68719476736">
                             </div>
                         </th>
-                        <td onclick="$('#textCreatePrivateThreads').prop('checked', $('#textCreatePrivateThreads').prop('checked') == false);" onselectstart="return false">Create Private Threads</td>
-                        <td onclick="$('#textCreatePrivateThreads').prop('checked', $('#textCreatePrivateThreads').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textCreatePrivateThreads').click();" onselectstart="return false">Create Private Threads</td>
+                        <td onclick="$('#textCreatePrivateThreads').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -240,8 +242,8 @@
                                 <input id="textSendMessagesThreads" class="form-check-input" type="checkbox" value="274877906944">
                             </div>
                         </th>
-                        <td onclick="$('#textSendMessagesThreads').prop('checked', $('#textSendMessagesThreads').prop('checked') == false);" onselectstart="return false">Send Messages in Threads</td>
-                        <td onclick="$('#textSendMessagesThreads').prop('checked', $('#textSendMessagesThreads').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendMessagesThreads').click();" onselectstart="return false">Send Messages in Threads</td>
+                        <td onclick="$('#textSendMessagesThreads').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -249,8 +251,8 @@
                                 <input id="textSendTTSMessages" class="form-check-input" type="checkbox" value="274877906944">
                             </div>
                         </th>
-                        <td onclick="$('#textSendTTSMessages').prop('checked', $('#textSendTTSMessages').prop('checked') == false);" onselectstart="return false">Send TTS Messages</td>
-                        <td onclick="$('#textSendTTSMessages').prop('checked', $('#textSendTTSMessages').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendTTSMessages').click();" onselectstart="return false">Send TTS Messages</td>
+                        <td onclick="$('#textSendTTSMessages').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -258,8 +260,8 @@
                                 <input id="textManageMessages" class="form-check-input" type="checkbox" value="8192">
                             </div>
                         </th>
-                        <td onclick="$('#textManageMessages').prop('checked', $('#textManageMessages').prop('checked') == false);" onselectstart="return false">Manage Messages</td>
-                        <td onclick="$('#textManageMessages').prop('checked', $('#textManageMessages').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textManageMessages').click();" onselectstart="return false">Manage Messages</td>
+                        <td onclick="$('#textManageMessages').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -267,8 +269,8 @@
                                 <input id="textManageThreads" class="form-check-input" type="checkbox" value="17179869184">
                             </div>
                         </th>
-                        <td onclick="$('#textManageThreads').prop('checked', $('#textManageThreads').prop('checked') == false);" onselectstart="return false">Manage Threads</td>
-                        <td onclick="$('#textManageThreads').prop('checked', $('#textManageThreads').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textManageThreads').click();" onselectstart="return false">Manage Threads</td>
+                        <td onclick="$('#textManageThreads').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -276,8 +278,8 @@
                                 <input id="textEmbedLinks" class="form-check-input" type="checkbox" value="16384">
                             </div>
                         </th>
-                        <td onclick="$('#textEmbedLinks').prop('checked', $('#textEmbedLinks').prop('checked') == false);" onselectstart="return false">Embed Links</td>
-                        <td onclick="$('#textEmbedLinks').prop('checked', $('#textEmbedLinks').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textEmbedLinks').click();" onselectstart="return false">Embed Links</td>
+                        <td onclick="$('#textEmbedLinks').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -285,8 +287,8 @@
                                 <input id="textAttachFiles" class="form-check-input" type="checkbox" value="32768">
                             </div>
                         </th>
-                        <td onclick="$('#textAttachFiles').prop('checked', $('#textAttachFiles').prop('checked') == false);" onselectstart="return false">Attach Files</td>
-                        <td onclick="$('#textAttachFiles').prop('checked', $('#textAttachFiles').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textAttachFiles').click();" onselectstart="return false">Attach Files</td>
+                        <td onclick="$('#textAttachFiles').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -294,8 +296,8 @@
                                 <input id="textReadMessageHistory" class="form-check-input" type="checkbox" value="65536">
                             </div>
                         </th>
-                        <td onclick="$('#textReadMessageHistory').prop('checked', $('#textReadMessageHistory').prop('checked') == false);" onselectstart="return false">Read Message History</td>
-                        <td onclick="$('#textReadMessageHistory').prop('checked', $('#textReadMessageHistory').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textReadMessageHistory').click();" onselectstart="return false">Read Message History</td>
+                        <td onclick="$('#textReadMessageHistory').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -303,8 +305,8 @@
                                 <input id="textMentionEveryone" class="form-check-input" type="checkbox" value="131072">
                             </div>
                         </th>
-                        <td onclick="$('#textMentionEveryone').prop('checked', $('#textMentionEveryone').prop('checked') == false);" onselectstart="return false">Mention Everyone</td>
-                        <td onclick="$('#textMentionEveryone').prop('checked', $('#textMentionEveryone').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textMentionEveryone').click();" onselectstart="return false">Mention Everyone</td>
+                        <td onclick="$('#textMentionEveryone').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -312,8 +314,8 @@
                                 <input id="textUseExternalEmojis" class="form-check-input" type="checkbox" value="262144">
                             </div>
                         </th>
-                        <td onclick="$('#textUseExternalEmojis').prop('checked', $('#textUseExternalEmojis').prop('checked') == false);" onselectstart="return false">Use External Emojis</td>
-                        <td onclick="$('#textUseExternalEmojis').prop('checked', $('#textUseExternalEmojis').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseExternalEmojis').click();" onselectstart="return false">Use External Emojis</td>
+                        <td onclick="$('#textUseExternalEmojis').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -321,8 +323,8 @@
                                 <input id="textUseExternalStickers" class="form-check-input" type="checkbox" value="137438953472">
                             </div>
                         </th>
-                        <td onclick="$('#textUseExternalStickers').prop('checked', $('#textUseExternalStickers').prop('checked') == false);" onselectstart="return false">Use External Stickers</td>
-                        <td onclick="$('#textUseExternalStickers').prop('checked', $('#textUseExternalStickers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseExternalStickers').click();" onselectstart="return false">Use External Stickers</td>
+                        <td onclick="$('#textUseExternalStickers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -330,8 +332,8 @@
                                 <input id="textAddReactions" class="form-check-input" type="checkbox" value="64">
                             </div>
                         </th>
-                        <td onclick="$('#textAddReactions').prop('checked', $('#textAddReactions').prop('checked') == false);" onselectstart="return false">Add Reactions</td>
-                        <td onclick="$('#textAddReactions').prop('checked', $('#textAddReactions').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textAddReactions').click();" onselectstart="return false">Add Reactions</td>
+                        <td onclick="$('#textAddReactions').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -339,8 +341,8 @@
                                 <input id="textUseSlashCommands" class="form-check-input" type="checkbox" value="2147483648">
                             </div>
                         </th>
-                        <td onclick="$('#textUseSlashCommands').prop('checked', $('#textUseSlashCommands').prop('checked') == false);" onselectstart="return false">Use Slash Commands</td>
-                        <td onclick="$('#textUseSlashCommands').prop('checked', $('#textUseSlashCommands').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseSlashCommands').click();" onselectstart="return false">Use Slash Commands</td>
+                        <td onclick="$('#textUseSlashCommands').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -348,8 +350,8 @@
                                 <input id="voiceConnect" class="form-check-input" type="checkbox" value="1048576" checked>
                             </div>
                         </th>
-                        <td onclick="$('#voiceConnect').prop('checked', $('#voiceConnect').prop('checked') == false);" onselectstart="return false">Connect to Voice Channels</td>
-                        <td onclick="$('#voiceConnect').prop('checked', $('#voiceConnect').prop('checked') == false);" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#voiceConnect').click();" onselectstart="return false">Connect to Voice Channels</td>
+                        <td onclick="$('#voiceConnect').click();" onselectstart="return false">Required by /ytstream</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -357,8 +359,8 @@
                                 <input id="voiceSpeak" class="form-check-input" type="checkbox" value="2097152" checked>
                             </div>
                         </th>
-                        <td onclick="$('#voiceSpeak').prop('checked', $('#voiceSpeak').prop('checked') == false);" onselectstart="return false">Speak in Voice Channels</td>
-                        <td onclick="$('#voiceSpeak').prop('checked', $('#voiceSpeak').prop('checked') == false);" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#voiceSpeak').click();" onselectstart="return false">Speak in Voice Channels</td>
+                        <td onclick="$('#voiceSpeak').click();" onselectstart="return false">Required by /ytstream</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -366,8 +368,8 @@
                                 <input id="voiceStream" class="form-check-input" type="checkbox" value="512">
                             </div>
                         </th>
-                        <td onclick="$('#voiceStream').prop('checked', $('#voiceStream').prop('checked') == false);" onselectstart="return false">Stream in Voice Channels</td>
-                        <td onclick="$('#voiceStream').prop('checked', $('#voiceStream').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceStream').click();" onselectstart="return false">Stream in Voice Channels</td>
+                        <td onclick="$('#voiceStream').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -375,8 +377,8 @@
                                 <input id="voiceMuteMembers" class="form-check-input" type="checkbox" value="4194304">
                             </div>
                         </th>
-                        <td onclick="$('#voiceMuteMembers').prop('checked', $('#voiceMuteMembers').prop('checked') == false);" onselectstart="return false">Mute Members</td>
-                        <td onclick="$('#voiceMuteMembers').prop('checked', $('#voiceMuteMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceMuteMembers').click();" onselectstart="return false">Mute Members</td>
+                        <td onclick="$('#voiceMuteMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -384,8 +386,8 @@
                                 <input id="voiceDeafenMembers" class="form-check-input" type="checkbox" value="8388608">
                             </div>
                         </th>
-                        <td onclick="$('#voiceDeafenMembers').prop('checked', $('#voiceDeafenMembers').prop('checked') == false);" onselectstart="return false">Deafen Members</td>
-                        <td onclick="$('#voiceDeafenMembers').prop('checked', $('#voiceDeafenMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceDeafenMembers').click();" onselectstart="return false">Deafen Members</td>
+                        <td onclick="$('#voiceDeafenMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -393,8 +395,8 @@
                                 <input id="voiceMoveMembers" class="form-check-input" type="checkbox" value="16777216">
                             </div>
                         </th>
-                        <td onclick="$('#voiceMoveMembers').prop('checked', $('#voiceMoveMembers').prop('checked') == false);" onselectstart="return false">Move Members</td>
-                        <td onclick="$('#voiceMoveMembers').prop('checked', $('#voiceMoveMembers').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceMoveMembers').click();" onselectstart="return false">Move Members</td>
+                        <td onclick="$('#voiceMoveMembers').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -402,8 +404,8 @@
                                 <input id="voiceUseVAD" class="form-check-input" type="checkbox" value="33554432">
                             </div>
                         </th>
-                        <td onclick="$('#voiceUseVAD').prop('checked', $('#voiceUseVAD').prop('checked') == false);" onselectstart="return false">Use Voice Activity</td>
-                        <td onclick="$('#voiceUseVAD').prop('checked', $('#voiceUseVAD').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceUseVAD').click();" onselectstart="return false">Use Voice Activity</td>
+                        <td onclick="$('#voiceUseVAD').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -411,8 +413,8 @@
                                 <input id="voicePrioritySpeaker" class="form-check-input" type="checkbox" value="256">
                             </div>
                         </th>
-                        <td onclick="$('#voicePrioritySpeaker').prop('checked', $('#voicePrioritySpeaker').prop('checked') == false);" onselectstart="return false">Priority Speaker</td>
-                        <td onclick="$('#voicePrioritySpeaker').prop('checked', $('#voicePrioritySpeaker').prop('checked') == false);" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voicePrioritySpeaker').click();" onselectstart="return false">Priority Speaker</td>
+                        <td onclick="$('#voicePrioritySpeaker').click();" onselectstart="return false">Required by nothing</td>
                     </tr>
                 </tbody>
             </table>
@@ -464,9 +466,9 @@
             const required = [ "generalViewChannels", "voiceConnect", "voiceSpeak" ]
 
             function hideUnused() { $(".permission").each((i, x) => { if (required.indexOf($(".form-check-input")[i].id) == -1) $(x).toggle() }); }
-            function enableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", true)) }
-            function disableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", false)) }
-            function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (required.indexOf(x.id) != -1))) }
+            function enableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", true)); updatePermissions(); }
+            function disableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", false)); updatePermissions(); }
+            function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (required.indexOf(x.id) != -1))); updatePermissions(); }
 
             hideUnused();
 
@@ -475,11 +477,18 @@
                 $(".form-check-input").each((i, x) => { if ($(x).is(":checked")) permissions += parseInt($(x).val()) });
                 $("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
                 $("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
+                if ($("#generalAdministrator").is(":checked")) {
+                    $("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
+                    $("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
+                    $(".form-check-input").each((i, x) => { if (x.id != "generalAdministrator") $(x).prop("disabled", true) });
+                } else {
+                    $(".form-check-input").each((i, x) => $(x).prop("disabled", false));
+                }
             }
 
             updatePermissions();
 
-            $(".form-check-input").on("click", () => updatePermissions());
+            $(".form-check-input").click(() => updatePermissions());
         </script>
     </body>
 </html>
