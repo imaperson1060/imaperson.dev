@@ -84,8 +84,10 @@ export default async function (client, interaction, options) {
     await interaction.editReply(`Playing "${songInfo.info.title}" in :loud_sound: ${channel.name}`);
 
     setTimeout(() => {
-        player.stop();
-        subscription.unsubscribe();
-        connection.destroy();
+        try {
+            player.stop();
+            subscription.unsubscribe();
+            connection.destroy();
+        } catch (e) { }
     }, songInfo.info.length * 1000);
 }
