@@ -109,7 +109,7 @@ export default async function (client, interaction, options) {
             
             connections.set(vc, audioManager);
 
-            audioManager.on("end", vc => connections.remove(vc));
+            audioManager.on("end", vc => connections.delete(vc));
 
             if (!manager) await interaction.editReply(`Playing "${songInfo.title}" in :loud_sound: ${client.channels.cache.get(vc.id).name}`);
             else await interaction.editReply(`Added "${songInfo.title}" to queue`);
