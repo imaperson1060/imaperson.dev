@@ -6,6 +6,7 @@ import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
 import { connect } from "http2";
+import { BurstyRateLimiter } from "rate-limiter-flexible";
 
 var mysqlLogin = JSON.parse(process.env.MYSQL);
 mysqlLogin = Object.assign(mysqlLogin, { database: "yt" });
@@ -62,6 +63,34 @@ export default async function (client, interaction, options) {
     if (!vc) return await interaction.editReply("You are not in a voice channel.");
     
     switch (interaction.options._subcommand) {
+        case "endloop":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+            
+            audioManager.loop(vc, audioManager.looptypes.off);
+
+            await interaction.editReply("Stopped loop");
+
+            break;
+        case "loop":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            audioManager.loop(vc, audioManager.looptypes.loop);
+
+            var playing = (await audioManager.queue(vc))[0].title;
+            await interaction.editReply(`Looping "${playing}"`);
+
+            break;
+        case "loopqueue":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            audioManager.loop(vc, audioManager.looptypes.off);
+
+            await interaction.editReply("Looping queue");
+
+            break;
         case "play":
             if (!yt.dl.validateURL(options.find(x => x.name == "song").value)) return await interaction.editReply("The song submitted does not exist.");
 
@@ -86,13 +115,33 @@ export default async function (client, interaction, options) {
             else await interaction.editReply(`Added "${songInfo.title}" to queue`);
 
             break;
+        case "pause":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            audioManager.pause(vc);
+
+            var playing = (await audioManager.queue(vc))[0].title;
+            await interaction.editReply(`Paused "${playing}"`);
+
+            break;
+        case "resume":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            audioManager.resume(vc);
+
+            var playing = (await audioManager.queue(vc))[0].title;
+            await interaction.editReply(`Resumed "${playing}"`);
+
+            break;
         case "skip":
             var audioManager = connections.get(vc);
             if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
 
-            const playing = (await audioManager.queue(vc))[0].title;
+            var playing = (await audioManager.queue(vc))[0].title;
 
-            audioManager.skip(vc);
+            await audioManager.skip(vc);
 
             await interaction.editReply(`Skipped "${playing}"`);
 

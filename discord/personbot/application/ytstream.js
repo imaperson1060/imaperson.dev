@@ -6,6 +6,18 @@ export let data = new SlashCommandBuilder()
 	.setName("ytstream")
 	.setDescription("Enter a YouTube video link (not id) to stream it to an audio channel!")
 	.addSubcommand(subcommand =>
+		subcommand.setName("endloop")
+			.setDescription("Stop the loop, if there is one (whether song or queue)")
+	)
+	.addSubcommand(subcommand =>
+		subcommand.setName("loop")
+			.setDescription("Loop the song that is now playing")
+	)
+	.addSubcommand(subcommand =>
+		subcommand.setName("loopqueue")
+			.setDescription("Loop the current queue (queue is still editable during loop)")
+	)
+	.addSubcommand(subcommand =>
 		subcommand.setName("play")
 			.setDescription("Stream a song to the voice channel you are in")
 			.addStringOption(option =>
@@ -13,6 +25,14 @@ export let data = new SlashCommandBuilder()
 					.setDescription("The YouTube Music URL (full, not just the id) of the song you want to stream.")
 					.setRequired(true)
 			)
+	)
+	.addSubcommand(subcommand =>
+		subcommand.setName("pause")
+			.setDescription("Pause the song currently playing")
+	)
+	.addSubcommand(subcommand =>
+		subcommand.setName("resume")
+			.setDescription("Resume a paused song")
 	)
 	.addSubcommand(subcommand =>
 		subcommand.setName("skip")
