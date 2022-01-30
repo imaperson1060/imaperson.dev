@@ -1,12 +1,11 @@
-import { AudioPlayerStatus, createAudioResource, createAudioPlayer, joinVoiceChannel, NoSubscriberBehavior } from "@discordjs/voice";
+import discordaudio from "discordaudio";
+import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import mysql from "mysql";
-import urlexists from "url-exists";
 import util from "util";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
-
-var urlExists = util.promisify(urlexists).bind(urlexists);
+import { connect } from "http2";
 
 var mysqlLogin = JSON.parse(process.env.MYSQL);
 mysqlLogin = Object.assign(mysqlLogin, { database: "yt" });
@@ -53,40 +52,141 @@ async function getVideoDetails(id, cookie) {
     return { success: true, formats: formats, info: { author: videoInfo.videoDetails.author.name, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, length: videoInfo.videoDetails.lengthSeconds, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` } };
 }
 
-function getId(url) {
-    var regExp = /^.*music.youtube.com\/watch?\??v?=?([^#&?]*).*/;
-    var match = url.match(regExp);
-    return (match && match[1].length == 11) ? match[1] : false;
-}
+const connections = new Map();
 
 export default async function (client, interaction, options) {
     await interaction.deferReply({ ephemeral: true });
 
-    var id = getId(options.find(x => x.name == "song").value);
-    if (!(await urlExists(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`))) return await interaction.editReply("The song submitted does not exist.");
+    const vc = interaction.member.voice.channel;
+
+    if (!vc) return await interaction.editReply("You are not in a voice channel.");
     
-    if (!interaction.member.voice.channelId) return await interaction.editReply("You are not in a voice channel.");
+    switch (interaction.options._subcommand) {
+        case "play":
+            if (!yt.dl.validateURL(options.find(x => x.name == "song").value)) return await interaction.editReply("The song submitted does not exist.");
 
-    const songInfo = await getVideoDetails(id);
+            var id = yt.dl.getVideoID(options.find(x => x.name == "song").value);
+            
+            const songInfo = (await getVideoDetails(id)).info;
+            
+            var audioManager = connections.get(vc) || new discordaudio.AudioManager();
+            
+            if (connections.get(vc) && audioManager.queue(vc).find(x => x.url == options.find(x => x.name == "song").value)) return await interaction.editReply("The song submitted is already in the queue or is playing.");
+            
+            const manager = await audioManager.play(vc, options.find(x => x.name == "song").value, { // You're probably wondering why I'm using a 3rd party library for streaming the actual song. The reason is whenever I do it from the URL I get it just cuts out randomly. I don't know how this does it better (hopefully not by downloading it) but it works.
+                autoleave: true,
+                quality: "high"
+            });
+            
+            connections.set(vc, audioManager);
 
-    const connection = joinVoiceChannel({
-        channelId: interaction.member.voice.channelId,
-        guildId: interaction.guildId,
-        adapterCreator: interaction.member.voice.guild.voiceAdapterCreator,
-    });
+            audioManager.on("end", vc => connections.remove(vc));
 
-    const player = createAudioPlayer();
+            if (!manager) await interaction.editReply(`Playing "${songInfo.title}" in :loud_sound: ${client.channels.cache.get(vc.id).name}`);
+            else await interaction.editReply(`Added "${songInfo.title}" to queue`);
 
-    const subscription = await connection.subscribe(player);
-    player.play(createAudioResource(songInfo.formats.audio));
-    
-    await interaction.editReply(`Playing "${songInfo.info.title}" in :loud_sound: ${client.channels.cache.get(interaction.member.voice.channelId).name}`);
+            break;
+        case "skip":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
 
-    setTimeout(() => {
-        try {
-            player.stop();
-            subscription.unsubscribe();
-            connection.destroy();
-        } catch (e) { }
-    }, songInfo.info.length * 1000);
+            const playing = (await audioManager.queue(vc))[0].title;
+
+            audioManager.skip(vc);
+
+            await interaction.editReply(`Skipped "${playing}"`);
+
+            break;
+        case "stop":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            await audioManager.stop(vc);
+            await interaction.editReply("Stopped");
+
+            connections.delete(vc);
+            break;
+        case "queue":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            async function generateEmbed(selection = 0, ended) {
+                const queue = audioManager.queue(vc);
+
+                const queueEmbed = new MessageEmbed()
+                    .setTitle("Queue");
+
+                var description = "";
+                queue.forEach((x, i) => description += `${(i == selection) ? "**" : ""}${i + 1}${(i == selection) ? "**" : ""} - [${x.title}](${x.url})${i == 0 ? " - Now Playing" : ""}\n` );
+                queueEmbed.setDescription(description);
+
+                const row = new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setCustomId("prev")
+                            .setEmoji("937226629439176725")
+                            .setStyle("PRIMARY")
+                            .setDisabled(ended || selection == 0),
+                        new MessageButton()
+                            .setCustomId("next")
+                            .setEmoji("937226629581791252")
+                            .setStyle("PRIMARY")
+                            .setDisabled(ended || selection == queue.length - 1),
+                        new MessageButton()
+                            .setCustomId("remove")
+                            .setEmoji("937227759904780299")
+                            .setStyle("DANGER")
+                            .setDisabled(ended || selection == 0),
+                        new MessageButton()
+                            .setCustomId("end")
+                            .setLabel("End Interaction")
+                            .setStyle("DANGER")
+                            .setDisabled(ended || false),
+                    )
+
+                return { components: [ row ], embeds: [ queueEmbed ] };
+            }
+
+            await interaction.editReply(await generateEmbed());
+
+            var selection = 0;
+
+            (async function updateEmbed() {
+                try {
+                    const buttonInteraction = (await client.channels.cache.get(interaction.channelId).awaitMessageComponent({ componentType: "BUTTON", time: 10000 }));
+                    
+                    const btn = buttonInteraction.customId;
+
+                    switch (btn) {
+                        case "end":
+                            await buttonInteraction.update(await generateEmbed(selection, true));
+                            break;
+                        case "remove":
+                            await audioManager.deletequeue(vc, audioManager.queue(vc)[selection].url);
+                            if (selection > audioManager.queue(vc).length - 1) selection = audioManager.queue(vc).length - 1;
+                            await buttonInteraction.update(await generateEmbed(selection));
+                            return updateEmbed();
+                        case "next":
+                            selection++;
+                            await buttonInteraction.update(await generateEmbed(selection));
+                            return updateEmbed();
+                        case "prev":
+                            selection--;
+                            await buttonInteraction.update(await generateEmbed(selection));
+                            return updateEmbed();
+                    }
+                } catch (err) {
+                    await interaction.editReply(await generateEmbed(selection, true));
+                    await interaction.followUp({ components: [ ], content: "Interaction ended due to inactivity", embeds: [ ], ephemeral: true })
+                }
+            })();
+
+            break;
+        case "volume":
+            var audioManager = connections.get(vc);
+            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+
+            audioManager.volume(vc, options.find(x => x.name == "new").value);
+            break;
+    }
 }
