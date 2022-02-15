@@ -129,6 +129,8 @@
 
             async function downloadVideos(audio = false) {
 				var zip = new JSZip();
+
+                $("#submit").attr("disabled", true);
                 
                 for await (const x of videos) {
                     if (audio) await zip.file(`${await getVideoTitle(x)}.mp3`, await getAudio(x), { binary: true });
@@ -145,6 +147,8 @@
 						$("#progressbar").removeClass("progress-bar-animated");
 						$("#progressbar").removeClass("progress-bar-striped");
                 });
+
+                $("#submit").attr("disabled", false);
 
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
                 $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
