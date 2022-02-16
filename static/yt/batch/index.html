@@ -14,6 +14,7 @@
         <script src="/socket.io.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="bootstrap-dialog.js"></script>
 
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
@@ -23,10 +24,15 @@
     <body>        
         <div class="container">
             <h1>Watch YouTube Ad-Free</h1>
-            
-            <div class="mb-3">
-                <label for="urls" class="form-label">Video URLs <span style="color: #ff2825">*</span></label>
-                <textarea id="urls" class="form-control" rows="5" maxlength="20000" placeholder="Video links, separated by new lines..."></textarea>
+
+            <div id="urls" class="mb-3">
+                <div class="mb-3">
+                    <ul id="videos" class="list-group">
+                    </ul>
+                </div>
+                <div class="d-grid gap-2">
+                    <button id="addButton" class="btn btn-primary" type="button" onclick="addVideo()"><i class="bi bi-plus-circle"></i> Add Video</button>
+                </div>
             </div>
 
             <div id="cookieInput" class="mb-3" style="display:none;">
@@ -46,8 +52,8 @@
 			<br>
 			<br>
 			
-			<div class="progress">
-				<div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+			<div id="progressContainer" class="progress" style="display:none;">
+				<div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
 			</div>
             
             <br>
@@ -69,7 +75,34 @@
 
             function HTMLWarn(text) { return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
 
+            function addVideo() {
+                var template = (id, title, author) => `<div class="btn-group" role="group" video-id="${id}">
+                    <button type="button" class="list-group-item list-group-item-info list-group-item-action" onclick="showInfo('${id}')"><b><i>${title}</i></b> by <b>${author}</b></button>
+                    <button type="button" class="btn btn-danger" onclick="removeVideo('${id}')"><i class="bi bi-trash"></i></button>
+                </div>`;
+
+                $.dialog.prompt("Add Video", "Paste YouTube URL", { type: "text", label: "URL..." }, async (url) => {
+                    if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("Invalid ID", "The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+
+                    var id = getId(url);
+                    var info = await getVideoInfo(id);
+                    $("#videos").append(template(id, info.title, info.author_name));
+                });
+            }
+
+            function removeVideo(id) {
+                $(`button[video-id=${id}]`).parent().remove();
+            }
+
+            async function showInfo(id) {
+                var info = await getVideoInfo(id);
+
+                $.dialog.alert(`<a href="https://youtu.be/${id}" target="_blank"><b><i>${info.title}</i></b></a> by <a href="${info.author_url}" target="_blank"><b>${info.author_name}</b></a>`, `<a href="https://youtu.be/${id}" target="_blank"><img src="${info.thumbnail_url}"></a>`);
+            }
+
             function changeProgress(percent) {
+                $("#progressContainer").show();
+
 				$("#progressbar").css("width", `${percent}%`);
 				$("#progressbar").attr("aria-valuenow", percent);
 				if (percent < 100) {
@@ -131,10 +164,11 @@
 				var zip = new JSZip();
 
                 $("#submit").attr("disabled", true);
-                
+                $("#addButton").attr("disabled", true);
+
                 for await (const x of videos) {
-                    if (audio) await zip.file(`${await getVideoTitle(x)}.mp3`, await getAudio(x), { binary: true });
-                    else await zip.file(`${await getVideoTitle(x)}.mp4`, await getVideo(x), { binary: true });
+                    if (audio) await zip.file(`${(await getVideoInfo(x)).title}.mp3`, await getAudio(x), { binary: true });
+                    else await zip.file(`${(await getVideoInfo(x)).title}.mp4`, await getVideo(x), { binary: true });
                     upto++;
                 }
                 
@@ -149,6 +183,7 @@
                 });
 
                 $("#submit").attr("disabled", false);
+                $("#addButton").attr("disabled", false);
 
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
                 $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
@@ -165,17 +200,7 @@
 
                 $("#warnings").html("");
 
-                $("#urls").val().split("\n").every(x => {
-                    const id = getId(x);
-                    if (!id) {
-                        $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));   
-                        videos = [];
-                        return false;
-                    } else {
-                        videos.push(id);
-                        return true;
-                    }
-                });
+                $.each($("#videos").children(), (i, x) => videos.push($(x).attr("video-id")));
 
                 if (videos.length) downloadVideos();
             });
@@ -206,38 +231,30 @@
                 if (videos.length) downloadVideos(true);
             });*/
 
-            $("#urls").on("change keyup paste", () => {
-                const videos = $("#urls").val().split("\n").filter(x => x != "");
-                const filter = videos.filter(x => getId(x));
-
-                if (filter.length != 0) {
-                    videos.forEach(x => {
-                        validateVideo(getId(x));
-                    });
+            $("#videos").on("DOMSubtreeModified", async () => {
+                var videos = [];
+                $.each($("#videos").children(), (i, x) => videos.push($(x).attr("video-id")));
+                
+                if (videos.length != 0) {
+                    $("#warnings").html("");
+                    $("#submit").attr("disabled", false);
+                    //$("#submitAudio").attr("disabled", false);
                 } else {
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
             });
 
-            async function validateVideo(id) {
-                const video = await fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`);
+            async function getVideoInfo(id) {
+                try {
+                    const video = await fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`);
 
-                if (video.ok) {
-                    $("#warnings").html("");
-                    $("#submit").attr("disabled", false);
-                    //$("#submitAudio").attr("disabled", false);
-                } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
-                    $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
-                }
-            }
-
-            async function getVideoTitle(id) {
-                const video = await (await fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`)).json();
-                console.log(video)
-                return video.title;
+                    if (video.ok) {
+                        return await video.json();
+                    } else {
+                        return false;
+                    }
+                } catch (e) { return false; }
             }
         </script>
     </body>
