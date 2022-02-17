@@ -40,7 +40,9 @@
                 <textarea id="urls" class="form-control" rows="5" maxlength="20000" placeholder="Video links, separated by new lines..."></textarea>
             </div>
 
-            <button type="button" id="switchMode" class="btn btn-danger mb-3" onclick="switchMode()" current-mode="friendly">Switch to <span id="mode">productive</span> mode</button>
+            <button type="button" id="switchMode" class="btn btn-danger" onclick="switchMode()" current-mode="friendly">Switch to <span id="mode">productive</span> mode</button>
+            <button type="button" id="addPlaylist" class="btn btn-secondary" onclick="addPlaylist()">Add Playlist</button>
+            <br>
             <br>
 
             <div id="cookieInput" class="mb-3" style="display:none;">
@@ -74,6 +76,12 @@
                 return (match && match[7].length == 11) ? match[7] : false;
             }
 
+            function getPlaylistId(url) {
+                var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+                var match = url.match(regExp);
+                return (match && match[2]) ? match[2] : false;
+            }
+
             var videos = [];
             var upto = 0;
 
@@ -97,24 +105,54 @@
                 }
             }
 
-            function addVideo() {
+            async function addVideo(url) {
                 var template = (id, title, author) => `<div class="btn-group" role="group" video-id="${id}">
                     <button type="button" class="list-group-item list-group-item-info list-group-item-action" onclick="showInfo('${id}')"><b><i>${title}</i></b> by <b>${author}</b></button>
                     <button type="button" class="btn btn-danger" onclick="removeVideo('${id}')"><i class="bi bi-trash"></i></button>
                 </div>`;
 
-                $.dialog.prompt("Add Video", "Paste YouTube URL", { type: "text", label: "URL..." }, async (url) => {
+                if (!url) {
+                    $.dialog.prompt("Add Video", "Paste YouTube URL", { type: "text", label: "URL..." }, async (url) => {
+                        if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("Invalid ID", "The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+
+                        var id = getId(url);
+                        var info = await getVideoInfo(id);
+                        $("#videos").append(template(id, info.title, info.author_name));
+                    });
+                } else {
                     if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("Invalid ID", "The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
 
                     var id = getId(url);
                     var info = await getVideoInfo(id);
                     $("#videos").append(template(id, info.title, info.author_name));
-                });
+                }
             }
 
             function removeVideo(id) {
                 $(`button[video-id=${id}]`).parent().remove();
             }
+
+            function addPlaylist() {
+                $.dialog.prompt("Add Playlist", "Paste YouTube Playlist URL", { type: "text", label: "URL..." }, async (url) => {
+                    if (!getPlaylistId(url)) return $.dialog.alert("Invalid ID", "The requested playlist does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+
+                    var id = getPlaylistId(url);
+                    socket.emit("yt", "playlist", { id: id });
+                });
+            }
+
+            socket.on("yt-getPlaylist", async (data) => {
+                var template = (id, title, author) => `<div class="btn-group" role="group" video-id="${id}">
+                    <button type="button" class="list-group-item list-group-item-info list-group-item-action" onclick="showInfo('${id}')"><b><i>${title}</i></b> by <b>${author}</b></button>
+                    <button type="button" class="btn btn-danger" onclick="removeVideo('${id}')"><i class="bi bi-trash"></i></button>
+                </div>`;
+
+                if (!data.success) return $.dialog.alert("Invalid ID", "The requested playlist does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+                
+                for await (const x of data.playlist.items) {
+                    await addVideo(x.shortUrl);
+                }
+            });
 
             async function showInfo(id) {
                 var info = await getVideoInfo(id);
@@ -166,13 +204,12 @@
 
                 $("#submit").attr("disabled", true);
                 $("#addButton").attr("disabled", true);
+                $("#addPlaylist").attr("disabled", true);
 
                 for await (const x of videos) {
                     await zip.file(`${(await getVideoInfo(x)).title.replace(/[/\\?%*:|"<>]/g, '-')}.mp4`, await getVideo(x), { binary: true });
                     upto++;
                 }
-
-                console.log(zip)
                 
                 await zip.generateAsync({ type: "blob" })
                 .then((content) => {
@@ -186,6 +223,7 @@
 
                 $("#submit").attr("disabled", false);
                 $("#addButton").attr("disabled", false);
+                $("#addPlaylist").attr("disabled", false);
 
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
             }
