@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>YouTube Ad-Free</title>
-        <meta name="description" content="Watch (or download) YouTube videos without any ads, for free! (Seriously, no hidden fees or conditions or anything.)">
+        <title>YouTube Batch Downloader</title>
+        <meta name="description" content="One of the first ever YouTube batch downloaders. I've wanted to do this since I was like 7 and now I did!">
         <meta name="author" content="Ari Meisels">
         <meta property="og:image" content="/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@
         <div class="container">
             <h1>Watch YouTube Ad-Free</h1>
 
-            <div id="urls" class="mb-3">
+            <div id="friendly" class="mb-3">
                 <div class="mb-3">
                     <ul id="videos" class="list-group">
                     </ul>
@@ -35,6 +35,14 @@
                 </div>
             </div>
 
+            <div id="productive" class="mb-3" style="display:none;">
+                <label for="urls" class="form-label">Video URLs <span style="color: #ff2825">*</span></label>
+                <textarea id="urls" class="form-control" rows="5" maxlength="20000" placeholder="Video links, separated by new lines..."></textarea>
+            </div>
+
+            <button type="button" id="switchMode" class="btn btn-danger mb-3" onclick="switchMode()" current-mode="friendly">Switch to <span id="mode">productive</span> mode</button>
+            <br>
+
             <div id="cookieInput" class="mb-3" style="display:none;">
                 <label for="cookie" class="form-label">Account Cookie <span style="color: #ff2825">*</span></label>
                 <input id="cookie" class="form-control" placeholder="Account Cookie...">
@@ -42,11 +50,7 @@
 
             <button id="submit" class="btn btn-primary" value="Submit" disabled>
                 <div id="loadingCircle" class="" role="status"></div>
-                Video
-            </button>
-            <button id="submitAudio" class="btn btn-secondary" value="Submit" disabled>
-                <div id="loadingCircleAudio" class="" role="status"></div>
-                Audio - Coming Soon!
+                Download
             </button>
 
 			<br>
@@ -74,6 +78,24 @@
             var upto = 0;
 
             function HTMLWarn(text) { return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
+
+            function switchMode() {
+                if ($("#switchMode").attr("current-mode") == "friendly") {
+                    $("#friendly").hide();
+                    $("#productive").show();
+                    $("#switchMode").attr("current-mode", "productive");
+                    $("#mode").html("friendly");
+                    $("#switchMode").removeClass("btn-danger");
+                    $("#switchMode").addClass("btn-info");
+                } else {
+                    $("#friendly").show();
+                    $("#productive").hide();
+                    $("#switchMode").attr("current-mode", "friendly");
+                    $("#mode").html("productive");
+                    $("#switchMode").removeClass("btn-info");
+                    $("#switchMode").addClass("btn-danger");
+                }
+            }
 
             function addVideo() {
                 var template = (id, title, author) => `<div class="btn-group" role="group" video-id="${id}">
@@ -139,38 +161,18 @@
                 return blob;
             }
 
-            /*async function getAudio(video) {
-                let response = await fetch("https://bot.arimeisels.com/ytdl?audio=true", { method: "POST", body: video });
-
-                const reader = response.body.getReader();
-
-                var contentLength = response.headers.get("Content-Length");
-
-                let receivedLength = 0;
-                let chunks = [];
-                while (true) {
-                    const {done, value} = await reader.read();
-
-                    if (done) break;
-
-                    chunks.push(value);
-                    receivedLength += value.length;
-
-                    changeProgress(Math.ceil((((100 / videos.length) * upto) + Math.ceil((((receivedLength / contentLength) * 100) / videos.length) * 100) / 100) * 100) / 100);
-                }
-            }*/
-
-            async function downloadVideos(audio = false) {
+            async function downloadVideos() {
 				var zip = new JSZip();
 
                 $("#submit").attr("disabled", true);
                 $("#addButton").attr("disabled", true);
 
                 for await (const x of videos) {
-                    if (audio) await zip.file(`${(await getVideoInfo(x)).title}.mp3`, await getAudio(x), { binary: true });
-                    else await zip.file(`${(await getVideoInfo(x)).title}.mp4`, await getVideo(x), { binary: true });
+                    await zip.file(`${(await getVideoInfo(x)).title.replace(/[/\\?%*:|"<>]/g, '-')}.mp4`, await getVideo(x), { binary: true });
                     upto++;
                 }
+
+                console.log(zip)
                 
                 await zip.generateAsync({ type: "blob" })
                 .then((content) => {
@@ -186,7 +188,6 @@
                 $("#addButton").attr("disabled", false);
 
                 $("#loadingCircle").removeClass("spinner-border spinner-border-sm text-light");
-                $("#loadingCircleAudio").removeClass("spinner-border spinner-border-sm text-light");
             }
 
             $("#submit").on("click", async () => {
@@ -200,36 +201,23 @@
 
                 $("#warnings").html("");
 
-                $.each($("#videos").children(), (i, x) => videos.push($(x).attr("video-id")));
-
+                if ($("#switchMode").attr("current-mode") == "friendly") {
+                    $.each($("#videos").children(), (i, x) => videos.push($(x).attr("video-id")));
+                } else {
+                    for await (const x of $("#urls").val().split("\n")) {
+                        const id = getId(x);
+                        if (!(await getVideoInfo(id))) {
+                            $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));   
+                            videos = [];
+                            return false;
+                        } else {
+                            videos.push(id);
+                        }
+                    }
+                }
+                
                 if (videos.length) downloadVideos();
             });
-
-            /*$("#submitAudio").on("click", async () => {
-                $("#progressbar").removeClass("bg-success");
-                $("#progressbar").html("");
-                changeProgress(0);
-                videos = [];
-                upto = 0;
-
-                $("#loadingCircleAudio").addClass("spinner-border spinner-border-sm text-light");
-
-                $("#warnings").html("");
-
-                $("#urls").val().split("\n").every(x => {
-                    const id = getId(x);
-                    if (!id) {
-                        $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));   
-                        videos = [];
-                        return false;
-                    } else {
-                        videos.push(id);
-                        return true;
-                    }
-                });
-
-                if (videos.length) downloadVideos(true);
-            });*/
 
             $("#videos").on("DOMSubtreeModified", async () => {
                 var videos = [];
@@ -238,10 +226,29 @@
                 if (videos.length != 0) {
                     $("#warnings").html("");
                     $("#submit").attr("disabled", false);
-                    //$("#submitAudio").attr("disabled", false);
                 } else {
                     $("#submit").attr("disabled", true);
-                    $("#submitAudio").attr("disabled", true);
+                }
+            });
+
+            $("#urls").on("change keyup paste", async () => {
+                const videos = $("#urls").val().split("\n").filter(x => x != "");
+                const filter = videos.filter(x => getId(x));
+
+                if (filter.length != 0) {
+                    for await (const x of videos) {
+                        if (!(await getVideoInfo(getId(x)))) {
+                            $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));
+                            $("#submit").attr("disabled", true);
+                            videos = [];
+                            return false;
+                        } else {
+                            $("#warnings").html("");
+                            $("#submit").attr("disabled", false);
+                        }
+                    }
+                } else {
+                    $("#submit").attr("disabled", true);
                 }
             });
 
