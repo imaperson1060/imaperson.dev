@@ -129,7 +129,7 @@
             }
 
             function removeVideo(id) {
-                $(`button[video-id=${id}]`).parent().remove();
+                $(`div[video-id=${id}]`).remove();
             }
 
             function addPlaylist() {
@@ -168,19 +168,29 @@
 				if (percent < 100) {
 					$("#progressbar").html(`${percent}% (${upto + 1} out of ${videos.length})`);
 				} else {
-					$("#progressbar").html("Done! Zipping files...");
+					$("#progressbar").html("Done! Zipping files... (0%)");
 					$("#progressbar").removeClass("bg-primary");
 					$("#progressbar").addClass("bg-info");
 				}
+            }
+
+            function zipUpdate(metadata) {
+                if (upto != videos.length) return;
+
+				$("#progressbar").css("width", `${metadata.percent}%`);
+				$("#progressbar").attr("aria-valuenow", metadata.percent);
+				$("#progressbar").html(`Done! Zipping files... (${metadata.percent.toFixed(2)}%)`);
+				$("#progressbar").removeClass("bg-primary");
+				$("#progressbar").addClass("bg-info");
             }
 
             async function getVideo(video) {
                 let response = await fetch("https://bot.arimeisels.com/ytdl", { method: "POST", body: video });
 
                 const reader = response.body.getReader();
-
+                
                 var contentLength = response.headers.get("Content-Length");
-
+                
                 let receivedLength = 0;
                 let chunks = [];
                 while (true) {
@@ -190,7 +200,7 @@
 
                     chunks.push(value);
                     receivedLength += value.length;
-
+                    
                     changeProgress(Math.ceil((((100 / videos.length) * upto) + Math.ceil((((receivedLength / contentLength) * 100) / videos.length) * 100) / 100) * 100) / 100);
                 }
 
@@ -211,14 +221,14 @@
                     upto++;
                 }
                 
-                await zip.generateAsync({ type: "blob" })
+                await zip.generateAsync({ type: "blob", streamFiles: true }, zipUpdate)
                 .then((content) => {
                     saveAs(content, `arimeisels.com_batch_${Date.now()}.zip`);
-						$("#progressbar").html("Your download should begin... now!");
-						$("#progressbar").removeClass("bg-info");
-						$("#progressbar").addClass("bg-success");
-						$("#progressbar").removeClass("progress-bar-animated");
-						$("#progressbar").removeClass("progress-bar-striped");
+					$("#progressbar").html("Your download should begin... now!");
+					$("#progressbar").removeClass("bg-info");
+					$("#progressbar").addClass("bg-success");
+					$("#progressbar").removeClass("progress-bar-animated");
+					$("#progressbar").removeClass("progress-bar-striped");
                 });
 
                 $("#submit").attr("disabled", false);
