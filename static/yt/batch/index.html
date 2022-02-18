@@ -230,7 +230,7 @@
                     upto++;
                 }
                 
-                await zip.generateAsync({ type: "blob", streamFiles: true }, zipUpdate)
+                await zip.generateAsync({ type: "blob" }, zipUpdate)
                 .then((content) => {
                     saveAs(content, `arimeisels.com_batch_${Date.now()}.zip`);
 					$("#progressbar").html("Your download should begin... now!");
