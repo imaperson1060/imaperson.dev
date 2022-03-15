@@ -51,7 +51,7 @@ popup.append(popupDialog);
 
 (async () => {
     try {
-        await fetch("https://api.arimeisels.com/up");
+        await fetch("https://api.imaperson.dev/up");
     }
     catch (e) {
         $(document.body).append(popup);
