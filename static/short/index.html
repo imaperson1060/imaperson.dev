@@ -3,7 +3,7 @@
     <head>
         <title>URL Shortener</title>
         <meta name="description" content="Shorten URLs quickly and easily.">
-        <meta name="author" content="Ari Meisels">
+        <meta name="author" content="imaperson">
         <meta property="og:image" content="/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
@@ -118,7 +118,7 @@
                 }
                 
                 if (validURL($("#url").val())) {
-                    const protocol = await fetch("https://bot.arimeisels.com/url", { method: "POST", body: $("#url").val() });
+                    const protocol = await fetch("https://bot.imaperson.dev/url", { method: "POST", body: $("#url").val() });
                     res = await protocol.json();
                     if (res.https) {
                         $("#url").val($("#url").val().replace("https://", ""));

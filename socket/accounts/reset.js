@@ -20,7 +20,7 @@ async function mail(to, subject, html) {
         }
     });
     let info = await mailer.sendMail({
-        from: "Ari Meisels <me@arimeisels.com>",
+        from: "Ari Meisels <me@imaperson.dev>",
         to: to,
         subject: subject,
         html: html

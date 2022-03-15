@@ -3,7 +3,7 @@
     <head>
         <title>YouTube Batch Downloader</title>
         <meta name="description" content="One of the first ever YouTube batch downloaders. I've wanted to do this since I was like 7 and now I did!">
-        <meta name="author" content="Ari Meisels">
+        <meta name="author" content="imaperson">
         <meta property="og:image" content="/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
@@ -188,7 +188,7 @@
             }
 
             async function getVideo(video) {
-                let response = await fetch("https://bot.arimeisels.com/ytdl", { method: "POST", body: video });
+                let response = await fetch("https://bot.imaperson.dev/ytdl", { method: "POST", body: video });
 
                 const reader = response.body.getReader();
                 
@@ -209,11 +209,14 @@
 
                 let blob = new Blob(chunks);
 
-                return blob;
+                return { blob, contentLength};
             }
 
             async function downloadVideos() {
-				var zip = new JSZip();
+                var zips = [  ];
+				zips.push({ zip: new JSZip(), size: 0 });
+                var i = 0;
+                var full = new JSZip();
 
                 $("#submit").attr("disabled", true);
                 $("#addButton").attr("disabled", true);
@@ -222,25 +225,43 @@
                 var elapsedTime = 0;
                 const timer = setInterval(() => {
                     elapsedTime += 0.01;
-                    $("#elapsedTime").html(`<b>Elapsed</b>: ${moment.utc(elapsedTime * 1000).format("HH:mm:ss")} | <b>Estimated Time Left</b>: ${moment.utc((100 - parseFloat($("#progressbar").attr("aria-valuenow"))) / (parseFloat($("#progressbar").attr("aria-valuenow")) / (elapsedTime * 1000 * 60))).format("HH:mm")}`);
+                    $("#elapsedTime").html(`<b>Elapsed</b>: ${moment.utc(elapsedTime * 1000).format("HH:mm:ss")} | <b>Estimated Time Left</b>: ${moment.utc(((100 - parseFloat($("#progressbar").attr("aria-valuenow"))) / (parseFloat($("#progressbar").attr("aria-valuenow")) / (elapsedTime * 1000))) * 60).format("HH:mm")}`);
                 }, 10);
 
                 for await (const x of videos) {
-                    await zip.file(`${(await getVideoInfo(x)).title.replace(/[/\\?%*:|"<>]/g, '-')}.mp4`, await getVideo(x), { binary: true });
+                    var video = await getVideo(x);
+                    if (zips[i].size + video.contentLength > 500000000) {
+                        zips.push({ zip: new JSZip(), size: 0 });
+                        i++;
+                    }
+                    zips[i].size += video.contentLength;
+                    await zips[i].zip.file(`${(await getVideoInfo(x)).title.replace(/[/\\?%*:|"<>]/g, '-')}.mp4`, video.blob, { binary: true });
                     upto++;
                 }
-                
-                await zip.generateAsync({ type: "blob" }, zipUpdate)
+
+                if (zips.length > 1) {
+                    for await (const [ i, x ] of zips.entries()) {
+                        await x.zip.generateAsync({ type: "blob", streamFiles: true }, zipUpdate)
+                        .then(async (content) => {
+                            await full.file(`${i}.zip`, content, { binary: true });
+                        });
+                    }
+                } else {
+                    full = zips[0].zip;
+                }
+
+                await full.generateAsync({ type: "blob", streamFiles: true }, zipUpdate)
                 .then((content) => {
-                    saveAs(content, `arimeisels.com_batch_${Date.now()}.zip`);
-					$("#progressbar").html("Your download should begin... now!");
-					$("#progressbar").removeClass("bg-info");
-					$("#progressbar").addClass("bg-success");
-					$("#progressbar").removeClass("progress-bar-animated");
-					$("#progressbar").removeClass("progress-bar-striped");
-                    clearInterval(timer);
+                    saveAs(content, `imaperson.dev_batch_${Date.now()}.zip`);
+	        		$("#progressbar").html("Your download should begin... now!");
+    		    	$("#progressbar").removeClass("bg-info");
+	        		$("#progressbar").addClass("bg-success");
+	            	$("#progressbar").removeClass("progress-bar-animated");
+				    $("#progressbar").removeClass("progress-bar-striped");
                 });
 
+                clearInterval(timer);
+                
                 $("#submit").attr("disabled", false);
                 $("#addButton").attr("disabled", false);
                 $("#addPlaylist").attr("disabled", false);

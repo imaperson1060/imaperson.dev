@@ -21,7 +21,7 @@ async function mail(to, subject, html) {
         }
     });
     let info = await mailer.sendMail({
-        from: "Ari Meisels <me@arimeisels.com>",
+        from: "Ari Meisels <me@imaperson.dev>",
         to: to,
         subject: subject,
         html: html
@@ -50,7 +50,7 @@ export default async (io, socket, args) => {
 
         await rateLimiter.consume(socket.handshake.address);
 
-        await mail(args[0].email, "Welcome", `<h1>Hey, ${capitalize(args[0].name)}! Thanks for creating an account on my website!</h1> <h2>If you have any questions, feel free to <a href="mailto:me@arimeisels.com">shoot me an email</a>!</h3> <style>* { font-family: sans-serif }</style>`);
+        await mail(args[0].email, "Welcome", `<h1>Hey, ${capitalize(args[0].name)}! Thanks for creating an account on my website!</h1> <h2>If you have any questions, feel free to <a href="mailto:me@imaperson.dev">shoot me an email</a>!</h3> <style>* { font-family: sans-serif }</style>`);
 
         await query("ALTER TABLE `users` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `users`"))[0].max]);
         await query("INSERT INTO `users`(`username`, `name`, `email`, `password`) VALUES (?,?,?,?)", [args[0].username, capitalize(args[0].name), args[0].email, md5(args[0].password)]);

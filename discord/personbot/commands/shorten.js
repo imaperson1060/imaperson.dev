@@ -39,7 +39,7 @@ export default async function (client, interaction, options) {
             "∞": 2147483647
         }
             
-        const urls = await (await fetch("https://bot.arimeisels.com/url", { method: "POST", body: decodeURIComponent(url) })).json();
+        const urls = await (await fetch("https://bot.imaperson.dev/url", { method: "POST", body: decodeURIComponent(url) })).json();
 
         if (!urls.https && !urls.http) {
             return await interaction.editReply("That website kinda doesn't exist, or it cannot be detected by me. Sorry!");

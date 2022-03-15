@@ -1,1 +1,1 @@
-const socket = io.connect(window.location.hostname == "localhost" ? "" : "https://api.arimeisels.com");
+const socket = io.connect(window.location.hostname == "localhost" ? "" : "https://api.imaperson.dev");

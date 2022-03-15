@@ -63,6 +63,8 @@ export default async function (client, interaction, options) {
     if (!vc) return await interaction.editReply("You are not in a voice channel.");
     
     switch (interaction.options._subcommand) {
+        case "alias":
+            break;
         case "endloop":
             var audioManager = connections.get(vc);
             if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");

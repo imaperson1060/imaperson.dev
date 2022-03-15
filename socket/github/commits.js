@@ -14,7 +14,7 @@ export default async (io, socket, args) => {
     var since = args[0] ? moment(args[0].since).toISOString() : moment().subtract(7, "d").toISOString();
     var until = args[0] ? moment(args[0].until).add(1, "d").toISOString() : moment();
 
-    var commits = await fetch(`https://api.github.com/repos/imaperson1060/arimeisels.com/commits?per_page=100&since=${since}&until=${until}`, {
+    var commits = await fetch(`https://api.github.com/repos/imaperson1060/imaperson.dev/commits?per_page=100&since=${since}&until=${until}`, {
         headers: {
             Authorization: `Basic ${btoa(`imaperson1060:${process.env.GITHUB_TOKEN}`)}`
         }
@@ -24,7 +24,7 @@ export default async (io, socket, args) => {
 
     for await (const x of commits) {
         if (!(await query("SELECT * FROM `commits` WHERE id=?", [ x.sha ]))[0]) {
-            x.stats = (await (await fetch(`https://api.github.com/repos/imaperson1060/arimeisels.com/commits/${x.sha}`, {
+            x.stats = (await (await fetch(`https://api.github.com/repos/imaperson1060/imaperson.dev/commits/${x.sha}`, {
                 headers: {
                     Authorization: `Basic ${btoa(`imaperson1060:${process.env.GITHUB_TOKEN}`)}`
                 }

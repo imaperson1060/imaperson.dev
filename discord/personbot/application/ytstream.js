@@ -6,6 +6,20 @@ export let data = new SlashCommandBuilder()
 	.setName("ytstream")
 	.setDescription("Enter a YouTube video link (not id) to stream it to an audio channel!")
 	.addSubcommand(subcommand =>
+		subcommand.setName("alias")
+			.setDescription("Link a song to an alias you can use in its place for easy access")
+			.addStringOption(option =>
+				option.setName("song")
+					.setDescription("The YouTube Music URL (full, not just the id) of the song you want to make an alias for.")
+					.setRequired(true)
+			)
+			.addStringOption(option =>
+				option.setName("alias")
+					.setDescription("The alias to reference the song with (unchangable at the moment)")
+					.setRequired(true)
+			)
+	)
+	.addSubcommand(subcommand =>
 		subcommand.setName("endloop")
 			.setDescription("Stop the loop, if there is one (whether song or queue)")
 	)
