@@ -14,14 +14,14 @@ async function deleteExpired() {
 }
 
 export default async (req, res) => {
-    if (!req.params.domain || !req.params.id) return res.redirect("/short/");
+    if (!req.params.domain || !req.params.id) return res.redirect("https://imaperson.dev/short");
 
     deleteExpired();
 
     if ((await query("SELECT * FROM `urls` WHERE name=?", [req.params.id]))[0]) {
         const result = (await query("SELECT * FROM `urls` WHERE name=? AND domain=?", [req.params.id, req.params.domain]))[0];
-        res.redirect(result ? result.longurl : "/short/");
+        res.redirect(result ? result.longurl : "https://imaperson.dev/short");
     } else {
-        res.redirect("/short/");
+        res.redirect("https://imaperson.dev/short");
     }
 }
