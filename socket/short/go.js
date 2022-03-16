@@ -20,7 +20,7 @@ export default async (req, res) => {
 
     if ((await query("SELECT * FROM `urls` WHERE name=?", [req.params.id]))[0]) {
         const result = (await query("SELECT * FROM `urls` WHERE name=? AND domain=?", [req.params.id, req.params.domain]))[0];
-        res.redirect(result ? result.longurl : "https://imaperson.dev/short");
+        res.redirect(result ? decodeURIComponent(result.longurl) : "https://imaperson.dev/short");
     } else {
         res.redirect("https://imaperson.dev/short");
     }
