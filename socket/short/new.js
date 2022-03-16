@@ -27,7 +27,7 @@ export default async (io, socket, args) => {
         
         deleteExpired();
 
-        const url = await fetch("https://bot.imaperson.dev/url", { method: "POST", body: decodeURIComponent(args[0].url) });
+        const url = await (await fetch("https://bot.imaperson.dev/url", { method: "POST", body: decodeURIComponent(args[0].url) })).json();
 
         if (url.https || url.http) {
             if (args[0].customid) {
