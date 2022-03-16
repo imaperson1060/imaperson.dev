@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import mysql from "mysql";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import util from "util";
