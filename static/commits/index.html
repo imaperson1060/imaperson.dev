@@ -33,39 +33,42 @@
         
         <script>
             var commitCache = [];
+            Object.keys(localStorage).filter(x => x.split("-")[0] == "commitCache").forEach(x => commitCache.push(JSON.parse(localStorage[x])));
 
             $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
             $("#until").html(moment().format("MM/DD/YYYY"));
 
+            function getCommits(since, until) {
+                if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix())) generateCards(commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix()).commits);
+                else socket.emit("github", "commits", { since, until });
+            }
+
+            function showCommits(commits) {
+                commits = commits.commits;
+
+                localStorage[`commitCache-${moment($("#since").html()).unix()}_${moment($("#until").html()).unix()}`] = JSON.stringify({ since: moment($("#since").html()).unix(), until: moment($("#until").html()).unix(), commits });
+                commitCache.push({ since: moment($("#since").html()).unix(), until: moment($("#until").html()).unix(), commits });
+
+                generateCards(commits);
+            }
+
             function moveDateBack() {
                 $("#since").html(moment($("#since").html()).subtract(8, "d").format("MM/DD/YYYY"));
                 $("#until").html(moment($("#until").html()).subtract(8, "d").format("MM/DD/YYYY"));
-                if (commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix())) {
-                    generateCards(commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix()).commits);
-                } else {
-                    socket.emit("github", "commits", { since: moment($("#since").html()).toISOString(), until: moment($("#until").html()).toISOString() });
-                }
+                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
             }
 
             function moveDateForward() {
                 if (moment().unix() < moment($("#until").html()).add(8, "d").unix()) return;
                 $("#since").html(moment($("#since").html()).add(8, "d").format("MM/DD/YYYY"));
                 $("#until").html(moment($("#until").html()).add(8, "d").format("MM/DD/YYYY"));
-                if (commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix())) {
-                    generateCards(commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix()).commits);
-                } else {
-                    socket.emit("github", "commits", { since: moment($("#since").html()).toISOString(), until: moment($("#until").html()).toISOString() });
-                }
+                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
             }
 
             function resetDate() {
                 $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
                 $("#until").html(moment().format("MM/DD/YYYY"));
-                if (commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix())) {
-                    generateCards(commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix()).commits);
-                } else {
-                    socket.emit("github", "commits", { since: moment($("#since").html()).toISOString(), until: moment($("#until").html()).toISOString() });
-                }
+                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
             }
 
             function generateCards(commits) {
@@ -233,15 +236,9 @@
                 });
             }
 
-            socket.emit("github", "commits");
+            getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
 
-            socket.on("github-commits", async (commits) => {
-                commits = commits.commits;
-
-                commitCache.push({ since: moment($("#since").html()).unix(), until: moment($("#until").html()).unix(), commits });
-
-                generateCards(commits);
-            });
+            socket.on("github-commits", (commits) => showCommits(commits));
         </script>
 
         <style>
