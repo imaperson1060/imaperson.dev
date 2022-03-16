@@ -92,7 +92,7 @@
                 if (localStorage.getItem("auth")) {
                     creator = JSON.parse(localStorage.getItem("auth")).username;
                 }
-
+                
                 socket.emit("short", "new", { url: encodeURIComponent($("#url").val()), customid: !!$("#customurl").val() ? $("#customurl").val() : undefined, domain: $("#domain").val(), expires, creator });
             }
             
