@@ -13,7 +13,7 @@ const rateLimiter = new RateLimiterMemory({ points: 1, duration: 300 });
 
 export default async (io, socket, args) => {
     try {
-        await rateLimiter.consume(socket.handshake.address);
+        if (!args[0]) await rateLimiter.consume(socket.handshake.address);
         
         if (args[0] && ((args[0].since && !args[0].until) || (!args[0].since && args[0].until) || !moment(args[0].since).isValid() || !moment(args[0].until).isValid())) return socket.emit("github-commits", { success: false, message: "invalidargs", args });
 
