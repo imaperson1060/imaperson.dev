@@ -270,7 +270,16 @@
 
             getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
 
-            socket.on("github-commits", (commits) => showCommits(commits));
+            socket.on("github-commits", (commits) => {
+                if (!commits.success) {
+                    let timer = commits.reset;
+                    setInterval(() => {
+                        $("#commits").html(`<p class="lead">Ratelimit! Try again in ${timer--} seconds.</p>`);
+                        if (timer == 0) location.reload();
+                    }, 1000);
+                }
+                else showCommits(commits);
+            });
         </script>
 
         <style>
