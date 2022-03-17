@@ -33,23 +33,52 @@
         
         <script>
             var commitCache = [];
-            Object.keys(localStorage).filter(x => x.split("-")[0] == "commitCache").forEach(x => commitCache.push(JSON.parse(localStorage[x])));
-
+            
+            if (!localStorage["commitCache"]) localStorage["commitCache"] = JSON.stringify([]);
+            
             $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
             $("#until").html(moment().format("MM/DD/YYYY"));
-
+            
             function getCommits(since, until) {
-                if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix())) generateCards(commitCache.find(x => x.since == moment($("#since").html()).unix() && x.until == moment($("#until").html()).unix()).commits);
+                commitCache = localStorage["commitCache"] ? JSON.parse(localStorage["commitCache"]) : [];
+
+                if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString())) generateCards(getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString()));
                 else socket.emit("github", "commits", { since, until });
             }
 
             function showCommits(commits) {
                 commits = commits.commits;
+                
+                let commitsOnDates = {};
 
-                localStorage[`commitCache-${moment($("#since").html()).unix()}_${moment($("#until").html()).unix()}`] = JSON.stringify({ since: moment($("#since").html()).unix(), until: moment($("#until").html()).unix(), commits });
-                commitCache.push({ since: moment($("#since").html()).unix(), until: moment($("#until").html()).unix(), commits });
+                commits.forEach(x => {
+                    if (!commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()]) commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()] = [];
+                    commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()].push(x);
+                });
+                
+                localStorage["commitCache"] = JSON.stringify({ ...JSON.parse(localStorage["commitCache"]), ...commitsOnDates });
 
                 generateCards(commits);
+            }
+
+            function getBetween(startDate, endDate) {
+                let dates = [];
+                let commits = [];
+
+                while (moment(startDate) <= moment(endDate)) {
+                    dates.push(moment(startDate).toISOString());
+                    startDate = moment(startDate).add(1, "days").toISOString();
+                }
+                
+                dates.forEach(x => {
+                    if (JSON.parse(localStorage["commitCache"])[x]) {
+                        JSON.parse(localStorage["commitCache"])[x].forEach(x => {
+                            commits.push(x);
+                        });
+                    }
+                });
+                
+                return commits.length == 0 ? false : commits;
             }
 
             function moveDateBack() {
@@ -77,6 +106,9 @@
                 $("#recent").html(commits.length);
 
                 var cards = new Array(commits.length);
+
+                commits.sort((x, y) => moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix());
+                console.log(commits)
 
                 for (var i = 0; i < commits.length; i++) {
                     (async (data, i) => {
