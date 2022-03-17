@@ -108,7 +108,10 @@
 
                 var cards = new Array(commits.length);
 
-                commits.sort((x, y) => moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix());
+                commits.sort((x, y) => {
+                    if (moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix()) return -1;
+                    else return 1;
+                });
                 console.log(commits)
 
                 for (var i = 0; i < commits.length; i++) {
