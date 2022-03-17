@@ -79,7 +79,7 @@
                     }
                 });
                 
-                return commits.length == 0 ? false : commits;
+                return commits;
             }
 
             function moveDateBack() {
@@ -112,7 +112,6 @@
                     if (moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix()) return -1;
                     else return 1;
                 });
-                console.log(commits)
 
                 for (var i = 0; i < commits.length; i++) {
                     (async (data, i) => {
