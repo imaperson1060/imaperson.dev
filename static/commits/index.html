@@ -21,7 +21,6 @@
     </head>
     <body>        
         <div class="container">
-            <span id="ratelimit" class="lead"></span>
             <h1>Recent Commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/imaperson1060/imaperson.dev/" target="_blank">View Repository</a></h1>
             <p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="Move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> From <span id="since"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="until"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span> <i class="bi bi-arrow-right-short" title="Move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>
 
@@ -40,10 +39,10 @@
             $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
             $("#until").html(moment().format("MM/DD/YYYY"));
             
-            function getCommits(since, until, ratelimit = false) {
+            function getCommits(since, until) {
                 commitCache = localStorage["commitCache"] ? JSON.parse(localStorage["commitCache"]) : [];
 
-                if (ratelimit || since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString())) generateCards(getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString()));
+                if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString())) generateCards(getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString()));
                 else socket.emit("github", "commits", { since, until });
             }
 
@@ -79,7 +78,7 @@
                     }
                 });
                 
-                return commits;
+                return commits.length == 0 ? false : commits;
             }
 
             function moveDateBack() {
@@ -108,10 +107,8 @@
 
                 var cards = new Array(commits.length);
 
-                commits.sort((x, y) => {
-                    if (moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix()) return -1;
-                    else return 1;
-                });
+                commits.sort((x, y) => moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix());
+                console.log(commits)
 
                 for (var i = 0; i < commits.length; i++) {
                     (async (data, i) => {
@@ -273,17 +270,7 @@
 
             getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
 
-            socket.on("github-commits", (commits) => {
-                if (!commits.success) {
-                    let timer = commits.reset;
-                    setInterval(() => {
-                        $("#ratelimit").html(`You're being ratelimited! The commits below won't be updated for another ${timer--} seconds.`);
-                        if (timer == 0) location.reload();
-                    }, 1000);
-                    getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString(), true);
-                }
-                else showCommits(commits);
-            });
+            socket.on("github-commits", (commits) => showCommits(commits));
         </script>
 
         <style>
