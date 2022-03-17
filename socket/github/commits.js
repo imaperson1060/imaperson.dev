@@ -42,7 +42,7 @@ export default async (io, socket, args) => {
             }
         }
 
-        socket.emit("github-commits", { commits, args });
+        socket.emit("github-commits", { success: true, commits, args });
     } catch (rejRes) {
         socket.emit("github-commits", { success: false, message: "ratelimit", reset: Math.round(rejRes.msBeforeNext / 1000), args });
     }
