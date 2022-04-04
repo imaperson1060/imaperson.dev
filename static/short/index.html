@@ -32,13 +32,13 @@
             
             <label for="domain-gray" class="form-label">Domain</label>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="domain-gray">ariurls.</span>
+                <span class="input-group-text" id="domain-gray">imaurl.</span>
                 <select id="domain" class="input-group form-select" aria-label="form-select-sm">
-                    <option id="ml" value="ml" selected>ml</option>
+                    <option id="tk" value="tk" selected>tk</option>
+                    <option id="ml" value="ml">ml</option>
                     <option id="gq" value="gq">gq</option>
                     <option id="cf" value="cf">cf</option>
                     <option id="ga" value="ga">ga</option>
-                    <option id="tk" value="tk" disabled>tk - currently unavailable</option>
                 </select>
             </div>
             
@@ -134,7 +134,7 @@
                 $("#customurl").val($("#customurl").val().replace(" ", "-"));
                 $("#customurl").val($("#customurl").val().replace(/[^a-z0-9_-]/gi, ""));
                 
-                const urls = ["ml", "gq", "cf", "ga", "tk"];
+                const urls = ["tk", "ml", "gq", "cf", "ga"];
                 var prefix = "/";
                 
                 if (!$("#customurl").val()) {
@@ -156,8 +156,6 @@
             
             $("#submit").on("click", function() {
                 if ($("#url").val()) {
-                    if ($("#domain").val() == "tk") return $("#warnings").html(HTMLError("The .tk extension is currently unavailable."));
-                    
                     if (!$("#customExpiration").length) {
                         var expires;
                         
@@ -215,7 +213,7 @@
             
             socket.on("short-new", (data) => {
                 if (data.success) {
-                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://ariurls.${$("#domain").val()}/${data.message}" target="_blank">ariurls.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`);
+                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://imaurl.${$("#domain").val()}/${data.message}" target="_blank">imaurl.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`);
                 } else {
                     $("#warnings").html(HTMLError(`Our servers returned the following error: ${data.message}`));
                 }
