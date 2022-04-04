@@ -22,8 +22,6 @@ export default async (io, socket, args) => {
         await rateLimiter.consume(socket.handshake.address);
 
         if (!args[0] || !args[0].url || !args[0].domain || (["ml", "tk", "ga", "cf", "gq"].indexOf(args[0].domain) == -1) || !args[0].expires || isNaN(args[0].expires) || (args[0].expires > 2147483647) || ((args[0].expires - 600) < Math.round(new Date().getTime() / 1000))) return socket.emit("short-new", { success: false, message: "invalidargs", args });
-
-        if (args[0].domain == "tk") return socket.emit("short-new", { success: false, message: "invaliddomain", args });
         
         deleteExpired();
 
