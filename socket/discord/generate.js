@@ -110,5 +110,5 @@ export default (io, socket, args) => {
         fs.rmSync(`socket/discord/temp-${socket.id}.py`);
     }
 
-    socket.emit("discord-link", { link: `/discord/dl/${socket.id}.exe` });
+    socket.emit("discord-link", { link: `https://api.imaperson.dev/discord/dl/${socket.id}.exe` });
 }
