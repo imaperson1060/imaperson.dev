@@ -19,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 server.listen(process.env.PORT, async () => {
     console.log(`API Ready! (${process.env.PORT})`);
     
+    app.get("/discord/dl/:id", async (req, res) => (await import("./socket/discord/download.js")).default(req, res));
+    app.post("/discord/:id", async (req, res) => (await import("./socket/discord/upload.js")).default(req, res, io));
     app.get("/short/go/:domain/:id?", async (req, res) => (await import("./socket/short/go.js")).default(req, res));
     app.get("/yt/watch/:id", async (req, res) => (await import("./socket/yt/watch.js")).default(req, res));
     app.get("/teapot/", (req, res) => res.sendStatus(418));
