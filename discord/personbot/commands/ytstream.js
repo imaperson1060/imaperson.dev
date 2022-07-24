@@ -1,5 +1,5 @@
 import discordaudio from "discordaudio";
-import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import mysql from "mysql";
 import util from "util";
 import ytdl from "ytdl-core";
@@ -57,6 +57,8 @@ const connections = new Map();
 
 export default async function (client, interaction, options) {
     await interaction.deferReply({ ephemeral: true });
+
+    return await interaction.editReply("Unfortunately, this is temporarily broken due to **STUPIDITY** from the DiscordJS team when they changed a ton of stuff that didn't need changing, and now the library I was using for streaming audio is hopelessly broken.");
 
     const vc = interaction.member.voice.channel;
 
@@ -164,34 +166,34 @@ export default async function (client, interaction, options) {
             async function generateEmbed(selection = 0, ended) {
                 const queue = audioManager.queue(vc);
 
-                const queueEmbed = new MessageEmbed()
+                const queueEmbed = new EmbedBuilder()
                     .setTitle("Queue");
 
                 var description = "";
                 queue.forEach((x, i) => description += `${(i == selection) ? "**" : ""}${i + 1}${(i == selection) ? "**" : ""} - [${x.title}](${x.url})${i == 0 ? " - Now Playing" : ""}\n` );
                 queueEmbed.setDescription(description);
 
-                const row = new MessageActionRow()
+                const row = new ActionRowBuilder()
                     .addComponents(
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("prev")
                             .setEmoji("937226629439176725")
-                            .setStyle("PRIMARY")
+                            .setStyle(ButtonStyle.Primary)
                             .setDisabled(ended || selection == 0),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("next")
                             .setEmoji("937226629581791252")
-                            .setStyle("PRIMARY")
+                            .setStyle(ButtonStyle.Primary)
                             .setDisabled(ended || selection == queue.length - 1),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("remove")
                             .setEmoji("937227759904780299")
-                            .setStyle("DANGER")
+                            .setStyle(ButtonStyle.Danger)
                             .setDisabled(ended || selection == 0),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("end")
                             .setLabel("End Interaction")
-                            .setStyle("DANGER")
+                            .setStyle(ButtonStyle.Danger)
                             .setDisabled(ended || false),
                     )
 

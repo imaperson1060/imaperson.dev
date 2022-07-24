@@ -1,8 +1,8 @@
-import { Client, Collection } from "discord.js";
-const client = new Client({ "intents": ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
+import { Client, Collection, GatewayIntentBits } from "discord.js";
+const client = new Client({ "intents": [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates ] });
 
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
+import { Routes } from "discord-api-types/v10";
 
 import fs from "fs";
 
@@ -22,7 +22,7 @@ export default function () {
     });
 
     (async () => {
-        const rest = new REST({ version: "8" }).setToken(process.env.PERSONBOT_TOKEN);
+        const rest = new REST({ version: "10" }).setToken(process.env.PERSONBOT_TOKEN);
     
         await rest.put(
             Routes.applicationCommands(process.env.PERSONBOT_ID), { body: [ (await import(`./application/update.js`)).data.toJSON() ] },

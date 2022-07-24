@@ -1,12 +1,13 @@
+import { PermissionsBitField } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-export let requires = [ "VIEW_CHANNEL", "CONNECT", "SPEAK" ];
+export let requires = [ PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.Speak ];
 
 export let data = new SlashCommandBuilder()
 	.setName("ytstream")
 	.setDescription("Enter a YouTube video link (not id) to stream it to an audio channel!")
 	.addSubcommand(subcommand =>
-		subcommand.setName("alias")
+    subcommand.setName("alias")
 			.setDescription("Link a song to an alias you can use in its place for easy access")
 			.addStringOption(option =>
 				option.setName("song")
@@ -65,19 +66,21 @@ export let data = new SlashCommandBuilder()
 			.setDescription("View or change the volume in your current voice channel")
 			.addNumberOption(option =>
 				option.setName("new")
-					.setDescription("The new volume")
+          .setDescription("The new volume")
 					.setMinValue(1)
 					.setMaxValue(10)
-					.addChoice("1", 1)
-					.addChoice("2", 2)
-					.addChoice("3", 3)
-					.addChoice("4", 4)
-					.addChoice("5", 5)
-					.addChoice("6", 6)
-					.addChoice("7", 7)
-					.addChoice("8", 8)
-					.addChoice("9", 9)
-					.addChoice("10", 10)
+					.addChoices(
+            { name: "1", value: 1 },
+            { name: "2", value: 2 },
+            { name: "3", value: 3 },
+            { name: "4", value: 4 },
+            { name: "5", value: 5 },
+            { name: "6", value: 6 },
+            { name: "7", value: 7 },
+            { name: "8", value: 8 },
+            { name: "9", value: 9 },
+            { name: "10", value: 10 }
+					)
 					.setRequired(true)
 			)
 	)
