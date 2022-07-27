@@ -38,7 +38,7 @@ export default async function (client, interaction, options) {
             "1y": 31536000,
             "∞": 2147483647
         }
-            
+
         const urls = await (await fetch("https://bot.imaperson.dev/url", { method: "POST", body: decodeURIComponent(url) })).json();
 
         if (!urls.https && !urls.http) {
@@ -54,7 +54,7 @@ export default async function (client, interaction, options) {
                 await query("ALTER TABLE `urls` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `urls`"))[0].max]);
                 await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [id, urls.https ? `https://${decodeURIComponent(url)}` : `http://${decodeURIComponent(url)}`, domain, "Guest", Math.round(new Date().getTime() / 1000) + expirations[expiration]]);
 
-                return await interaction.editReply(`Shortened to https://ariurls.${domain}/${id} !`);
+                return await interaction.editReply(`Shortened to https://imaurl.${domain}/${id} !`);
             }
         } else {
             var characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -67,10 +67,11 @@ export default async function (client, interaction, options) {
                 await query("ALTER TABLE `urls` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `urls`"))[0].max]);
                 await query("INSERT INTO `urls`(`name`, `longurl`, `domain`, `creator`, `expiration`) VALUES (?,?,?,?,?)", [randomString, urls.https ? `https://${decodeURIComponent(url)}` : `http://${decodeURIComponent(url)}`, domain, "Guest", Math.round(new Date().getTime() / 1000) + expirations[expiration]]);
 
-                return await interaction.editReply(`Shortened to https://ariurls.${domain}/${randomString} !`);
+                return await interaction.editReply(`Shortened to https://imaurl.${domain}/${randomString} !`);
             })();
         }
     } catch (rejRes) {
-        return await interaction.editReply(`You're being ratelimited! Try again in *${Math.round(rejRes.msBeforeNext / 1000)}* seconds.`);
+        if (!isNaN(Math.round(rejRes.msBeforeNext / 1000))) return await interaction.editReply(`You're being ratelimited! Try again in *${Math.round(rejRes.msBeforeNext / 1000)}* seconds.`);
+        else return await interaction.editReply(`There's been an error, pog!\n\`\`\`\n${rejRes}\n\`\`\`\nPlease DM this to imaperson.exe#1060 so I can fix this :)`);
     }
 }
