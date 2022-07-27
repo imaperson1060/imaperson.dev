@@ -29,6 +29,7 @@ export default async function (client, interaction, options) {
 
         return await interaction.editReply(`**Slash commands updated!**\nCommands are:\n${commandNames.join("\n")}`);
     } catch (rejRes) {
-        return await interaction.editReply(`You're being ratelimited! Try again in *${Math.round(rejRes.msBeforeNext / 1000)}* seconds.`);
+        if (!isNaN(Math.round(rejRes.msBeforeNext / 1000))) return await interaction.editReply(`You're being ratelimited! Try again in *${Math.round(rejRes.msBeforeNext / 1000)}* seconds.`);
+        else return await interaction.editReply(`There's been an error, pog!\n\`\`\`\n${rejRes}\n\`\`\`\nPlease DM this to imaperson.exe#1060 so I can fix this :)`);
     }
 }

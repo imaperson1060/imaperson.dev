@@ -1,9 +1,12 @@
+import { ComponentType } from "discord.js";
 import mysql from "mysql";
 import urlexists from "url-exists";
 import util from "util";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
+
+import * as components from "../components/ytdownload.js";
 
 var urlExists = util.promisify(urlexists).bind(urlexists);
 
@@ -61,69 +64,41 @@ function getId(url) {
 export default async function (client, interaction, options) {
     await interaction.deferReply({ ephemeral: true });
     
-    var id = getId(options.find(x => x.name == "video").value);
+    const id = getId(options.find(x => x.name == "video").value);
+    const cookie = options.find(x => x.name == "cookie")?.value;
 
-    if (!(await urlExists(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}`))) return await interaction.editReply("The video submitted does not exist.");
+    const videoInfo = await getVideoDetails(id, cookie);
 
-    const videoInfo = await getVideoDetails(id);
+    let more = false;
 
-    if (options.find(x => x.name == "format").value == "mp4") {
-        const videoEmbed = {
-            color: "#0099ff",
-            author: {
-                name: client.user.username,
-                iconURL: client.user.displayAvatarURL(),
-                url: "https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=2147483648&scope=bot%20applications.commands"
-            },
-            title: `${videoInfo.info.title} by ${videoInfo.info.author}`,
-            url: `https://youtu.be/${id}`,
-            description: videoInfo.info.description,
-            fields: [
-                {
-                    name: '\u200B',
-                    value: '\u200B'
-                },
-                {
-                    name: "Download link",
-                    value: `[Download the video](${videoInfo.formats.hd ? videoInfo.formats.hd : videoInfo.formats.sd}) (link expires in 6 hours)`
-                }
-            ],
-            timestamp: new Date(),
-            footer: {
-                icon_url: "https://imaperson.dev/favicon.png",
-                text: "PersonBot by imaperson.exe#1060"
+    if (videoInfo.success) await interaction.editReply({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, videoInfo, id, more) ] });
+    else return await interaction.editReply({ components: [ components.learnCookies ], content: "That video doesn't exist, or you need to provide cookies. You can learn how to get your YouTube cookies from the link below." });
+
+    (async function updateEmbed() {
+        try {
+            const buttonInteraction = (await interaction.channel.awaitMessageComponent({ filter: x => x.message.interaction.id == interaction.id, componentType: ComponentType.Button, time: 10000 }));
+            
+            const btn = buttonInteraction.customId;
+
+            switch (btn) {
+                case "download":
+                    await buttonInteraction.update({ components: [ components.downloadButtons(id) ], embeds: [ components.videoEmbed(client, videoInfo, id, more) ] });
+                    return updateEmbed();
+                case "more":
+                    more = true;
+                    await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, videoInfo, id, more) ] });
+                    return updateEmbed();
+                case "less":
+                    more = false;
+                    await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, videoInfo, id, more) ] });
+                    return updateEmbed();
+                case "back":
+                    await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, videoInfo, id, more) ] });
+                    return updateEmbed();
             }
+        } catch (err) {
+            await interaction.editReply({ components: [ ], embeds: [ components.videoEmbed(client, videoInfo, id) ] });
+            await interaction.followUp({ components: [ ], content: "Interaction ended due to inactivity", embeds: [ ], ephemeral: true });
         }
-
-        await interaction.editReply({ embeds: [ videoEmbed ] });
-    } else {
-        const audioEmbed = {
-            color: "#0099ff",
-            author: {
-                name: client.user.username,
-                iconURL: client.user.displayAvatarURL(),
-                url: "https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=2147483648&scope=bot%20applications.commands"
-            },
-            title: `${videoInfo.info.title} by ${videoInfo.info.author}`,
-            url: `https://youtu.be/${id}`,
-            description: videoInfo.info.description,
-            fields: [
-                {
-                    name: '\u200B',
-                    value: '\u200B'
-                },
-                {
-                    name: "Download link",
-                    value: `[Download the audio](${videoInfo.formats.audio}) (link expires in 6 hours)`
-                }
-            ],
-            timestamp: new Date(),
-            footer: {
-                icon_url: "https://imaperson.dev/favicon.png",
-                text: "PersonBot by imaperson.exe#1060"
-            }
-        }
-
-        await interaction.editReply({ embeds: [ audioEmbed ] });
-    }
+    })();
 }
