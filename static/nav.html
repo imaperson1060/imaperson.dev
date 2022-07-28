@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <a class="navbar-brand text-white" href="/">
             <img width="35" height="35" src="/favicon.png" alt="Strnage Person Picture Thing">
-            <span id="imapersontext"></span>
+            <span id="imapersontext"></span><span id="imapersonext"></span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,42 +147,43 @@
         }
     });
 
-    $(document).ready(() => {
-        let delay = 0;
-        setTimeout(() => $("#imapersontext").html("i"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("im"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("ima"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imap"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imape"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaper"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imapers"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperso"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson."), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.e"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.ex"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.exe"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.ex"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.e"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson."), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.j"), delay = delay + 500);
-        setTimeout(() => $("#imapersontext").html("imaperson.js"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.j"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson."), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.p"), delay = delay + 500);
-        setTimeout(() => $("#imapersontext").html("imaperson.py"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.p"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson."), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.h"), delay = delay + 500);
-        setTimeout(() => $("#imapersontext").html("imaperson.ht"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.htm"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.html"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.htm"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.ht"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.h"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson."), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.d"), delay = delay + 500);
-        setTimeout(() => $("#imapersontext").html("imaperson.de"), delay = delay + 150);
-        setTimeout(() => $("#imapersontext").html("imaperson.dev"), delay = delay + 150);
+    async function changeText(text, element) {
+        return new Promise(resolve => {
+            let originalText = currentText = element.html();
+            let newText = "";
+
+            for (var i = 0; i < originalText.length; i++) {
+                setTimeout(() => {
+                    currentText = currentText.slice(0, -1);
+                    element.html(currentText);
+                }, (i + 1) * 100);
+            }
+
+            for (var i = 0; i < text.length; i++) {
+                setTimeout(() => {
+                    newText = text.substr(0, newText.length + 1);
+                    element.html(newText);
+                }, (i * 100) + (originalText.length * 100) + 300);
+            }
+
+            setTimeout(() => resolve(), (text.length * 100) + (originalText.length * 100) + 300);
+        });
+    }
+
+    $(document).ready(async () => {
+        await changeText("imaperson.", $("#imapersontext"))
+
+        let extensions =  [ "cs", "go", "html", "js", "py" ];
+        
+        await changeText("exe", $("#imapersonext"));
+
+        for await (const i of new Array(3)) {
+            let ext = extensions[Math.floor(Math.random() * extensions.length)];
+            extensions = extensions.filter(x => x != ext);
+
+            await changeText(ext, $("#imapersonext"));
+        }
+
+        await changeText("dev", $("#imapersonext"));
     });
 </script>
