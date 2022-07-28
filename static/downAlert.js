@@ -1,5 +1,3 @@
-
-
 const popup = document.createElement("div");
 popup.setAttribute("id", "serverDownAlert");
 popup.setAttribute("class", "modal fade");

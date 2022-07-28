@@ -33,7 +33,7 @@ export default function (app) {
             crypto.createHmac("sha1", process.env.PASSWORD)
                 .update(JSON.stringify(req.body))
                 .digest("hex");
-    
+
         const signature = req.headers["x-hub-signature"];
         if (signature == expectedSignature) {
             await changeStatus("0");

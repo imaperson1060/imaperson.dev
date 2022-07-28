@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="/style.css">
-        
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
@@ -17,7 +17,6 @@
 
         <script src="/script.js"></script>
     </head>
-    
     <body>
         <div class="container">
             <div class="modal-dialog">
@@ -30,10 +29,10 @@
                             <span class="input-group-text" id="emailIcon">@</span>
                             <input class="form-control" id="email" placeholder="Email" aria-label="email" area-descibedby="emailIcon">
                         </div>
-        
+
                         <div id="response" class="mb-3"></div>
                     </div>
-        
+
                     <div class="modal-footer">
                         <button id="forgotBtn" type="submit" class="btn btn-primary" style="margin-left: inherit !important;">Submit</button>
                         <button type="button" class="btn btn-secondary" onclick="window.close();" style="margin-left: auto !important;" data-bs-dismiss="modal">Close</button>
@@ -41,7 +40,7 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
             function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }            
             const errors = (err) => {

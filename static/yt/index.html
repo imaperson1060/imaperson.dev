@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="/style.css">
-        
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
@@ -18,10 +18,10 @@
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
     </head>
-    <body>        
+    <body>
         <div class="container">
             <h1>Watch YouTube Ad-Free</h1>
-            
+
             <p class="lead">Download multiple videos at once <a href="/yt/batch">here</a>!</p>
 
             <div class="mb-3">
@@ -45,20 +45,20 @@
             <button id="paste" class="btn btn-info">
                 Paste
             </button>
-            
+
             <br>
             <br>
 
             <div id="warnings" role="alert">
             </div>
-            
+
             <br>
             <br>
-            
+
             <p class="lead">Get the Chrome Extension <a href="youtube.zip">here</a>!</p>
             <p><a href="https://superuser.com/a/247654" target="_blank">Installation Guide</a></p>
         </div>
-        
+
         <script>
             function getId(url) {
                 var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -67,7 +67,7 @@
             }
 
             function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
-            
+
             function HTMLWarn(text) { return `<div class="alert alert-warning alert-dismissible fade show" role="alert"> <strong>Warning!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
 
             function showCookieBox() {

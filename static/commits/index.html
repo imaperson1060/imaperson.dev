@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="/style.css">
-        
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
@@ -19,7 +19,7 @@
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
     </head>
-    <body>        
+    <body>
         <div class="container">
             <h1>Recent Commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/imaperson1060/imaperson.dev/" target="_blank">View Repository</a></h1>
             <p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="Move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> From <span id="since"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="until"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span> <i class="bi bi-arrow-right-short" title="Move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>

@@ -25,6 +25,6 @@ server.listen(process.env.PORT, async () => {
     app.get("/up/", (req, res) => res.json({ success: true, uptime: new Date(Math.round(process.uptime()) * 1000).toISOString().slice(11, -5) }));
     (await import("./uptimerobot.js")).default(app);
     (await import("fs")).readdirSync("./discord").forEach(async x => (await import(`./discord/${x}/bot.js`)).default());
-    
+
     io.on("connection", async (socket) => (await import("./socket/socket.js")).default(io, socket));
 });

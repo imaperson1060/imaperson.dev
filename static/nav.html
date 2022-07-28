@@ -76,15 +76,15 @@
                     <span class="input-group-text" id="usernameIcon"><i class="bi bi-person-circle"></i></span>
                     <input class="form-control" id="login-username" placeholder="Username" aria-label="username" area-descibedby="usernameIcon">
                 </div>
-    
+
                 <div class="input-group flex-nowrap mb-3">
                     <span class="input-group-text" id="passwordIcon"><i class="bi bi-lock-fill"></i></span>
                     <input type="password" class="form-control" id="login-password" placeholder="Password" aria-label="password" area-descibedby="passwordIcon">
                 </div>
-                    
+
                 <div id="response" class="mb-3"></div>
             </div>
-    
+
             <div class="modal-footer">
                 <button id="loginBtn" type="submit" class="btn btn-primary" onclick="socket.emit('accounts', 'login', { username: $('#login-username').val(), password: $('#login-password').val() });" style="margin-left: inherit !important;">Login</button>
                 <button id="signUpBtn" type="submit" class="btn btn-secondary" onclick="window.open('/signup.html', 'signupWindow', 'width=500,height=500');" style="margin-left: inherit !important;">Signup</button>

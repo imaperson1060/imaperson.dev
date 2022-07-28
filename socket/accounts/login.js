@@ -13,7 +13,7 @@ export default async (io, socket, args) => {
     const info = (await query("SELECT * FROM `users` WHERE username=?", [args[0].username]))[0];
 
     if (!info) return socket.emit("accounts-login", { success: false, message: "noaccount", args });
-    
+
     if ((args[0].password == info.password) || (md5(args[0].password) == info.password)) {
         socket.emit("accounts-login", { success: true, args });
     } else {

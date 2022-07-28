@@ -38,7 +38,7 @@ async function getVideoDetails(id, cookie) {
             return { success: false, e };
         }
     }
-    
+
     var hd;
     try { hd = videoInfo.formats.find(x => x.itag == 22).url; } catch (e) {}
     var sd = videoInfo.formats.find(x => x.itag == 18).url;
@@ -63,7 +63,7 @@ function getId(url) {
 
 export default async function (client, interaction, options) {
     await interaction.deferReply({ ephemeral: true });
-    
+
     const id = getId(options.find(x => x.name == "video").value);
     const cookie = options.find(x => x.name == "cookie")?.value;
 
@@ -77,7 +77,7 @@ export default async function (client, interaction, options) {
     (async function updateEmbed() {
         try {
             const buttonInteraction = (await interaction.channel.awaitMessageComponent({ filter: x => x.message.interaction.id == interaction.id, componentType: ComponentType.Button, time: 10000 }));
-            
+
             const btn = buttonInteraction.customId;
 
             switch (btn) {

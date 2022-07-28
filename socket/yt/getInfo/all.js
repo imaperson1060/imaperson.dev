@@ -32,7 +32,7 @@ async function getVideoDetails(id, cookie) {
             return { success: false, e };
         }
     }
-    
+
     var hd;
     try { hd = videoInfo.formats.find(x => x.itag == 22).url; } catch (e) {}
     var sd = videoInfo.formats.find(x => x.itag == 18).url;

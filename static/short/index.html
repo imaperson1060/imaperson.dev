@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="/style.css">        
-        
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
@@ -21,7 +21,7 @@
     <body>
         <div class="container">
             <h1>URL Shortener</h1>
-            
+
             <div class="mb-3">
                 <label for="httpLabel" class="form-label">URL <span style="color: #ff2825">*</span></label>
                 <div class="input-group mb-3">
@@ -29,7 +29,7 @@
                     <input id="url" class="form-control" maxlength="2000" placeholder="URL to be shortened...">
                 </div>
             </div>
-            
+
             <label for="domain-gray" class="form-label">Domain</label>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="domain-gray">imaurl.</span>
@@ -41,12 +41,12 @@
                     <option id="ga" value="ga">ga</option>
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label for="customurl" class="form-label">Custom URL (optional)</label>
                 <input id="customurl" class="form-control" maxlength="32" placeholder="Custom URL...">
             </div>
-            
+
             <label for="expiration" class="form-label">Expiration</label>
             <div class="mb-3">
                 <select id="expiration" class="form-select">
@@ -60,14 +60,14 @@
                     <option id="Custom" value="c">Custom...</option>
                 </select>
             </div>
-            
+
             <div id="customExpirationdiv" class="mb-3"></div>
-            
+
             <button id="submit" class="btn btn-primary" value="Submit">Submit</button>
-            
+
             <br>
             <br>
-            
+
             <div id="warnings" role="alert">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <strong>Warning!</strong>
@@ -76,7 +76,7 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
             (async function () {
                 if (localStorage.getItem("auth")) {
@@ -92,7 +92,7 @@
                 if (localStorage.getItem("auth")) {
                     creator = JSON.parse(localStorage.getItem("auth")).username;
                 }
-                
+
                 socket.emit("short", "new", { url: encodeURIComponent($("#url").val()), customid: !!$("#customurl").val() ? $("#customurl").val() : undefined, domain: $("#domain").val(), expires, creator });
             }
             
@@ -101,12 +101,12 @@
                     $("#url").val($("#url").val().replace("https://", ""));
                     $("#protocol").html("https://");
                 }
-                
+
                 if ($("#url").val().substr(0, 7) == "http://") {
                     $("#url").val($("#url").val().replace("http://", ""));
                     $("#protocol").html("http://");
                 }
-                
+
                 function validURL(str) {
                     var pattern = new RegExp("^(https?:\\/\\/)?"+ // protocol
                                              "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|"+ // domain name
@@ -116,7 +116,7 @@
                                              "(\\#[-a-z\\d_]*)?$","i"); // fragment locator
                     return !!pattern.test(str);
                 }
-                
+
                 if (validURL($("#url").val())) {
                     const protocol = await fetch("https://bot.imaperson.dev/url", { method: "POST", body: $("#url").val() });
                     res = await protocol.json();
@@ -129,23 +129,23 @@
                     }
                 }
             });
-            
+
             $("#customurl").on("input", function() {
                 $("#customurl").val($("#customurl").val().replace(" ", "-"));
                 $("#customurl").val($("#customurl").val().replace(/[^a-z0-9_-]/gi, ""));
-                
+
                 const urls = ["tk", "ml", "gq", "cf", "ga"];
                 var prefix = "/";
-                
+
                 if (!$("#customurl").val()) {
                     prefix = "";
                 }
-                
+
                 for (var i = 0; i < urls.length; i++) {
                     $(`#${urls[i]}`).html(`${urls[i]}${prefix}${$("#customurl").val()}`);
                 }
             });
-            
+
             $("#expiration").on("change", function () {
                 if ($("#expiration").val() == "c") {
                     $("#customExpirationdiv").html(`<label for="customExpiration" class="form-label">Custom Expiration Time</label><input id="customExpiration" class="form-control" maxlength="10" placeholder="Epoch Timestamp...">`);
@@ -153,12 +153,12 @@
                     $("#customExpirationdiv").html("");
                 }
             });
-            
+
             $("#submit").on("click", function() {
                 if ($("#url").val()) {
                     if (!$("#customExpiration").length) {
                         var expires;
-                        
+
                         switch (expiration.value) {
                             case "∞":
                                 expires = "2147483647";
@@ -181,10 +181,10 @@
                             case "1y":
                                 expires = Math.round(new Date().getTime() / 1000) + 31536000;
                         }
-                        
+
                         return shorten(expires);
                     }
-                    
+
                     if (isNaN($("#customExpiration").val())) {
                         $("#warnings").html(HTMLError("This custom timestamp has to be a number."));
                     } else {
@@ -210,7 +210,7 @@
                     $("#warnings").html(HTMLError("You need to fill out the URL field."));
                 }
             });
-            
+
             socket.on("short-new", (data) => {
                 if (data.success) {
                     $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://imaurl.${$("#domain").val()}/${data.message}" target="_blank">imaurl.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`);

@@ -30,7 +30,7 @@ export default async (io, socket, args) => {
         if (account) {
             if (account.password == md5(args[0].password)) {
                 await shortQuery("DELETE FROM `urls` WHERE name=?", [args[0].id]);
-                
+
                 socket.emit("short-delete-success", { success: true, message: `The id "${result.name}" has been deleted.`, args });
             } else {
                 socket.emit("short-delete-success", { success: false, message: `The password is incorrect.`, args });

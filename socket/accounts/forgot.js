@@ -33,7 +33,7 @@ export default async (io, socket, args) => {
     const info = (await query("SELECT * FROM `users` WHERE email=?", [args[0].email]))[0];
 
     if (!info) return socket.emit("accounts-forgot", { success: false, message: "invalidemail", args });
-    
+
     await mail(info.email, "Reset Password", `<h1>Hi, ${info.name}!</h1> <h2>Click <a href="https://imaperson.dev/reset.html?u=${info.username}&c=${md5(info.username + info.password)}">here</a> to reset your password!</h2> <h3>If you did not request to have your password reset, please ignore this email.</h3> <style>* { font-family: sans-serif }</style>`);
 
     socket.emit("accounts-forgot", { "success": true, args });

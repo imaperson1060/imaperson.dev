@@ -42,7 +42,7 @@ export default async (io, socket, args) => {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
             });
         }
-        
+
         if ((await query("SELECT * FROM `users` WHERE username=?", [args[0].username]))[0]) return socket.emit("accounts-signup", { success: false, message: "taken", args });
         if ((await query("SELECT * FROM `users` WHERE email=?", [args[0].email]))[0]) return socket.emit("accounts-signup", { success: false, message: "emailused", args });
 

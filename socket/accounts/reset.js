@@ -33,7 +33,7 @@ export default async (io, socket, args) => {
     const info = (await query("SELECT * FROM `users` WHERE username=?", [args[0].username]))[0];
 
     if (!info) return socket.emit("accounts-reset", { success: false, message: "noaccount", args });
-    
+
     if (args[0].code == md5(info.username + info.password)) {
         const newPassword = md5(Math.floor(Date.now() / 1000) + info.password);
 
