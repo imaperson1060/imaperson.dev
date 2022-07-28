@@ -30,10 +30,10 @@
             <ul>
                 <li>URL Shortener</li>
                 <li>YouTube Downloader</li>
-                <li>YouTube Streaming</li>
+                <li><strike>YouTube Streaming</strike> - Not anymore!</li>
             </ul>
             
-            <p class="lead"><strike>That's... that's it?</strike></p>
+            <p class="lead"><strike>That... that's it?</strike></p>
 
             <br>
 
@@ -71,8 +71,8 @@
                                 <input id="generalAdministrator" class="form-check-input" type="checkbox" value="8">
                             </div>
                         </th>
-                        <td onclick="$('#generalAdministrator').click();" onselectstart="return false">Administrator</td>
-                        <td onclick="$('#generalAdministrator').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalAdministrator').click();">Administrator</td>
+                        <td id="generalAdministrator_requiredby" onclick="$('#generalAdministrator').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -80,8 +80,8 @@
                                 <input id="generalViewAuditLog" class="form-check-input" type="checkbox" value="128">
                             </div>
                         </th>
-                        <td onclick="$('#generalViewAuditLog').click();" onselectstart="return false">View Audit Log</td>
-                        <td onclick="$('#generalViewAuditLog').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalViewAuditLog').click();">View Audit Log</td>
+                        <td id="generalViewAuditLog_requiredby" onclick="$('#generalViewAuditLog').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -89,8 +89,8 @@
                                 <input id="generalViewGuildInsights" class="form-check-input" type="checkbox" value="524288">
                             </div>
                         </th>
-                        <td onclick="$('#generalViewGuildInsights').click();" onselectstart="return false">View Server Insights</td>
-                        <td onclick="$('#generalViewGuildInsights').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalViewGuildInsights').click();">View Server Insights</td>
+                        <td id="generalViewGuildInsights_requiredby" onclick="$('#generalViewGuildInsights').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -98,8 +98,8 @@
                                 <input id="generalManageGuild" class="form-check-input" type="checkbox" value="32">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageGuild').click();" onselectstart="return false">Manage Server</td>
-                        <td onclick="$('#generalManageGuild').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageGuild').click();">Manage Server</td>
+                        <td id="generalManageGuild_requiredby" onclick="$('#generalManageGuild').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -107,8 +107,8 @@
                                 <input id="generalManageRoles" class="form-check-input" type="checkbox" value="268435456">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageRoles').click();" onselectstart="return false">Manage Roles</td>
-                        <td onclick="$('#generalManageRoles').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageRoles').click();">Manage Roles</td>
+                        <td id="generalManageRoles_requiredby" onclick="$('#generalManageRoles').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -116,8 +116,8 @@
                                 <input id="generalManageChannels" class="form-check-input" type="checkbox" value="16">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageChannels').click();" onselectstart="return false">Manage Channels</td>
-                        <td onclick="$('#generalManageChannels').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageChannels').click();">Manage Channels</td>
+                        <td id="generalManageChannels_requiredby" onclick="$('#generalManageChannels').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -125,8 +125,8 @@
                                 <input id="generalKickMembers" class="form-check-input" type="checkbox" value="2">
                             </div>
                         </th>
-                        <td onclick="$('#generalKickMembers').click();" onselectstart="return false">Kick Members</td>
-                        <td onclick="$('#generalKickMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalKickMembers').click();">Kick Members</td>
+                        <td id="generalKickMembers_requiredby" onclick="$('#generalKickMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -134,8 +134,8 @@
                                 <input id="generalBanMembers" class="form-check-input" type="checkbox" value="4">
                             </div>
                         </th>
-                        <td onclick="$('#generalBanMembers').click();" onselectstart="return false">Ban Members</td>
-                        <td onclick="$('#generalBanMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalBanMembers').click();">Ban Members</td>
+                        <td id="generalBanMembers_requiredby" onclick="$('#generalBanMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -143,8 +143,8 @@
                                 <input id="generalCreateInvite" class="form-check-input" type="checkbox" value="1">
                             </div>
                         </th>
-                        <td onclick="$('#generalCreateInvite').click();" onselectstart="return false">Create Instant Invite</td>
-                        <td onclick="$('#generalCreateInvite').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalCreateInvite').click();">Create Instant Invite</td>
+                        <td id="generalCreateInvite_requiredby" onclick="$('#generalCreateInvite').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -152,8 +152,8 @@
                                 <input id="generalChangeNickname" class="form-check-input" type="checkbox" value="67108864">
                             </div>
                         </th>
-                        <td onclick="$('#generalChangeNickname').click();" onselectstart="return false">Change Nickname</td>
-                        <td onclick="$('#generalChangeNickname').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalChangeNickname').click();">Change Nickname</td>
+                        <td id="generalChangeNickname_requiredby" onclick="$('#generalChangeNickname').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -161,8 +161,8 @@
                                 <input id="generalManageNicknames" class="form-check-input" type="checkbox" value="134217728">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageNicknames').click();" onselectstart="return false">Manage Nicknames</td>
-                        <td onclick="$('#generalManageNicknames').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageNicknames').click();">Manage Nicknames</td>
+                        <td id="generalManageNicknames_requiredby" onclick="$('#generalManageNicknames').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -170,8 +170,8 @@
                                 <input id="generalManageEmojis" class="form-check-input" type="checkbox" value="1073741824">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageEmojis').click();" onselectstart="return false">Manage Emojis and Stickers</td>
-                        <td onclick="$('#generalManageEmojis').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageEmojis').click();">Manage Emojis and Stickers</td>
+                        <td id="generalManageEmojis_requiredby" onclick="$('#generalManageEmojis').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -179,17 +179,17 @@
                                 <input id="generalManageWebhooks" class="form-check-input" type="checkbox" value="536870912">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageWebhooks').click();" onselectstart="return false">Manage Webhooks</td>
-                        <td onclick="$('#generalManageWebhooks').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageWebhooks').click();">Manage Webhooks</td>
+                        <td id="generalManageWebhooks_requiredby" onclick="$('#generalManageWebhooks').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
                             <div class="form-check form-switch">
-                                <input id="generalViewChannels" class="form-check-input" type="checkbox" value="1024" checked>
+                                <input id="generalViewChannels" class="form-check-input" type="checkbox" value="1024">
                             </div>
                         </th>
-                        <td onclick="$('#generalViewChannels').click();" onselectstart="return false">Read Messages / View Channels</td>
-                        <td onclick="$('#generalViewChannels').click();" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#generalViewChannels').click();">Read Messages / View Channels</td>
+                        <td id="generalViewChannels_requiredby" onclick="$('#generalViewChannels').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -197,8 +197,8 @@
                                 <input id="generalManageEvents" class="form-check-input" type="checkbox" value="8589934592">
                             </div>
                         </th>
-                        <td onclick="$('#generalManageEvents').click();" onselectstart="return false">Manage Events</td>
-                        <td onclick="$('#generalManageEvents').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalManageEvents').click();">Manage Events</td>
+                        <td id="generalManageEvents_requiredby" onclick="$('#generalManageEvents').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -206,8 +206,8 @@
                                 <input id="generalModerateMembers" class="form-check-input" type="checkbox" value="1099511627776">
                             </div>
                         </th>
-                        <td onclick="$('#generalModerateMembers').click();" onselectstart="return false">Moderate Members</td>
-                        <td onclick="$('#generalModerateMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#generalModerateMembers').click();">Moderate Members</td>
+                        <td id="generalModerateMembers_requiredby" onclick="$('#generalModerateMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -215,8 +215,8 @@
                                 <input id="textSendMessages" class="form-check-input" type="checkbox" value="2048">
                             </div>
                         </th>
-                        <td onclick="$('#textSendMessages').click();" onselectstart="return false">Send Messages</td>
-                        <td onclick="$('#textSendMessages').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendMessages').click();">Send Messages</td>
+                        <td id="textSendMessages_requiredby" onclick="$('#textSendMessages').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -224,8 +224,8 @@
                                 <input id="textCreatePublicThreads" class="form-check-input" type="checkbox" value="34359738368">
                             </div>
                         </th>
-                        <td onclick="$('#textCreatePublicThreads').click();" onselectstart="return false">Create Public Threads</td>
-                        <td onclick="$('#textCreatePublicThreads').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textCreatePublicThreads').click();">Create Public Threads</td>
+                        <td id="textCreatePublicThreads_requiredby" onclick="$('#textCreatePublicThreads').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -233,8 +233,8 @@
                                 <input id="textCreatePrivateThreads" class="form-check-input" type="checkbox" value="68719476736">
                             </div>
                         </th>
-                        <td onclick="$('#textCreatePrivateThreads').click();" onselectstart="return false">Create Private Threads</td>
-                        <td onclick="$('#textCreatePrivateThreads').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textCreatePrivateThreads').click();">Create Private Threads</td>
+                        <td id="textCreatePrivateThreads_requiredby" onclick="$('#textCreatePrivateThreads').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -242,8 +242,8 @@
                                 <input id="textSendMessagesThreads" class="form-check-input" type="checkbox" value="274877906944">
                             </div>
                         </th>
-                        <td onclick="$('#textSendMessagesThreads').click();" onselectstart="return false">Send Messages in Threads</td>
-                        <td onclick="$('#textSendMessagesThreads').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendMessagesThreads').click();">Send Messages in Threads</td>
+                        <td id="textSendMessagesThreads_requiredby" onclick="$('#textSendMessagesThreads').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -251,8 +251,8 @@
                                 <input id="textSendTTSMessages" class="form-check-input" type="checkbox" value="274877906944">
                             </div>
                         </th>
-                        <td onclick="$('#textSendTTSMessages').click();" onselectstart="return false">Send TTS Messages</td>
-                        <td onclick="$('#textSendTTSMessages').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textSendTTSMessages').click();">Send TTS Messages</td>
+                        <td id="textSendTTSMessages_requiredby" onclick="$('#textSendTTSMessages').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -260,8 +260,8 @@
                                 <input id="textManageMessages" class="form-check-input" type="checkbox" value="8192">
                             </div>
                         </th>
-                        <td onclick="$('#textManageMessages').click();" onselectstart="return false">Manage Messages</td>
-                        <td onclick="$('#textManageMessages').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textManageMessages').click();">Manage Messages</td>
+                        <td id="textManageMessages_requiredby" onclick="$('#textManageMessages').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -269,8 +269,8 @@
                                 <input id="textManageThreads" class="form-check-input" type="checkbox" value="17179869184">
                             </div>
                         </th>
-                        <td onclick="$('#textManageThreads').click();" onselectstart="return false">Manage Threads</td>
-                        <td onclick="$('#textManageThreads').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textManageThreads').click();">Manage Threads</td>
+                        <td id="textManageThreads_requiredby" onclick="$('#textManageThreads').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -278,8 +278,8 @@
                                 <input id="textEmbedLinks" class="form-check-input" type="checkbox" value="16384">
                             </div>
                         </th>
-                        <td onclick="$('#textEmbedLinks').click();" onselectstart="return false">Embed Links</td>
-                        <td onclick="$('#textEmbedLinks').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textEmbedLinks').click();">Embed Links</td>
+                        <td id="textEmbedLinks_requiredby" onclick="$('#textEmbedLinks').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -287,8 +287,8 @@
                                 <input id="textAttachFiles" class="form-check-input" type="checkbox" value="32768">
                             </div>
                         </th>
-                        <td onclick="$('#textAttachFiles').click();" onselectstart="return false">Attach Files</td>
-                        <td onclick="$('#textAttachFiles').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textAttachFiles').click();">Attach Files</td>
+                        <td id="textAttachFiles_requiredby" onclick="$('#textAttachFiles').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -296,8 +296,8 @@
                                 <input id="textReadMessageHistory" class="form-check-input" type="checkbox" value="65536">
                             </div>
                         </th>
-                        <td onclick="$('#textReadMessageHistory').click();" onselectstart="return false">Read Message History</td>
-                        <td onclick="$('#textReadMessageHistory').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textReadMessageHistory').click();">Read Message History</td>
+                        <td id="textReadMessageHistory_requiredby" onclick="$('#textReadMessageHistory').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -305,8 +305,8 @@
                                 <input id="textMentionEveryone" class="form-check-input" type="checkbox" value="131072">
                             </div>
                         </th>
-                        <td onclick="$('#textMentionEveryone').click();" onselectstart="return false">Mention Everyone</td>
-                        <td onclick="$('#textMentionEveryone').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textMentionEveryone').click();">Mention Everyone</td>
+                        <td id="textMentionEveryone_requiredby" onclick="$('#textMentionEveryone').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -314,8 +314,8 @@
                                 <input id="textUseExternalEmojis" class="form-check-input" type="checkbox" value="262144">
                             </div>
                         </th>
-                        <td onclick="$('#textUseExternalEmojis').click();" onselectstart="return false">Use External Emojis</td>
-                        <td onclick="$('#textUseExternalEmojis').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseExternalEmojis').click();">Use External Emojis</td>
+                        <td id="textUseExternalEmojis_requiredby" onclick="$('#textUseExternalEmojis').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -323,8 +323,8 @@
                                 <input id="textUseExternalStickers" class="form-check-input" type="checkbox" value="137438953472">
                             </div>
                         </th>
-                        <td onclick="$('#textUseExternalStickers').click();" onselectstart="return false">Use External Stickers</td>
-                        <td onclick="$('#textUseExternalStickers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseExternalStickers').click();">Use External Stickers</td>
+                        <td id="textUseExternalStickers_requiredby" onclick="$('#textUseExternalStickers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -332,8 +332,8 @@
                                 <input id="textAddReactions" class="form-check-input" type="checkbox" value="64">
                             </div>
                         </th>
-                        <td onclick="$('#textAddReactions').click();" onselectstart="return false">Add Reactions</td>
-                        <td onclick="$('#textAddReactions').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textAddReactions').click();">Add Reactions</td>
+                        <td id="textAddReactions_requiredby" onclick="$('#textAddReactions').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -341,26 +341,26 @@
                                 <input id="textUseSlashCommands" class="form-check-input" type="checkbox" value="2147483648">
                             </div>
                         </th>
-                        <td onclick="$('#textUseSlashCommands').click();" onselectstart="return false">Use Slash Commands</td>
-                        <td onclick="$('#textUseSlashCommands').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#textUseSlashCommands').click();">Use Slash Commands</td>
+                        <td id="textUseSlashCommands_requiredby" onclick="$('#textUseSlashCommands').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
                             <div class="form-check form-switch">
-                                <input id="voiceConnect" class="form-check-input" type="checkbox" value="1048576" checked>
+                                <input id="voiceConnect" class="form-check-input" type="checkbox" value="1048576">
                             </div>
                         </th>
-                        <td onclick="$('#voiceConnect').click();" onselectstart="return false">Connect to Voice Channels</td>
-                        <td onclick="$('#voiceConnect').click();" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#voiceConnect').click();">Connect to Voice Channels</td>
+                        <td id="voiceConnect_requiredby" onclick="$('#voiceConnect').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
                             <div class="form-check form-switch">
-                                <input id="voiceSpeak" class="form-check-input" type="checkbox" value="2097152" checked>
+                                <input id="voiceSpeak" class="form-check-input" type="checkbox" value="2097152">
                             </div>
                         </th>
-                        <td onclick="$('#voiceSpeak').click();" onselectstart="return false">Speak in Voice Channels</td>
-                        <td onclick="$('#voiceSpeak').click();" onselectstart="return false">Required by /ytstream</td>
+                        <td onclick="$('#voiceSpeak').click();">Speak in Voice Channels</td>
+                        <td id="voiceSpeak_requiredby" onclick="$('#voiceSpeak').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -368,8 +368,8 @@
                                 <input id="voiceStream" class="form-check-input" type="checkbox" value="512">
                             </div>
                         </th>
-                        <td onclick="$('#voiceStream').click();" onselectstart="return false">Stream in Voice Channels</td>
-                        <td onclick="$('#voiceStream').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceStream').click();">Stream in Voice Channels</td>
+                        <td id="voiceStream_requiredby" onclick="$('#voiceStream').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -377,8 +377,8 @@
                                 <input id="voiceMuteMembers" class="form-check-input" type="checkbox" value="4194304">
                             </div>
                         </th>
-                        <td onclick="$('#voiceMuteMembers').click();" onselectstart="return false">Mute Members</td>
-                        <td onclick="$('#voiceMuteMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceMuteMembers').click();">Mute Members</td>
+                        <td id="voiceMuteMembers_requiredby" onclick="$('#voiceMuteMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -386,8 +386,8 @@
                                 <input id="voiceDeafenMembers" class="form-check-input" type="checkbox" value="8388608">
                             </div>
                         </th>
-                        <td onclick="$('#voiceDeafenMembers').click();" onselectstart="return false">Deafen Members</td>
-                        <td onclick="$('#voiceDeafenMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceDeafenMembers').click();">Deafen Members</td>
+                        <td id="voiceDeafenMembers_requiredby" onclick="$('#voiceDeafenMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -395,8 +395,8 @@
                                 <input id="voiceMoveMembers" class="form-check-input" type="checkbox" value="16777216">
                             </div>
                         </th>
-                        <td onclick="$('#voiceMoveMembers').click();" onselectstart="return false">Move Members</td>
-                        <td onclick="$('#voiceMoveMembers').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceMoveMembers').click();">Move Members</td>
+                        <td id="voiceMoveMembers_requiredby" onclick="$('#voiceMoveMembers').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -404,8 +404,8 @@
                                 <input id="voiceUseVAD" class="form-check-input" type="checkbox" value="33554432">
                             </div>
                         </th>
-                        <td onclick="$('#voiceUseVAD').click();" onselectstart="return false">Use Voice Activity</td>
-                        <td onclick="$('#voiceUseVAD').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voiceUseVAD').click();">Use Voice Activity</td>
+                        <td id="voiceUseVAD_requiredby" onclick="$('#voiceUseVAD').click();">Required by nothing</td>
                     </tr>
                     <tr class="permission">
                         <th scope="row">
@@ -413,8 +413,8 @@
                                 <input id="voicePrioritySpeaker" class="form-check-input" type="checkbox" value="256">
                             </div>
                         </th>
-                        <td onclick="$('#voicePrioritySpeaker').click();" onselectstart="return false">Priority Speaker</td>
-                        <td onclick="$('#voicePrioritySpeaker').click();" onselectstart="return false">Required by nothing</td>
+                        <td onclick="$('#voicePrioritySpeaker').click();">Priority Speaker</td>
+                        <td id="voicePrioritySpeaker_requiredby" onclick="$('#voicePrioritySpeaker').click();">Required by nothing</td>
                     </tr>
                 </tbody>
             </table>
@@ -463,14 +463,16 @@
 	            voicePrioritySpeaker: 256
             } for anyone who needs it */
 
-            const required = [ "generalViewChannels", "voiceConnect", "voiceSpeak" ]
+            const required = [ /* { name: "generalViewChannels", requiredby: [ "/ytstream" ] }, { name: "voiceConnect", requiredby: [ "/ytstream" ] }, { name: "voiceSpeak", requiredby: [ "/ytstream" ] } */ ];
 
-            function hideUnused() { $(".permission").each((i, x) => { if (required.indexOf($(".form-check-input")[i].id) == -1) $(x).toggle() }); }
+            function hideUnused() { $(".permission").each((i, x) => { if (!required.find(x => x.name == $(".form-check-input")[i].id)) $(x).toggle() }); }
             function enableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", true)); updatePermissions(); }
             function disableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", false)); updatePermissions(); }
-            function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (required.indexOf(x.id) != -1))); updatePermissions(); }
+            function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (!!required.find(y => y.name == x.id)))); updatePermissions(); }
 
             hideUnused();
+            resetAll();
+            $(".form-check-input").each((i, x) => $(`#${x.id}_requiredby`).html(required.find(y => y.name == x.id) ? `Required by <code>${required.find(y => y.name == x.id).requiredby.join("</code>, <code>")}</code>`.replace(/,([^,]*)$/, ", and $1").replace(/,([^,]*)$/, ",$1") : "Required by nothing"));
 
             function updatePermissions() {
                 var permissions = 0;
