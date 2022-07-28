@@ -173,9 +173,7 @@
     $(document).ready(async () => {
         await changeText("imaperson.", $("#imapersontext"))
 
-        let extensions =  [ "cs", "go", "html", "js", "py" ];
-        
-        await changeText("exe", $("#imapersonext"));
+        let extensions =  [ "cs", "exe", "go", "html", "js", "py" ];
 
         for await (const i of new Array(3)) {
             let ext = extensions[Math.floor(Math.random() * extensions.length)];
