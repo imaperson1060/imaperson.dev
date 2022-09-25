@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Floating Point Math</title>
+        <meta name="description" content="Floating point math is now fixed. You're welcome.">
+        <meta name="author" content="imaperson">
+        <meta property="og:image" content="/favicon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/favicon.ico">
+        <link rel="stylesheet" href="/style.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        <script src="/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="/script.js"></script>
+        <script src="/nav.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Floating point math is broken</h1>
+
+            <br>
+
+            <h5>0.1 + 0.2 is <i>not</i> this</h5>
+            <pre>
+                > <code><span style="color: #7ceb85">0.1</span> + <span style="color: #7ceb85">0.2</span></code>
+                < <code><span style="color: #8869c1">0.30000000000000004</span></code>
+            </pre>
+
+            <br>
+            
+            <h5>So this is caused because fractions are annoying in code</h5>
+            <p class="lead"><a href="https://floating-point-gui.de" target="_blank">More info</a> from actually smart people</p>
+            
+            <br>
+            
+            <h5>So I had a bit of a brainstorm. Why use floating point numbers at all?</h5>
+            
+            <br>
+            
+            <pre>
+                <code>Number.<span style="color: #d4c163">prototype</span>.<span style="color: #d4c163">add</span> = <span style="color: #8869c1">function</span> (float) {</code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #8869c1">var</span> places = Math.<span style="color: #d4c163">max</span>(...[<span style="color: #8869c1">this</span>, float].<span style="color: #d4c163">map</span>(x => x = x.<span style="color: #d4c163">toString</span>().<span style="color: #d4c163">split</span>(<span style="color: #9e4029">"."</span>)[1].<span style="color: #d4c163">length</span>));</code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #8869c1">return</span> ((<span style="color: #8869c1">this</span> * Math.<span style="color: #d4c163">pow</span>(<span style="color: #7ceb85">10</span>, places)) + (float * Math.<span style="color: #d4c163">pow</span>(<span style="color: #7ceb85">10</span>, places))) / Math.<span style="color: #d4c163">pow</span>(<span style="color: #7ceb85">10</span>, places);</code>
+                <code>}</code>
+            </pre>
+
+            <p>My code simply multiplies both floats by the largest decimal place, and then adds them.</p>
+            <p>Since that's just normal addition, it works perfectly.</p>
+            <p>Then you just need to divide the sum by the largest decimal place and you've got your floating point number without bad.</p>
+            
+            <pre>
+                > <code><span style="color: #7ceb85">0.1</span>.<span style="color: #d4c163">add</span>(<span style="color: #7ceb85">0.2</span>)</code>
+                < <code><span style="color: #8869c1">0.3</span></code>
+            </pre>
+            
+            <p>It also works with subtraction (technically).</p>
+            
+            <pre>
+                > <code><span style="color: #7ceb85">0.4</span>.<span style="color: #d4c163">add</span>(-<span style="color: #7ceb85">0.1</span>)</code>
+                < <code><span style="color: #8869c1">0.3</span></code>
+            </pre>
+            
+            <br>
+            
+            <p>Unfortunately JavaScript doesn't allow operator overloading, and even if it did I'm pretty sure I'd still not be allowed to interfere with the Number class (then again, it's JavaScript, and that's exactly how it works in Adobe's <a href="https://stackoverflow.com/a/54816490/14791858" target="_blank">ExtendScript</a>).</p>
+            <p>So we're stuck with a dumb method. Amazing. Love it.</p>
+            
+            <br>
+            
+            <p>(yes I'm aware this only fixes float addition, but I'm too stupid to do multiplication and division)</p>
+        </div>
+        
+        <style>
+            pre, code {
+                white-space: pre-line;
+            }
+        </style>
+    </body>
+</html>
