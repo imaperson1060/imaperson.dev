@@ -56,8 +56,6 @@ const connections = new Map();
 export default async function (client, interaction, options) {
     await interaction.deferReply({ ephemeral: true });
 
-    //return await interaction.editReply("Unfortunately, this is temporarily broken due to **STUPIDITY** from the DiscordJS team when they changed a ton of stuff that didn't need changing, and now the library I was using for streaming audio is hopelessly broken.");
-
     const vc = interaction.member.voice.channel;
 
     if (!vc) return await interaction.editReply("You are not in a voice channel.");
