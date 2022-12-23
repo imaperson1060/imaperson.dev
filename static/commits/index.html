@@ -274,6 +274,13 @@
         </script>
 
         <style>
+            /* Copied code from .input-group, but changed to btn-group */
+
+            .btn-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3), .btn-group:not(.has-validation)>:not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
             /* Originally supposed to be https://codepen.io/nzbin/pen/GGrXbp, but that's not inline so I used https://codepen.io/arthak/pen/rmqvgo, but that's not inline either >:( Am I just doing something wrong? So I just yoinked it from StackOverflow lol https://stackoverflow.com/questions/47214419/jumping-dots-animation*/
 
             .dot {
