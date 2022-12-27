@@ -28,7 +28,7 @@ popupContent.append(popupHeader);
 const popupBody = document.createElement("div");
 popupBody.setAttribute("class", "modal-body");
 const popupBodyText = document.createElement("p");
-const popupBodyTextNode = document.createTextNode("This may cause some or all arimeisels.com services to stop working. This is most likely because my computer is off (we all know nothing I make ever has bugs). Sorry for the inconvienience!");
+const popupBodyTextNode = document.createTextNode("This may cause some or all imaperson.dev services to stop working. This is most likely because my computer is off (we all know nothing I make ever has bugs). Sorry for the inconvienience!");
 popupBodyText.append(popupBodyTextNode);
 popupBody.append(popupBodyText);
 popupContent.append(popupBody);
