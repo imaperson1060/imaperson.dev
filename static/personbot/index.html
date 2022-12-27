@@ -30,7 +30,7 @@
             <ul>
                 <li>URL Shortener</li>
                 <li>YouTube Downloader</li>
-                <li><strike>YouTube Streaming</strike> - Not anymore!</li>
+                <li>YouTube Streaming</li>
             </ul>
             
             <p class="lead"><strike>That... that's it?</strike></p>
@@ -463,7 +463,7 @@
 	            voicePrioritySpeaker: 256
             } for anyone who needs it */
 
-            const required = [ /* { name: "generalViewChannels", requiredby: [ "/ytstream" ] }, { name: "voiceConnect", requiredby: [ "/ytstream" ] }, { name: "voiceSpeak", requiredby: [ "/ytstream" ] } */ ];
+            const required = [ { name: "generalViewChannels", requiredby: [ "/ytstream" ] }, { name: "voiceConnect", requiredby: [ "/ytstream" ] }, { name: "voiceSpeak", requiredby: [ "/ytstream" ] } ];
 
             function hideUnused() { $(".permission").each((i, x) => { if (!required.find(x => x.name == $(".form-check-input")[i].id)) $(x).toggle() }); }
             function enableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", true)); updatePermissions(); }
