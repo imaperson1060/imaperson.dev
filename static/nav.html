@@ -1,11 +1,12 @@
-<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark" role="navigation">
+<nav class="navbar navbar-expand-lg sticky-top bg-primary" role="navigation">
     <div class="container-fluid">
         <a class="navbar-brand text-white" href="/">
             <img width="35" height="35" src="/favicon.png" alt="Strnage Person Picture Thing">
-            <span id="imapersontext"></span><span id="imapersonext"></span>
+            <span style="display: inline-block; width: 150px;"><span id="imapersontext"></span><span id="imapersonext"></span></span>
+            <span id="notmobile">|</span>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler bg-success" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -15,7 +16,7 @@
                     <a class="nav-link dropdown-toggle text-white" id="navbarDropdownUtils" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Utilities
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownUtils">
+                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownUtils">
                         <li><a class="dropdown-item" href="/utils/">Everything</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/yt/">YouTube Ad-Free Viewer</a></li>
@@ -28,7 +29,7 @@
                     <a class="nav-link dropdown-toggle text-white" id="navbarDropdownRand" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Random Stuff
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownRand">
+                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownRand">
                         <li><a class="dropdown-item" href="/random/">Everything</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/commits/">Commit History</a></li>
@@ -40,7 +41,7 @@
                     <a class="nav-link dropdown-toggle text-white" id="navbarDropdownSrc" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Source
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownSrc">
+                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownSrc">
                         <li><a class="dropdown-item" href="/source/">Everything</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/socket/yt" target="_blank">YouTube Ad-Free Viewer Source</a></li>
@@ -98,6 +99,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (mobile) $("#notmobile").remove();
+
     const errors = (err) => {
         switch (err) {
             case "ratelimit": return "Only one account can be created every 15 minutes.";
