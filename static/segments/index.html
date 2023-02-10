@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Graphing Line Segments</title>
+        <meta name="description" content="I graphed a triangle on my TI-84. Here's how.">
+        <meta name="author" content="imaperson">
+        <meta property="og:image" content="/favicon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/favicon.ico">
+        <link rel="stylesheet" href="/style.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <script src="/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="/script.js"></script>
+        <script src="/nav.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>You can't graph line segments</h1>
+            <p class="lead">or can you...</p>
+
+            <br>
+
+            <h5 class="mb-3">Well, no, you can't. Not with a normal equation, at least</h5>
+            <p>On most, if not all TI calculators, there is a button called "<b style="color: #6fb5fc">TEST</b>".</p>
+            <p>The menu contains comparators such as <code>&lt;</code> and <code>&gt;</code>, but it also has a <b>LOGIC</b> tab.</p>
+            <p>This gives you access to conditional operators, like <code>and</code> and <code>or</code>.</p>
+            <p>Since these will either return <code>1</code> (<code>true</code>) or <code>0</code> (<code>false</code>), they can cut off lines at certain points.</p>
+
+            <br>
+
+            <h5 class="mb-3">It's that easy</h5>
+            <ul>
+                <li>
+                    <b>Horizontal lines:</b>
+                    <ul>
+                        <li>These are extremely easy to make, because you just need to have two comparisons and one condition.</li>
+                        <li><code>X&gt;-5 and X&lt;5</code></li>
+                        <li>That equation draws a line from <code>(-5, 1)</code> to <code>(5, 1)</code>.<br><img src="straight.png"></li>
+                        <li>To offset this line, simply wrap the in parenthesis and multiply it by anything. This works because when the condition is <code>0</code> (<code>false</code>), nothing will happen.</li>
+                        <li><code>(X&gt;-5 and X&lt;5)5</code><br><img src="straightoffset.png"></li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Diagonal lines:</b>
+                    <ul>
+                        <li>Diagonals are similar to straight lines, except that they stretch across multiple Y values.</li>
+                        <li>To accomplish this, just replace the multiplier with an equation.</li>
+                        <li><code>(X&gt;-5 and X&lt;0)(X+5)</code><br><img src="diagonal.png"></li>
+                        <li>To offset this, add the original equation to the end of the equation.</li>
+                        <li><code>(X&gt;-5 and X&lt;0)(X+5)+(X&gt;-5 and X&lt;0)</code><br><img src="diagonaloffset.png"></li>
+                        <li><code>(X&gt;-5 and X&lt;0)(X+5)+(X&gt;-5 and X&lt;0)2</code><br><img src="diagonaloffset2.png"></li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Vertical lines:</b>
+                    <ul>
+                        <li>Nah, bro. These are straight up impossible.</li>
+                        <li>You cannot have two different Y values for any given X, or it is not a valid function.</li>
+                        <li>Unless...</li>
+                        <li>
+                            <code>Y<sub>1</sub>=(X&gt;1 and X&lt;1.25)</code>
+                            <br>
+                            <code>Y<sub>2</sub>=(X&gt;1 and X&lt;1.25)1.25</code>
+                            <br>
+                            <code>Y<sub>3</sub>=(X&gt;1 and X&lt;1.25)1.5</code>
+                            <br>
+                            <code>Y<sub>4</sub>=(X&gt;1 and X&lt;1.25)1.75</code>
+                            <br>
+                            <code>Y<sub>5</sub>=(X&gt;1 and X&lt;1.25)2</code>
+                            <br>
+                            <code>Y<sub>6</sub>=(X&gt;1 and X&lt;1.25)2.25</code>
+                            <br>
+                            <code>Y<sub>7</sub>=(X&gt;1 and X&lt;1.25)2.5</code>
+                            <br>
+                            <code>Y<sub>8</sub>=(X&gt;1 and X&lt;1.25)2.75</code>
+                            <br>
+                            <code>Y<sub>9</sub>=(X&gt;1 and X&lt;1.25)3</code>
+                            <br>
+                            <img src="vertical.png">
+                        </li>
+                        <li><p class="lead">(<code>1.25</code> is the default margin of each marker)</p></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <br>
+
+            <h5>Drawing a triangle</h5>
+            <p>Putting a horizontal and 2 diagonal lines together will make a triangle. Simple as that.</p>
+            <p>
+                <code>Y<sub>1</sub>=(X&gt;-5 and X&lt;5)</code>
+                <br>
+                <code>Y<sub>2</sub>=(X&gt;-5 and X&lt;0)(X+5)+(X&gt;-5 and X&lt;0)</code>
+                <br>
+                <code>Y<sub>3</sub>=(X&gt;0 and X&lt;5)(-X+5)+(X&gt;0 and X&lt;5)</code>
+                <br>
+                <img src="triangle.png">
+            </p>
+        </div>
+    </body>
+</html>
