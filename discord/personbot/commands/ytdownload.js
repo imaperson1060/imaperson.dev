@@ -1,14 +1,11 @@
 import { ComponentType } from "discord.js";
 import mysql from "mysql";
-import urlexists from "url-exists";
 import util from "util";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
 
 import * as components from "../components/ytdownload.js";
-
-var urlExists = util.promisify(urlexists).bind(urlexists);
 
 var mysqlLogin = JSON.parse(process.env.MYSQL);
 mysqlLogin = Object.assign(mysqlLogin, { database: "yt" });
