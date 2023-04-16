@@ -20,7 +20,7 @@ async function mail(to, subject, html) {
         }
     });
     let info = await mailer.sendMail({
-        from: "Ari Meisels <me@imaperson.dev>",
+        from: "Ima Person <me@imaperson.dev>",
         to: to,
         subject: subject,
         html: html
@@ -37,7 +37,7 @@ export default async (io, socket, args) => {
     if (args[0].code == md5(info.username + info.password)) {
         const newPassword = md5(Math.floor(Date.now() / 1000) + info.password);
 
-        await mail(info.email, "Password Reset", `<h1>Hi, ${info.name}!</h1> <h2>Your password was just reset to "${newPassword}" about a minute ago. Just thought you should know in case it wasn't you!</h2> <style>* { font-family: sans-serif }</style>`);
+        //await mail(info.email, "Password Reset", `<h1>Hi, ${info.name}!</h1> <h2>Your password was just reset to "${newPassword}" about a minute ago. Just thought you should know in case it wasn't you!</h2> <style>* { font-family: sans-serif }</style>`);
 
         await query("UPDATE `users` SET password=? WHERE username=?", [md5(newPassword), args[0].username]);
 
