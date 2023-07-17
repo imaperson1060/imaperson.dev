@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
     <head>
-        <title>URL Shortener</title>
-        <meta name="description" content="Shorten URLs quickly and easily.">
+        <title>imaperson.dev | url shortener</title>
+        <meta name="description" content="shorten urls for free">
         <meta name="author" content="imaperson">
-        <meta property="og:image" content="/favicon.png">
+        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/favicon.ico">
-        <link rel="stylesheet" href="/style.css">        
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
+        <link rel="stylesheet" href="/style.css">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
     </head>
     <body>
         <div class="container">
-            <h1>URL Shortener</h1>
+            <h1>url shortener</h1>
 
             <div class="mb-3">
-                <label for="httpLabel" class="form-label">URL <span style="color: #ff2825">*</span></label>
+                <label for="httpLabel" class="form-label">url <span style="color: #ff2825">*</span></label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="protocol">http://</span>
                     <input id="url" class="form-control" maxlength="2000" placeholder="URL to be shortened...">
                 </div>
             </div>
 
-            <label for="domain-gray" class="form-label">Domain</label>
+            <label for="domain-gray" class="form-label">domain</label>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="domain-gray">imaurl.</span>
                 <select id="domain" class="input-group form-select" aria-label="form-select-sm">
@@ -38,52 +38,39 @@
                     <option id="ml" value="ml">ml</option>
                     <option id="gq" value="gq">gq</option>
                     <option id="cf" value="cf">cf</option>
-                    <option id="ga" value="ga">ga</option>
                 </select>
             </div>
 
             <div class="mb-3">
-                <label for="customurl" class="form-label">Custom URL (optional)</label>
-                <input id="customurl" class="form-control" maxlength="32" placeholder="Custom URL...">
+                <label for="customurl" class="form-label">custom url (optional)</label>
+                <input id="customurl" class="form-control" maxlength="32" placeholder="custom url...">
             </div>
 
-            <label for="expiration" class="form-label">Expiration</label>
+            <label for="expiration" class="form-label">expiration</label>
             <div class="mb-3">
                 <select id="expiration" class="form-select">
-                    <option id="12h" value="12h" selected>12 Hours</option>
-                    <option id="1d" value="1d">1 Day (24 hours)</option>
-                    <option id="1w" value="1w">1 Week (7 days)</option>
-                    <option id="1m" value="1m">1 Month (4 weeks)</option>
-                    <option id="6m" value="6m">6 Months (24 weeks)</option>
-                    <option id="1y" value="1y">1 Year (365 days)</option>
+                    <option id="12h" value="12h" selected>12 hours</option>
+                    <option id="1d" value="1d">1 day (24 hours)</option>
+                    <option id="1w" value="1w">1 week (7 days)</option>
+                    <option id="1m" value="1m">1 month (4 weeks)</option>
+                    <option id="6m" value="6m">6 months (24 weeks)</option>
+                    <option id="1y" value="1y">1 year (365 days)</option>
                     <option id="∞" value="∞">∞</option>
-                    <option id="Custom" value="c">Custom...</option>
+                    <option id="custom" value="c">custom...</option>
                 </select>
             </div>
 
             <div id="customExpirationdiv" class="mb-3"></div>
 
-            <button id="submit" class="btn btn-primary" value="Submit">Submit</button>
+            <button id="submit" class="btn btn-primary" value="submit">submit</button>
 
             <br>
             <br>
 
-            <div id="warnings" role="alert">
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Warning!</strong>
-                    You will not be able to edit or delete your URL after submitting because you are not logged in.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
+            <div id="warnings" role="alert"></div>
         </div>
 
         <script>
-            (async function () {
-                if (localStorage.getItem("auth")) {
-                    $("#warnings").html("");
-                }
-            })();            
-
             function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
             
             async function shorten(expires) {
@@ -134,7 +121,7 @@
                 $("#customurl").val($("#customurl").val().replace(" ", "-"));
                 $("#customurl").val($("#customurl").val().replace(/[^a-z0-9_-]/gi, ""));
 
-                const urls = ["tk", "ml", "gq", "cf", "ga"];
+                const urls = [ "tk", "ml", "gq", "cf" ];
                 var prefix = "/";
 
                 if (!$("#customurl").val()) {
@@ -148,7 +135,7 @@
 
             $("#expiration").on("change", function () {
                 if ($("#expiration").val() == "c") {
-                    $("#customExpirationdiv").html(`<label for="customExpiration" class="form-label">Custom Expiration Time</label><input id="customExpiration" class="form-control" maxlength="10" placeholder="Epoch Timestamp...">`);
+                    $("#customExpirationdiv").html(`<label for="customExpiration" class="form-label">custom expiration time</label><input id="customExpiration" class="form-control" maxlength="10" placeholder="epoch timestamp...">`);
                 } else {
                     $("#customExpirationdiv").html("");
                 }
@@ -186,36 +173,36 @@
                     }
 
                     if (isNaN($("#customExpiration").val())) {
-                        $("#warnings").html(HTMLError("This custom timestamp has to be a number."));
+                        $("#warnings").html(HTMLError("this custom timestamp has to be a number."));
                     } else {
                         if (!$("#customExpiration").val() == "") {
                             if ($("#customExpiration").val() > Math.round(new Date().getTime() / 1000)) {
                                 if (($("#customExpiration").val() - 600) > Math.round(new Date().getTime() / 1000)) {
                                     if ($("#customExpiration").val() > 2147483647) {
-                                        warnings.innerHTML = HTMLError("This time exceeds the maximum epoch timestamp.");
+                                        warnings.innerHTML = HTMLError("this time exceeds the maximum epoch timestamp.");
                                     } else {
                                         shorten($("#customExpiration").val())
                                     }
                                 } else {
-                                    $("#warnings").html(HTMLError("This time will happen in less than 10 minutes."));
+                                    $("#warnings").html(HTMLError("this time will happen in less than 10 minutes."));
                                 }
                             } else {
-                                $("#warnings").html(HTMLError("This time already happened."));
+                                $("#warnings").html(HTMLError("this time already happened."));
                             }
                         } else {
-                            $("#warnings").html(HTMLError("You need to enter a timestamp."));
+                            $("#warnings").html(HTMLError("enter a timestamp."));
                         }
                     }
                 } else {
-                    $("#warnings").html(HTMLError("You need to fill out the URL field."));
+                    $("#warnings").html(HTMLError("fill out the url field."));
                 }
             });
 
             socket.on("short-new", (data) => {
                 if (data.success) {
-                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>Success!</strong> Your URL: <a href="https://imaurl.${$("#domain").val()}/${data.message}" target="_blank">imaurl.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`);
+                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>success!</strong> your url: <a href="https://imaurl.${$("#domain").val()}/${data.message}" target="_blank">imaurl.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button> </div>`);
                 } else {
-                    $("#warnings").html(HTMLError(`Our servers returned the following error: ${data.message}`));
+                    $("#warnings").html(HTMLError(`the servers returned the following error: ${data.message}`));
                 }
             });
 

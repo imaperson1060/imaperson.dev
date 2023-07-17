@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
     <head>
-        <title>YouTube Batch Downloader</title>
-        <meta name="description" content="One of the first ever YouTube batch downloaders. I've wanted to do this since I was like 7 and now I did!">
+        <title>imaperson.dev | youtube batch downloader</title>
+        <meta name="description" content="ive wanted to do this since i was like 7">
         <meta name="author" content="imaperson">
-        <meta property="og:image" content="/favicon.png">
+        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/favicon.ico">
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
         <link rel="stylesheet" href="/style.css">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-        <script src="bootstrap-dialog.js"></script>
-
+        
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
+        <script src="bootstrap-dialog.js"></script>
         <script src="jszip.js"></script>
         <script src="save.js"></script>
     </head>
     <body>
         <div class="container">
-            <h1>Watch YouTube Ad-Free</h1>
+            <h1>youtube batch downloader</h1>
 
             <div id="friendly" class="mb-3">
                 <div class="mb-3">
@@ -32,28 +32,28 @@
                     </ul>
                 </div>
                 <div class="d-grid gap-2">
-                    <button id="addButton" class="btn btn-primary" type="button" onclick="addVideo()"><i class="bi bi-plus-circle"></i> Add Video</button>
+                    <button id="addButton" class="btn btn-primary" type="button" onclick="addVideo()"><i class="bi bi-plus-circle"></i> add video</button>
                 </div>
             </div>
 
             <div id="productive" class="mb-3" style="display:none;">
-                <label for="urls" class="form-label">Video URLs <span style="color: #ff2825">*</span></label>
+                <label for="urls" class="form-label">video urls <span style="color: #ff2825">*</span></label>
                 <textarea id="urls" class="form-control" rows="5" maxlength="20000" placeholder="Video links, separated by new lines..."></textarea>
             </div>
 
-            <button type="button" id="switchMode" class="btn btn-danger" onclick="switchMode()" current-mode="friendly">Switch to <span id="mode">productive</span> mode</button>
-            <button type="button" id="addPlaylist" class="btn btn-secondary" onclick="addPlaylist()">Add Playlist</button>
+            <button type="button" id="switchMode" class="btn btn-danger" onclick="switchMode()" current-mode="friendly">switch to <span id="mode">productive</span> mode</button>
+            <button type="button" id="addPlaylist" class="btn btn-secondary" onclick="addPlaylist()">add playlist</button>
             <br>
             <br>
 
             <div id="cookieInput" class="mb-3" style="display:none;">
-                <label for="cookie" class="form-label">Account Cookie <span style="color: #ff2825">*</span></label>
+                <label for="cookie" class="form-label">account cookie <span style="color: #ff2825">*</span></label>
                 <input id="cookie" class="form-control" placeholder="Account Cookie...">
             </div>
 
             <button id="submit" class="btn btn-primary" value="Submit" disabled>
                 <div id="loadingCircle" class="" role="status"></div>
-                Download
+                download
             </button>
             &nbsp;
             <span id="elapsedTime" class="lead"></span>
@@ -115,15 +115,15 @@
                 </div>`;
 
                 if (!url) {
-                    $.dialog.prompt("Add Video", "Paste YouTube URL", { type: "text", label: "URL..." }, async (url) => {
-                        if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("Invalid ID", "The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+                    $.dialog.prompt("add video", "paste youtube url", { type: "text", label: "url..." }, async (url) => {
+                        if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("invalid id", "the requested video does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.");
 
                         var id = getId(url);
                         var info = await getVideoInfo(id);
                         $("#videos").append(template(id, info.title, info.author_name));
                     });
                 } else {
-                    if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("Invalid ID", "The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+                    if (!getId(url) || !await getVideoInfo(getId(url))) return $.dialog.alert("invalid id", "the requested video does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.");
 
                     var id = getId(url);
                     var info = await getVideoInfo(id);
@@ -136,8 +136,8 @@
             }
 
             function addPlaylist() {
-                $.dialog.prompt("Add Playlist", "Paste YouTube Playlist URL", { type: "text", label: "URL..." }, async (url) => {
-                    if (!getPlaylistId(url)) return $.dialog.alert("Invalid ID", "The requested playlist does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+                $.dialog.prompt("add playlist", "paste youtube playlist url", { type: "text", label: "url..." }, async (url) => {
+                    if (!getPlaylistId(url)) return $.dialog.alert("invalid id", "the requested playlist does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.");
 
                     var id = getPlaylistId(url);
                     socket.emit("yt", "playlist", { id: id });
@@ -150,7 +150,7 @@
                     <button type="button" class="btn btn-danger" onclick="removeVideo('${id}')"><i class="bi bi-trash"></i></button>
                 </div>`;
 
-                if (!data.success) return $.dialog.alert("Invalid ID", "The requested playlist does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.");
+                if (!data.success) return $.dialog.alert("invalid id", "the requested playlist does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.");
                 
                 for await (const x of data.playlist.items) {
                     await addVideo(x.shortUrl);
@@ -171,7 +171,7 @@
                 if (percent < 100) {
                     $("#progressbar").html(`${percent}% (${upto + 1} out of ${videos.length})`);
                 } else {
-                    $("#progressbar").html("Done! Zipping files... (0%)");
+                    $("#progressbar").html("zipping files... (0%)");
                     $("#progressbar").removeClass("bg-primary");
                     $("#progressbar").addClass("bg-info");
                 }
@@ -182,7 +182,7 @@
 
                 $("#progressbar").css("width", `${metadata.percent}%`);
                 $("#progressbar").attr("aria-valuenow", metadata.percent);
-                $("#progressbar").html(`Done! Zipping files... (${metadata.percent.toFixed(2)}%)`);
+                $("#progressbar").html(`zipping files... (${metadata.percent.toFixed(2)}%)`);
                 $("#progressbar").removeClass("bg-primary");
                 $("#progressbar").addClass("bg-info");
             }
@@ -225,7 +225,7 @@
                 var elapsedTime = 0;
                 const timer = setInterval(() => {
                     elapsedTime += 0.01;
-                    $("#elapsedTime").html(`<b>Elapsed</b>: ${moment.utc(elapsedTime * 1000).format("HH:mm:ss")} | <b>Estimated Time Left</b>: ${moment.utc(((100 - parseFloat($("#progressbar").attr("aria-valuenow"))) / (parseFloat($("#progressbar").attr("aria-valuenow")) / (elapsedTime * 1000))) * 60).format("HH:mm")}`);
+                    $("#elapsedTime").html(`<b>elapsed</b>: ${moment.utc(elapsedTime * 1000).format("HH:mm:ss")} | <b>estimated time left</b>: ${moment.utc(((100 - parseFloat($("#progressbar").attr("aria-valuenow"))) / (parseFloat($("#progressbar").attr("aria-valuenow")) / (elapsedTime * 1000))) * 60).format("HH:mm")}`);
                 }, 10);
 
                 for await (const x of videos) {
@@ -253,7 +253,7 @@
                 await full.generateAsync({ type: "blob", streamFiles: true }, zipUpdate)
                 .then((content) => {
                     saveAs(content, `imaperson.dev_batch_${Date.now()}.zip`);
-                    $("#progressbar").html("Your download should begin... now!");
+                    $("#progressbar").html("done");
                     $("#progressbar").removeClass("bg-info");
                     $("#progressbar").addClass("bg-success");
                     $("#progressbar").removeClass("progress-bar-animated");
@@ -286,7 +286,7 @@
                     for await (const x of $("#urls").val().split("\n")) {
                         const id = getId(x);
                         if (!(await getVideoInfo(id))) {
-                            $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));   
+                            $("#warnings").html(HTMLWarn(`the video "<a href='${x}'>${x}</a>" does not exist or is private. unfortunately, cookies are not supported. the download process has been cancelled.`));   
                             videos = [];
                             return false;
                         } else {
@@ -317,7 +317,7 @@
                 if (filter.length != 0) {
                     for await (const x of videos) {
                         if (!(await getVideoInfo(getId(x)))) {
-                            $("#warnings").html(HTMLWarn(`The video "<a href='${x}'>${x}</a>" does not exist or is private. Unfortunately, cookies are not supported. The download process has been cancelled.`));
+                            $("#warnings").html(HTMLWarn(`the video "<a href='${x}'>${x}</a>" does not exist or is private. unfortunately, cookies are not supported. the download process has been cancelled.`));
                             $("#submit").attr("disabled", true);
                             videos = [];
                             return false;

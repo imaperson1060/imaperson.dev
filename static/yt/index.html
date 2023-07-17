@@ -1,49 +1,49 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
     <head>
-        <title>YouTube Ad-Free</title>
-        <meta name="description" content="Watch (or download) YouTube videos without any ads, for free! (Seriously, no hidden fees or conditions or anything.)">
+        <title>imaperson.dev | youtube downloader</title>
+        <meta name="description" content="download youtube videos without any ads, for free">
         <meta name="author" content="imaperson">
-        <meta property="og:image" content="/favicon.png">
+        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/favicon.ico">
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
         <link rel="stylesheet" href="/style.css">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <script src="/socket.io.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script src="/script.js"></script>
         <script src="/nav.js"></script>
     </head>
     <body>
         <div class="container">
-            <h1>Watch YouTube Ad-Free</h1>
+            <h1>youtube downloader</h1>
 
-            <p class="lead">Download multiple videos at once <a href="/yt/batch">here</a>!</p>
+            <p class="lead">download multiple videos at once <a href="/yt/batch">here</a></p>
 
             <div class="mb-3">
-                <label for="url" class="form-label">Video URL <span style="color: #ff2825">*</span></label>
-                <input id="url" class="form-control" maxlength="2000" placeholder="Video Link...">
+                <label for="url" class="form-label">video url <span style="color: #ff2825">*</span></label>
+                <input id="url" class="form-control" maxlength="2000" placeholder="video url...">
             </div>
 
             <div id="cookieInput" class="mb-3" style="display:none;">
-                <label for="cookie" class="form-label">Account Cookie <span style="color: #ff2825">*</span></label>
-                <input id="cookie" class="form-control" placeholder="Account Cookie...">
+                <label for="cookie" class="form-label">account cookie <span style="color: #ff2825">*</span></label>
+                <input id="cookie" class="form-control" placeholder="account cookie...">
             </div>
 
-            <button id="submit" class="btn btn-primary" value="Submit" disabled>
+            <button id="submit" class="btn btn-primary" value="submit" disabled>
                 <div id="loadingCircle" class="" role="status"></div>
-                Video
+                video
             </button>
-            <button id="submitAudio" class="btn btn-secondary" value="Submit" disabled>
+            <button id="submitAudio" class="btn btn-secondary" value="submit" disabled>
                 <div id="loadingCircleAudio" class="" role="status"></div>
-                Audio
+                audio
             </button>
             <button id="paste" class="btn btn-info">
-                Paste
+                paste
             </button>
 
             <br>
@@ -55,8 +55,8 @@
             <br>
             <br>
 
-            <p class="lead">Get the Chrome Extension <a href="youtube.zip">here</a>!</p>
-            <p><a href="https://superuser.com/a/247654" target="_blank">Installation Guide</a></p>
+            <p class="lead">get the chrome extension <a href="youtube.zip">here</a></p>
+            <p><a href="https://superuser.com/a/247654" target="_blank">installation guide</a></p>
         </div>
 
         <script>
@@ -72,7 +72,7 @@
 
             function showCookieBox() {
                 $("#cookieInput").show();
-                $("#warnings").html(HTMLWarn("This video is not visible to the public (age restricted, private, premium, etc.). To view it, you will have to provide the cookies for an account that has access. <a href='/yt/getcookies' target='blank'>Need help?</a>"));
+                $("#warnings").html(HTMLWarn("this video is not visible publicly (age restricted, private, premium, etc.). to view it, you will have to provide the cookies for an account that has access. <a href='/yt/getcookies' target='blank'>guide</a>"));
                 $("#submit").attr("disabled", true);
                 $("#submitAudio").attr("disabled", true);
             }
@@ -109,7 +109,7 @@
             $("#paste").on("click", async () => {
                 const clipboard = await navigator.clipboard.readText();
 
-                if (!getId(clipboard)) return $("#warnings").html(HTMLWarn("The contents of your clipboard are not a valid YouTube video link."));;
+                if (!getId(clipboard)) return $("#warnings").html(HTMLWarn("the contents of your clipboard are not a valid youtube video link."));;
 
                 $("#url").val(clipboard);
                 $("#url").trigger("input");
@@ -121,7 +121,7 @@
                     $("#submit").attr("disabled", false);
                     $("#submitAudio").attr("disabled", false);
                 } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
+                    $("#warnings").html(HTMLWarn("the requested video does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>click here if you have a cookie string.</a>"));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
@@ -135,15 +135,15 @@
                     if (data.args[0].downloadType == "audio") return window.open(data.video.formats.audio);
                     if (data.video.formats.hd) return window.open(data.video.formats.hd);
                     if (data.video.formats.sd) return window.open(data.video.formats.sd);
-                    $("#warnings").html(HTMLError("There has been an unexpected error in the server. Please contact me so I can look further into the issue."));
+                    $("#warnings").html(HTMLError("there has been an unexpected error in the server. please contact me so i can look further into the issue."));
                 } else if (data.code == 410) {
                     showCookieBox();
                 } else if (data.code == 403) {
-                    $("#warnings").html(HTMLWarn("Invalid cookies have been provided."));
+                    $("#warnings").html(HTMLWarn("invalid cookies have been provided."));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 } else {
-                    $("#warnings").html(HTMLWarn("The requested video does not exist, or is private. If you are sure that it does, please contact me so I can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>Click here if you have a cookie string.</a>"));
+                    $("#warnings").html(HTMLWarn("the requested video does not exist, or is private. if you are sure that it does, please contact me so i can fix this bug.&nbsp;<a href='#' onclick='showCookieBox();'>click here if you have a cookie string.</a>"));
                     $("#submit").attr("disabled", true);
                     $("#submitAudio").attr("disabled", true);
                 }
