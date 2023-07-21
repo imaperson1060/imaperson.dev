@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+        <meta charset="utf-8">
+
+        <title>imaperson.dev | exploiting whatsapp</title>
+        <meta name="description" content="saving single view images">
+        <meta name="author" content="imaperson">
+        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
+        <link rel="stylesheet" href="/style.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <script src="/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="/script.js"></script>
+        <script src="/nav.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>this is art</h1>
+            <p class="lead">shut up it totally is</p>
+            <img src="art.png" class="mb-5" height="256">
+
+            <br>
+
+            <h5 class="mb-3">i want to send it to someone on whatsapp</h5>
+            <p>but what if they steal it and sell it because it's valuable art</p>
+            <p>i know, i'll just use a single view image!</p>
+            <img src="onetime.png" class="mb-5" height="32">
+
+            <br>
+
+            <h5 class="mb-3">enter: whatsapp web</h5>
+            <p>more specifically, <a href="https://wwebjs.dev" target="_blank">whatsapp-web.js</a></p>
+            <p>whatsapp web disabled single view media functionality, requiring you to use your phone</p>
+            <p>but... the media is still sent to the browser</p>
+
+            <br>
+
+            <h5 class="mb-3">exploit time</h5>
+            <p>using a custom userbot script, it is possible to retrieve the message media</p>
+            
+            <br>
+
+            <pre>
+                <code><span style="color: #c586c0">if</span> <span style="color: #569cd6">(</span><span style="color: #9cdcfe">message</span><span style="color: #fff">.</span><span style="color: #9cdcfe">hasQuotedMsg</span> <span style="color: #fff">&&</span> <span style="color: #9cdcfe">message</span><span style="color: #fff">.</span><span style="color: #9cdcfe">body</span> <span style="color: #fff">==</span> <span style="color: #ce9178">"!view"</span><span style="color: #569cd6">)</span> <span style="color: #569cd6">{</span></code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #569cd6">var</span> <span style="color: #9cdcfe">quotedMsg</span> <span style="color: #fff">=</span> <span style="color: #c586c0">await</span> <span style="color: #9cdcfe">message</span><span style="color: #fff">.</span><span style="color: #dcdcaa">getQuotedMessage</span><span style="color: #d4c163">()</span><span style="color: #fff">;</span></code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #c586c0">if</span> <span style="color: #569cd6">(</span><span style="color: #fff">!</span><span style="color: #9cdcfe">quotedMsg</span><span style="color: #fff">.</span><span style="color: #9cdcfe">hasMedia</span><span style="color: #569cd6">)</span> <span style="color: #c586c0">return</span><span style="color: #fff">;</span></code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #569cd6">var</span> <span style="color: #9cdcfe">media</span> <span style="color: #fff">=</span> <span style="color: #c586c0">await</span> <span style="color: #9cdcfe">quotedMsg</span><span style="color: #fff">.</span><span style="color: #dcdcaa">getQuotedMessage</span><span style="color: #d4c163">()</span><span style="color: #fff">;</span></code>
+                &nbsp;&nbsp;&nbsp;&nbsp;<code><span style="color: #c586c0">await</span> <span style="color: #569cd6">message</span><span style="color: #fff">.</span><span style="color: #dcdcaa">reply</span><span style="color: #d4c163">(<span style="color: #569cd6">new</span> <span style="color: #4EC9B0">MessageMedia</span><span style="color: #569cd6">(</span><span style="color: #9cdcfe">onetime</span><span style="color: #fff">.</span><span style="color: #9cdcfe">mimetype</span><span style="color: #fff">,</span> <span style="color: #9cdcfe">onetime</span>.<span style="color: #9cdcfe">data</span><span style="color: #fff">,</span> <span style="color: #9cdcfe">onetime</span><span style="color: #fff">.</span><span style="color: #9cdcfe">filename</span><span style="color: #fff">,</span> <span style="color: #9cdcfe">onetime</span><span style="color: #fff">.</span><span style="color: #9cdcfe">filesize</span><span style="color: #569cd6">)</span><span style="color: #d4c163">)</span><span style="color: #fff">;</span></code>
+                <code><span style="color: #569cd6">}</span></code>
+            </pre>
+
+            <br>
+
+            <h5 class="mb-3">demo:</h5>
+            <img src="demo.gif" class="mb-4" height="256">
+
+            <br>
+
+            <h5>full code coming soon...</h5>
+            <p class="lead">happy hacking 😉</p>
+        </div>
+    </body>
+</html>

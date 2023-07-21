@@ -6,3 +6,8 @@ a.disabled {
     color: gray;
     pointer-events: none;
 }
+
+pre {
+    text-align: left;
+    white-space: pre-line;
+}
