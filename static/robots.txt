@@ -2,10 +2,10 @@
 
 User-agent: googlebot
 
-Disallow /assets/
-Disallow /yt/batch/
-Disallow /yt/getcookies/
-Disallow /404.html
-Disallow /nav.html
+Disallow: /assets/
+Disallow: /yt/batch/
+Disallow: /yt/getcookies/
+Disallow: /404.html
+Disallow: /nav.html
 
 Sitemap: https://imaperson.dev/sitemap.xml
