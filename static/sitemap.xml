@@ -6,77 +6,77 @@
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/about</loc>
+        <loc>https://imaperson.dev/about/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/contact</loc>
+        <loc>https://imaperson.dev/contact/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/blog</loc>
+        <loc>https://imaperson.dev/blog/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/random</loc>
+        <loc>https://imaperson.dev/random/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/source</loc>
+        <loc>https://imaperson.dev/source/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/utils</loc>
+        <loc>https://imaperson.dev/utils/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/commits</loc>
+        <loc>https://imaperson.dev/commits/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/dislikes</loc>
+        <loc>https://imaperson.dev/dislikes/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/floats</loc>
+        <loc>https://imaperson.dev/floats/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/limelight</loc>
+        <loc>https://imaperson.dev/limelight/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/onetime</loc>
+        <loc>https://imaperson.dev/onetime/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/personbot</loc>
+        <loc>https://imaperson.dev/personbot/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/segments</loc>
+        <loc>https://imaperson.dev/segments/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/short</loc>
+        <loc>https://imaperson.dev/short/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://imaperson.dev/yt</loc>
+        <loc>https://imaperson.dev/yt/</loc>
         <lastmod>2023-07-24</lastmod>
         <priority>0.5</priority>
     </url>
