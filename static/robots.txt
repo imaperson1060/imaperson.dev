@@ -3,6 +3,7 @@
 User-agent: googlebot
 
 Disallow: /assets/
+Disallow: /dedication/
 Disallow: /yt/batch/
 Disallow: /yt/getcookies/
 Disallow: /404.html
