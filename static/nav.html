@@ -86,19 +86,8 @@
             let originalText = currentText = element.html();
             let newText = "";
 
-            for (var i = 0; i < originalText.length; i++) {
-                setTimeout(() => {
-                    currentText = currentText.slice(0, -1);
-                    element.html(currentText);
-                }, (i + 1) * 100);
-            }
-
-            for (var i = 0; i < text.length; i++) {
-                setTimeout(() => {
-                    newText = text.substr(0, newText.length + 1);
-                    element.html(newText);
-                }, (i * 100) + (originalText.length * 100) + 300);
-            }
+            for (var i = 0; i < originalText.length; i++) setTimeout(() => element.html(currentText = currentText.slice(0, -1)), (i + 1) * 100);
+            for (var i = 0; i < text.length; i++) setTimeout(() => element.html(newText = text.substr(0, newText.length + 1)), (i * 100) + (originalText.length * 100) + 300);
 
             setTimeout(() => resolve(), (text.length * 100) + (originalText.length * 100) + 300);
         });
