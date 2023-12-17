@@ -66,14 +66,14 @@
                 let dates = [];
                 let commits = [];
 
-                while (moment(startDate) <= moment(endDate)) {
+                while (moment(startDate) < moment(endDate)) {
                     dates.push(moment(startDate).toISOString());
                     startDate = moment(startDate).add(1, "days").toISOString();
                 }
                 
                 dates.forEach(x => {
                     if (JSON.parse(localStorage["commitCache"])[x]) {
-                        JSON.parse(localStorage["commitCache"])[x].forEach(x => {
+                        JSON.parse(localStorage["commitCache"])[x].reverse().forEach(x => {
                             commits.push(x);
                         });
                     }
