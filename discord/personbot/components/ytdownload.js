@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 
 let videoEmbed = (client, video, id, more) => new EmbedBuilder()
-		.setTitle(`**${video.title}** by **${video.author.display}**`)
+		.setTitle("**${video.title}** by **${video.author.display}**")
 		.setDescription(more ? video.description : "press \"view more info\" for more")
 		.setURL(`https://youtu.be/${id}`)
 		.setAuthor({

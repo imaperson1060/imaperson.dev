@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import moment from "moment";
 
 let shortURLEmbed = (client, domain, id, editkey, expiration) => new EmbedBuilder()
-	.setTitle(`**success!**`)
+	.setTitle("**success!**")
 	.setDescription(`your url was shortened successfully`)
 	.setAuthor({
 		name: client.user.username,
