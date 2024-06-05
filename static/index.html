@@ -1,112 +1,120 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-    <head>
-        <meta charset="utf-8">
+<html data-bs-theme="dark">
+	<head>
+		<title>imaperson.dev</title>
+		<meta name="description" content="the website of a strange person thing">
+		<meta name="keywords" content="imaperson, imaperson1060, imaperson.dev">
+		<meta name="author" content="imaperson">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653">
+		<link rel="icon" href="https://avatars.githubusercontent.com/u/68653653">
 
-        <title>imaperson.dev</title>
-        <meta name="description" content="the website of a strange person thing">
-        <meta name="keywords" content="imaperson, imaperson1060">
-        <meta name="author" content="imaperson">
-        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <link rel="stylesheet" href="/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+	</head>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <script src="/socket.io.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<body class="mb-5">
+		<div class="mb-4" hx-get="/nav.html" hx-trigger="load"></div>
 
-        <script src="/script.js"></script>
-        <script src="/nav.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>hi, i'm <code>Ar</code><code id="name-i">i</code></h1>
-            <p class="subtitle lead" style="display: none;">bad coder</p>
-            <p class="subtitle lead" style="display: none;">ctrl c addict</p>
-            <p class="subtitle lead" style="display: none;">where am i?</p>
-            <p class="subtitle lead" style="display: none;">not a virus, i swear</p>
-            <p class="subtitle lead" style="display: none;">very law abiding</p>
-            <p class="subtitle lead" style="display: none;"><code>i</code>'m a person</p>
+		<div class="container">
+			<h1>hi, i'm <code id="name-a"></code><code id="name-r"></code><code id="name-i"></code></h1>
+			<p class="subtitle lead" style="display: none;">bad coder</p>
+			<p class="subtitle lead" style="display: none;">ctrl c addict</p>
+			<p class="subtitle lead" style="display: none;">not a virus, i swear</p>
+			<p class="subtitle lead" style="display: none;"><code id="text-i">i</code>'m a person</p>
 
-            <div id="terminal" class="mt-3" style="display: none;">
-                <code style="color: #276ed2;">&gt;</code><code id="terminal-code-1"> </code>
-            </div>
+			<div id="terminal" class="mt-3" style="display: none;"><code style="color: #276ed2;">&gt;</code><code id="terminal-code-1"> </code></div>
 
-            <div id="cards" style="display: none;">
-                <div class="mt-3 row">
-                    <div class="col-sm-3 mb-3">
-                        <div class="card">
-                            <img src="https://github-readme-stats.vercel.app/api?username=imaperson1060&include_all_commits=true&show_icons=true&hide_rank=true&theme=radical" class="card-img-top" alt="GitHub">
-                            <div class="card-body">
-                                <h5 class="card-title">GitHub</h5>
-                                <p class="card-text"><a href="https://github.com/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-github"></i> <b>/</b> imaperson1060</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mb-3">
-                        <div class="card">
-                            <img src="/assets/discord.png" class="card-img-top" alt="Discord">
-                            <div class="card-body">
-                                <h5 class="card-title">Discord</h5>
-                                <p class="card-text"><a href="https://discord.gg/t4wp5t9DsN" class="btn btn-primary" target="_blank"><i class="bi bi-discord"></i> <b>/</b> t4wp5t9DsN</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3 mb-3">
-                        <div class="card">
-                            <img src="/assets/twitter.png" class="card-img-top" alt="Twitter">
-                            <div class="card-body">
-                                <h5 class="card-title">Twitter</h5>
-                                <p class="card-text"><a href="https://twitter.com/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-twitter"></i> <b>/</b> imaperson1060</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mb-3">
-                        <div class="card">
-                            <img src="/assets/reddit.png" class="card-img-top" alt="Reddit">
-                            <div class="card-body">
-                                <h5 class="card-title">Reddit</h5>
-                                <p class="card-text"><a href="https://reddit.com/u/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-reddit"></i> <b>/</b> imaperson1060</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+			<div id="cards" class="mt-5" style="display: none;">
+				<div class="mt-3 row">
+					<div class="col-sm-3 mb-3">
+						<div class="card">
+							<img src="https://github-readme-stats.vercel.app/api?username=imaperson1060&include_all_commits=true&show_icons=true&hide_rank=true&theme=radical" class="card-img-top" alt="GitHub">
+							<div class="card-body">
+								<h5 class="card-title">github</h5>
+								<p class="card-text"><a href="https://github.com/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-github"></i> <b>/</b> imaperson1060</a></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-3 mb-3">
+						<div class="card">
+							<img src="/assets/discord.png" class="card-img-top" alt="Discord">
+							<div class="card-body">
+								<h5 class="card-title">discord</h5>
+								<p class="card-text"><a href="https://discord.gg/t4wp5t9DsN" class="btn btn-primary" target="_blank"><i class="bi bi-discord"></i> <b>/</b> t4wp5t9DsN</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-3 mb-3">
+						<div class="card">
+							<img src="/assets/twitter.png" class="card-img-top" alt="Twitter">
+							<div class="card-body">
+								<h5 class="card-title">twitter</h5>
+								<p class="card-text"><a href="https://twitter.com/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-twitter"></i> <b>/</b> imaperson1060</a></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-3 mb-3">
+						<div class="card">
+							<img src="/assets/reddit.png" class="card-img-top" alt="Reddit">
+							<div class="card-body">
+								<h5 class="card-title">reddit</h5>
+								<p class="card-text"><a href="https://reddit.com/u/imaperson1060" class="btn btn-primary" target="_blank"><i class="bi bi-reddit"></i> <b>/</b> imaperson1060</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 
-        <script>
-            let subtitles = $(".subtitle");
-            let index = 0;
-            
-            $(subtitles[0]).delay(100).fadeIn(250);
-            let interval = setInterval(() => {
-                if (index == subtitles.length - 2) $("#name-i").animate({ opacity: 0.25 }, 200);
+	<script>
+		async function symbolText(text, element) {
+			return new Promise(resolve => {
+				for (var i = 0; i < text.length; i++) setTimeout(i => element.html(text.charAt(i)), (i * 20) + 300, i);
+				setTimeout(() => resolve(), (text.length * 20) - (text.length / 2 * 20));
+			});
+		}
 
-                $(subtitles[index]).slideToggle(250);
-                $(subtitles[++index]).slideToggle(250);
-                if (index == subtitles.length - 1) {
-                    clearInterval(interval);
-                    setTimeout(() => animateTerminal(), 1000);
-                }
-            }, 750);
+		$(document).ready(async () => {
+			await symbolText("!@#$%^&*A", $("#name-a"));
+			await symbolText("!@#$%^&*r", $("#name-r"));
+			await symbolText("!@#$%^&*i", $("#name-i"));
 
-            function animateTerminal() {
-                $("#terminal").fadeIn();
+			let subtitles = $(".subtitle");
+			let index = 0;
+			$(subtitles[0]).delay(100).fadeIn(250);
+			let interval = setInterval(() => {
+				if (index == subtitles.length - 2) {
+					$("#name-i").animate({ opacity: 0.25 }, 200);
+					setInterval(async () => {
+						await symbolText("!@#$%^&*A", $("#name-a"));
+						await symbolText("!@#$%^&*r", $("#name-r"));
+						await symbolText("!@#$%^&*i", $("#text-i"));
+					}, 1500);
+				}
+				$(subtitles[index]).slideToggle(250);
+				$(subtitles[++index]).slideToggle(250);
+				if (index == subtitles.length - 1) {
+					clearInterval(interval);
+					setTimeout(() => animateTerminal(), 1000);
+				}
+			}, 750);
 
-                "initHomepage();".split("").forEach((x, i) => {
-                    setTimeout(() => {
-                        $("#terminal-code-1").append(x);
-                        if (x == ";") setTimeout(() => {
-                            $("#cards").fadeIn();
-                        }, 500);
-                    }, (100 * i) + 500);
-                });
-            }
-        </script>
-    </body>
+			function animateTerminal() {
+				$("#terminal").fadeIn();
+				"initHomepage();".split("").forEach((x, i) => {
+					setTimeout(() => {
+						$("#terminal-code-1").append(x);
+						if (x == ";") setTimeout(() => $("#cards").fadeIn(), 500);
+					}, (100 * i));
+				});
+			}
+		});
+	</script>
 </html>

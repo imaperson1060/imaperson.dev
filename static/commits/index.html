@@ -1,389 +1,131 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
-    <head>
-        <title>imaperson.dev | update log</title>
-        <meta name="description" content="recent updates to my site">
-        <meta name="keywords" content="imaperson, imaperson1060, commits, changelog, commit history, history, updates">
-        <meta name="author" content="imaperson">
-        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <link rel="stylesheet" href="/style.css">
+	<head>
+		<title>imaperson.dev | update log</title>
+		<meta name="description" content="recent updates to my site">
+		<meta name="keywords" content="imaperson, imaperson1060, imaperson.dev, commits, changelog, commit history, history, updates">
+		<meta name="author" content="imaperson">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653">
+		<link rel="icon" href="https://avatars.githubusercontent.com/u/68653653">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <script src="/socket.io.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/ext/client-side-templates.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+	</head>
 
-        <script src="/script.js"></script>
-        <script src="/nav.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>recent commits (<span id="recent"> <span class="dots-cont"> <span class="dot dot-1"></span> <span class="dot dot-2"></span> <span class="dot dot-3"></span> </span> </span>) - <a href="//github.com/imaperson1060/imaperson.dev" target="_blank">view repository</a></h1>
-            <p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="Move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> from <span id="since"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> &nbsp; </span> to <span id="until"> &nbsp; <span class="dots-cont"> <span class="dot dot-lead dot-1"></span> <span class="dot dot-lead dot-2"></span> <span class="dot dot-lead dot-3"></span> </span> </span> <i class="bi bi-arrow-right-short" title="Move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>
+	<body class="mb-5" hx-ext="client-side-templates">
+		<div class="mb-4" hx-get="/nav.html" hx-trigger="load"></div>
 
-            <br>
-            <br>
+		<div class="container">
+			<h1>recent commits (<span id="recent"><div class="spinner-border spinner-border-sm fs-6 align-middle"></div></span>) - <a href="https://github.com/imaperson1060/imaperson.dev" target="_blank">view repository</a> • <a href="https://skyline.github.com/imaperson1060" target="_blank">view skyline</a></h1>
+			<p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> from <span id="since"></span> to <span id="until"></span> <i class="bi bi-arrow-right-short" title="move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>
 
-            <div id="commits">
-            </div>
-        </div>
-        
-        <script>
-            var commitCache = [];
-            
-            if (!localStorage["commitCache"]) localStorage["commitCache"] = JSON.stringify([]);
-            
-            $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
-            $("#until").html(moment().format("MM/DD/YYYY"));
-            
-            function getCommits(since, until) {
-                commitCache = localStorage["commitCache"] ? JSON.parse(localStorage["commitCache"]) : [];
+			<div id="commits" hx-get="/api/github" hx-trigger="rangeChanged" mustache-template="commit"></div>
+		</div>
+	</body>
 
-                if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString())) generateCards(getBetween(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString()));
-                else socket.emit("github", "commits", { since, until });
-            }
+	<template id="commit">
+		{{ #commits }}
+			<div class="card mb-3" style="max-width: 75%;">
+				<div class="row g-0">
+					<div class="col-md-4" style="max-width: 175px;"><img src="{{ author.avatar_url }}" class="card-img-top" alt="Ari" width="175px" height="175px"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h5 class="card-title" title="{{ commit.message }}" style="margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;"><a href="{{ html_url }}" target="_blank"><span class="commit-message">{{ commit.message }}</span></a></h5>
+							<div class="btn-group" style="margin-bottom: 1px !important"><label class="input-group-text bi bi-person-circle"></label><a href="{{ author.html_url }}" class="btn btn-primary" target="_blank">{{ author.login }}</a></div>
+							<br>
+							<div class="btn-group" style="margin-bottom: 1px !important"><label class="input-group-text"><img src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Octicons-diff.svg" width="14.5" height="16"></label><button class="btn btn-warning" disabled="true">{{ stats.total }}</button></div>
+							<div class="btn-group" style="margin-bottom: 1px !important"><label class="input-group-text bi bi-plus"></label><button class="btn btn-success" disabled>{{ stats.additions }}</button></div>
+							<div class="btn-group" style="margin-bottom: 1px !important"><label class="input-group-text bi bi-dash"></label><button class="btn btn-danger" disabled>{{ stats.deletions }}</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer commit-date" date="{{ commit.author.date }}"></div>
+			</div>
+		{{ /commits }}
+	</template>
 
-            function showCommits(commits) {
-                commits = commits.commits;
-                
-                let commitsOnDates = {};
+	<script>
+		if (!localStorage["commitCache"]) localStorage["commitCache"] = JSON.stringify([]);
 
-                commits.forEach(x => {
-                    if (!commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()]) commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()] = [];
-                    commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()].push(x);
-                });
-                
-                localStorage["commitCache"] = JSON.stringify({ ...JSON.parse(localStorage["commitCache"]), ...commitsOnDates });
+		$(document.body).on("htmx:beforeRequest", evt => {
+			if (evt.detail.pathInfo.requestPath != "/api/github") return;
+			let { since, until } = evt.detail.requestConfig.parameters;
+			if (since != moment(moment().subtract(7, "d").format("MM/DD/YYYY")).toISOString() && until != moment(moment().format("MM/DD/YYYY")).toISOString() && getBetween(since, until)) {
+				evt.preventDefault();
+				$("#commits").html(Mustache.render($("#commit").html(), { commits: getBetween(since, until) }));
+				$(".commit-message").each(async (_, el) => {
+					$(el).html($(el).html().split("\n\n")[0]);
+					for await (const emoji of [...$(el).html().match(/:([^:]+):/g) || []]) $(el).html($(el).html().replaceAll(emoji, `<img src="https://github.githubassets.com/images/icons/emoji/${emoji.slice(1, -1)}.png" width="24">`));
+				});
+				$(".commit-date").each((_, el) => $(el).html(moment($(el).attr("date")).format("dddd, MMMM Do YYYY, h:mm:ss a")));
+				$("#recent").html(getBetween(since, until).length);
+			}
+		});
+		$(document.body).on("htmx:configRequest", evt => {
+			if (evt.detail.path != "/api/github") return;
+			$("#recent").html("<div class=\"spinner-border spinner-border-sm fs-6 align-middle\"></div>");
+			evt.detail.parameters = { since: moment($("#since").html()).toISOString(), until: moment($("#until").html()).toISOString() }
+		});
+		$(document.body).on("htmx:afterRequest", evt => {
+			if (evt.detail.pathInfo.requestPath != "/api/github") return;
+			let commitsOnDates = {}, commits = JSON.parse(evt.detail.xhr.response).commits;
+			commits.forEach(x => {
+				if (!commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()]) commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()] = [];
+				commitsOnDates[moment(moment(x.commit.author.date).format("MM/DD/YYYY")).toISOString()].push(x);
+			});
+			if (!commits.length) { for (let i = 0; i < 7; i++) commitsOnDates[moment(evt.detail.requestConfig.parameters.since).add(i, "d").toISOString()] = []; }
+			localStorage["commitCache"] = JSON.stringify({ ...JSON.parse(localStorage["commitCache"]), ...commitsOnDates });
+		});
+		$(document.body).on("htmx:afterSwap", evt => {
+			if (evt.detail.pathInfo.requestPath != "/api/github") return;
+			$(".commit-message").each(async (_, el) => {
+				$(el).html($(el).html().split("\n\n")[0]);
+				for await (const emoji of [...$(el).html().match(/:([^:]+):/g) || []]) $(el).html($(el).html().replaceAll(emoji, `<img src="https://github.githubassets.com/images/icons/emoji/${emoji.slice(1, -1)}.png" width="24">`));
+			});
+			$(".commit-date").each((_, el) => $(el).html(moment($(el).attr("date")).format("dddd, MMMM Do YYYY, h:mm:ss a")));
+			$("#recent").html(JSON.parse(evt.detail.xhr.response).commits.length);
+		});
 
-                generateCards(commits);
-            }
+		$("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
+		$("#until").html(moment().format("MM/DD/YYYY"));
 
-            function getBetween(startDate, endDate) {
-                let dates = [];
-                let commits = [];
+		function getBetween(startDate, endDate) {
+			let dates = [], commits = [], isNew = true;
+			while (moment(startDate) < moment(endDate)) {
+				dates.push(moment(startDate).toISOString());
+				startDate = moment(startDate).add(1, "days").toISOString();
+			}
+			dates.forEach(x => {
+				let cache = JSON.parse(localStorage["commitCache"])[x];
+				cache?.reverse().forEach(x => commits.push(x));
+				if (cache) isNew = false;
+			});
+			return isNew ? false : commits.reverse();
+		}
+		function moveDateBack() {
+			$("#since").html(moment($("#since").html()).subtract(8, "d").format("MM/DD/YYYY"));
+			$("#until").html(moment($("#until").html()).subtract(8, "d").format("MM/DD/YYYY"));
+			htmx.trigger("#commits", "rangeChanged");
+		}
+		function moveDateForward() {
+			if (moment().unix() < moment($("#until").html()).add(8, "d").unix()) return;
+			$("#since").html(moment($("#since").html()).add(8, "d").format("MM/DD/YYYY"));
+			$("#until").html(moment($("#until").html()).add(8, "d").format("MM/DD/YYYY"));
+			htmx.trigger("#commits", "rangeChanged");
+		}
+		function resetDate() {
+			$("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
+			$("#until").html(moment().format("MM/DD/YYYY"));
+			htmx.trigger("#commits", "rangeChanged");
+		}
 
-                while (moment(startDate) < moment(endDate)) {
-                    dates.push(moment(startDate).toISOString());
-                    startDate = moment(startDate).add(1, "days").toISOString();
-                }
-                
-                dates.forEach(x => {
-                    if (JSON.parse(localStorage["commitCache"])[x]) {
-                        JSON.parse(localStorage["commitCache"])[x].reverse().forEach(x => {
-                            commits.push(x);
-                        });
-                    }
-                });
-                
-                return commits.length == 0 ? false : commits.reverse();
-            }
-
-            function moveDateBack() {
-                $("#since").html(moment($("#since").html()).subtract(8, "d").format("MM/DD/YYYY"));
-                $("#until").html(moment($("#until").html()).subtract(8, "d").format("MM/DD/YYYY"));
-                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
-            }
-
-            function moveDateForward() {
-                if (moment().unix() < moment($("#until").html()).add(8, "d").unix()) return;
-                $("#since").html(moment($("#since").html()).add(8, "d").format("MM/DD/YYYY"));
-                $("#until").html(moment($("#until").html()).add(8, "d").format("MM/DD/YYYY"));
-                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
-            }
-
-            function resetDate() {
-                $("#since").html(moment().subtract(7, "d").format("MM/DD/YYYY"));
-                $("#until").html(moment().format("MM/DD/YYYY"));
-                getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
-            }
-
-            function generateCards(commits) {
-                $("#commits").empty();
-
-                $("#recent").html(commits.length);
-
-                var cards = new Array(commits.length);
-
-                commits.sort((x, y) => moment(x.commit.author.date).unix() > moment(y.commit.author.date).unix());
-                console.log(commits)
-
-                for (var i = 0; i < commits.length; i++) {
-                    (async (data, i) => {
-                        var card = document.createElement("div");
-                        card.setAttribute("class", "card mb-3");
-                        card.setAttribute("style", "max-width: 75%;");
-
-                        var grid = document.createElement("div");
-                        grid.setAttribute("class", "row g-0");
-
-                        var imageFrame = document.createElement("div");
-                        imageFrame.setAttribute("class", "col-md-4");
-                        imageFrame.setAttribute("style", "max-width: 175px;");
-
-                        var image = document.createElement("img");
-                        image.setAttribute("src", data.author.avatar_url);
-                        image.setAttribute("class", "card-img-top");
-                        image.setAttribute("alt", data.commit.author.name);
-                        image.setAttribute("width", "175px");
-                        image.setAttribute("height", "175px");
-
-                        imageFrame.appendChild(image);
-                        grid.appendChild(imageFrame);
-
-                        var commitInfo = document.createElement("div");
-                        commitInfo.setAttribute("class", "col-md-8");
-
-                        var body = document.createElement("div");
-                        body.setAttribute("class", "card-body");
-
-                        var title = document.createElement("h5");
-                        title.setAttribute("class", "card-title");
-                        const emojis = [];
-                        data.commit.message.replace(/:([^:]+):/g, async x => emojis.push(x));
-                        var newMessage = data.commit.message;
-                        for await (const x of emojis) {
-                            newMessage = newMessage.replaceAll(x, (await (await fetch(`https://www.emojidex.com/api/v1/emoji/${x.slice(1, -1)}`)).json()).moji);
-                        };
-                        title.setAttribute("title", newMessage);
-                        title.setAttribute("style", "margin-bottom: 2.5% !important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;");
-                        var titleText = document.createElement("a");
-                        titleText.setAttribute("href", data.html_url);
-                        titleText.setAttribute("target", "_blank");
-                        var titleTextBox = document.createElement("span");
-                        titleTextBox.innerHTML = newMessage.split("\n")[0];
-                        titleText.appendChild(titleTextBox);
-                        title.appendChild(titleText);
-
-                        body.appendChild(title);
-
-
-                        var author = document.createElement("div");
-                        author.setAttribute("class", "btn-group");
-                        author.setAttribute("style", "margin-bottom: 1px !important");
-                        var authorIcon = document.createElement("label");
-                        authorIcon.setAttribute("class", "input-group-text bi bi-person-circle");
-                        author.appendChild(authorIcon);
-                        var authorLink = document.createElement("a");
-                        authorLink.setAttribute("href", data.author.html_url);
-                        authorLink.setAttribute("class", "btn btn-primary");
-                        authorLink.setAttribute("target", "_blank");
-                        var authorText = document.createTextNode(data.author.login);
-                        authorLink.appendChild(authorText);
-                        author.appendChild(authorLink);
-
-                        var forceNewLine = document.createElement("br");
-
-                        body.appendChild(author);
-                        body.appendChild(forceNewLine);
-
-
-                        var footer = document.createElement("div");
-                        footer.setAttribute("class", "card-footer");
-                        var footerText = document.createTextNode(moment(data.commit.author.date).format("dddd, MMMM Do YYYY, h:mm:ss a"));
-                        footer.appendChild(footerText);
-
-
-                        var changes = document.createElement("div");
-                        changes.setAttribute("class", "btn-group");
-                        changes.setAttribute("style", "margin-bottom: 1px !important");
-                        var changesIcon = document.createElement("label");
-                        changesIcon.setAttribute("class", "input-group-text");
-                        changesSvg = document.createElement("img");
-                        changesSvg.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/1/1c/Octicons-diff.svg");
-                        changesSvg.setAttribute("width", 14.5);
-                        changesSvg.setAttribute("height", 16);
-                        changesIcon.appendChild(changesSvg);
-                        changes.appendChild(changesIcon);
-                        var changesLink = document.createElement("button");
-                        changesLink.setAttribute("class", "btn btn-warning");
-                        changesLink.setAttribute("disabled", true);
-                        var changesText = document.createTextNode(data.stats.total);
-                        changesLink.appendChild(changesText);
-                        changes.appendChild(changesLink);
-
-                        var nbsp = document.createTextNode("\xa0");
-
-                        body.appendChild(changes);
-                        body.appendChild(nbsp);
-
-
-                        var additions = document.createElement("div");
-                        additions.setAttribute("class", "btn-group");
-                        additions.setAttribute("style", "margin-bottom: 1px !important");
-                        var additionsIcon = document.createElement("label");
-                        additionsIcon.setAttribute("class", "input-group-text bi bi-plus");
-                        additions.appendChild(additionsIcon);
-                        var additionsLink = document.createElement("button");
-                        additionsLink.setAttribute("class", "btn btn-success");
-                        additionsLink.setAttribute("disabled", true);
-                        var additionsText = document.createTextNode(data.stats.additions);
-                        additionsLink.appendChild(additionsText);
-                        additions.appendChild(additionsLink);
-
-                        var nbsp = document.createTextNode("\xa0");
-
-                        body.appendChild(additions);
-                        body.appendChild(nbsp);
-
-
-                        var deletions = document.createElement("div");
-                        deletions.setAttribute("class", "btn-group");
-                        deletions.setAttribute("style", "margin-bottom: 1px !important");
-                        var deletionsIcon = document.createElement("label");
-                        deletionsIcon.setAttribute("class", "input-group-text bi bi-dash");
-                        deletions.appendChild(deletionsIcon);
-                        var deletionsLink = document.createElement("button");
-                        deletionsLink.setAttribute("class", "btn btn-danger");
-                        deletionsLink.setAttribute("disabled", true);
-                        var deletionsText = document.createTextNode(data.stats.deletions);
-                        deletionsLink.appendChild(deletionsText);
-                        deletions.appendChild(deletionsLink);
-
-                        body.appendChild(deletions);
-
-
-                        commitInfo.appendChild(body);
-                        grid.appendChild(commitInfo);
-                        card.appendChild(grid);
-                        card.appendChild(footer);
-                        cards[i] = card;
-                    })(commits[i], i);
-                }
-
-                function waitFor(condition, callback) {
-                    if(!condition()) {
-                        window.setTimeout(waitFor.bind(null, condition, callback), 100);
-                    } else {
-                        callback();
-                    }
-                }
-
-                waitFor(() => commits.length - cards.filter(function(x, i){ return true }).length == 0, () => {
-                    cards.forEach(card => {
-                        $("#commits").append(card);
-                    });
-                });
-            }
-
-            getCommits(moment($("#since").html()).toISOString(), moment($("#until").html()).toISOString());
-
-            socket.on("github-commits", (commits) => showCommits(commits));
-        </script>
-
-        <style>
-            /* Copied code from .input-group, but changed to btn-group */
-
-            .btn-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3), .btn-group:not(.has-validation)>:not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-
-            /* Originally supposed to be https://codepen.io/nzbin/pen/GGrXbp, but that's not inline so I used https://codepen.io/arthak/pen/rmqvgo, but that's not inline either >:( Am I just doing something wrong? So I just yoinked it from StackOverflow lol https://stackoverflow.com/questions/47214419/jumping-dots-animation*/
-
-            .dot {
-                width: 6px;
-                height: 6px;
-                background: #adb5bd;
-                display: inline-block;
-                border-radius: 50%;
-                right: 0px;
-                bottom: 0px;
-                margin: 0px -2px;
-                position: relative;
-            }
-            .dot-lead {
-                width: 3px !important;
-                height: 3px !important;
-                background: #adb5bd;
-                display: inline-block;
-                border-radius: 50%;
-                right: 0px;
-                bottom: 0px;
-                margin: 0px -2px;
-                position: relative;
-            }
-
-            .dots-cont > .dot {
-                position: relative;
-                bottom: 0px;
-                animation-name: jump;
-                animation-duration: .3s;
-                animation-iteration-count: infinite;
-                animation-direction: alternate;
-                animation-timing-function: ease;
-            }
-
-            .dots-cont .dot-1 {
-                -webkit-animation-delay: 100ms;
-                animation-delay: 100ms;
-            }
-
-            .dots-cont .dot-2 {
-                -webkit-animation-delay: 200ms;
-                animation-delay: 200ms;
-            }
-
-            .dots-cont .dot-3 {
-                -webkit-animation-delay: 300ms;
-                animation-delay: 300ms;
-            }
-            @keyframes jump {
-                from {bottom: 0px}
-                to {bottom: 20px}
-            }
-            @-webkit-keyframes jump {
-                from {bottom: 0px}
-                to {bottom: 10px}
-            }
-        </style>
-
-        <script type="application/ld+json">
-            [
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "update log"
-                        }
-                    ]
-                },
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "random",
-                            "item": "https://imaperson.dev/random"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 3,
-                            "name": "update log"
-                        }
-                    ]
-                }
-            ]
-        </script>
-    </body>
+		$(document).ready(() => htmx.trigger("#commits", "rangeChanged"));
+	</script>
 </html>

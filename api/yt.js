@@ -1,11 +1,8 @@
-import { ComponentType } from "discord.js";
 import mysql from "mysql";
 import util from "util";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
-
-import * as components from "../components/ytdownload.js";
 
 let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }),
 	database = mysql.createPool(mysqlLogin),
@@ -13,14 +10,14 @@ let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }
 
 let yt = { dl: ytdl, pl: ytpl, sr: ytsr };
 
-async function getVideoDetails(id) {
+export async function getVideoDetails(id, cookie) {
 	let video = (await query("SELECT * FROM `videos` WHERE id=?", [ id ]))[0];
 	if (video && video.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) return { code: 200, id, title: JSON.parse(decodeURIComponent(video.title)), description: JSON.parse(decodeURIComponent(video.description)), author: JSON.parse(decodeURIComponent(video.author)), formats: JSON.parse(decodeURIComponent(video.formats)) };
 
 	let videoInfo;
-	try { videoInfo = await yt.dl.getInfo(id); }
+	try { videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
 	catch (e) {
-		if (e.toString().indexOf("private video") != -1) return { code: 401, error: "this video is private" };
+		if (e.toString().indexOf("private video") != -1) return { code: cookie ? 403 : 401, error: cookie ? "invalid cookie" : "this video is private" };
 		else if (e.toString().indexOf("video id found") != -1 || e.toString().indexOf("unavailable") != -1) return { code: 404, error: "video not found" };
 		else return { code: 500, error: "an unknown error occurred" };
 	}
@@ -33,41 +30,21 @@ async function getVideoDetails(id) {
 	return { code: 200, id, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, author: { display: videoInfo.videoDetails.author.name, username: videoInfo.videoDetails.author.user }, formats };
 }
 
-export default async function (client, interaction, options) {
-	await interaction.deferReply({ ephemeral: true });
+export default async (req, res) => {
+	switch (req.method) {
+		case "GET":
+			let id, cookie = req.get("auth"); // cookies are stored in temporary cache and *never* permanently saved
+			if (req.query.url) {
+				try { id = yt.dl.getURLVideoID(req.query.url); }
+				catch (e) { return res.status(400).json({ success: false, code: 400, error: "no video id found in url", args: req.query }); }
+			} else id = req.query.id;
+			if (!id) return res.status(400).json({ success: false, code: 400, error: "no video id provided", args: req.query });
+			let video = await getVideoDetails(id, cookie);
 
-	let id = options.find(x => x.name == "video").value;
-	try { id = yt.dl.getURLVideoID(id); }
-	catch (e) { return await interaction.editReply("no video id found in url"); }
-	let video = await getVideoDetails(id);
-
-	let more = false;
-	if (video.code == 200) await interaction.editReply({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, video, id, more) ] });
-	else if (video.code == 401) return await interaction.editReply({ components: [ components.openWebsite ], content: "this video is private, and requires cookies to download. this feature is only available on the website." });
-	else if (video.code == 404) return await interaction.editReply("video not found");
-	else return await interaction.editReply("an unknown error occurred");
-	(async function updateEmbed() {
-		try {
-			let buttonInteraction = (await interaction.channel.awaitMessageComponent({ filter: x => x.message.interaction.id == interaction.id, componentType: ComponentType.Button, time: 10000 }));
-			switch (buttonInteraction.customId) {
-				case "download":
-					await buttonInteraction.update({ components: [ components.downloadButtons(id, video.formats, false) ], embeds: [ components.videoEmbed(client, video, id, more) ] });
-					return updateEmbed();
-				case "more":
-					more = true;
-					await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, video, id, more) ] });
-					return updateEmbed();
-				case "less":
-					more = false;
-					await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, video, id, more) ] });
-					return updateEmbed();
-				case "back":
-					await buttonInteraction.update({ components: [ components.buttons(more) ], embeds: [ components.videoEmbed(client, video, id, more) ] });
-					return updateEmbed();
-			}
-		} catch (err) {
-			await interaction.editReply({ components: [ components.downloadButtons(id, video.formats, true) ], embeds: [ components.videoEmbed(client, video, id) ] });
-			await interaction.followUp({ components: [], content: "interaction ended due to inactivity", embeds: [], ephemeral: true });
-		}
-	})();
+			if (req.query.go) return res.redirect(video.code == 200 ? video.formats.download : "https://imaperson.dev/yt");
+			else if (req.query.audio) return res.redirect(video.code == 200 ? video.formats.audio : "https://imaperson.dev/yt");
+			else if (video.code != 200) return res.status(video.code).json({ success: false, code: video.code, error: video.error, args: req.query });
+			return res.status(200).json({ success: true, code: 200, video: { id, title: video.title, description: video.description, author: { name: video.author.display, username: video.author.username }, formats: video.formats }, args: req.query });
+		default: return res.status(405).json({ success: false, code: 405, error: "method not allowed", args: req.body });
+	}
 }

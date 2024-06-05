@@ -1,241 +1,157 @@
 import discordaudio from "discordaudio";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { ComponentType } from "discord.js";
 import mysql from "mysql";
 import util from "util";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
 import ytsr from "ytsr";
 
-var mysqlLogin = JSON.parse(process.env.MYSQL);
-mysqlLogin = Object.assign(mysqlLogin, { database: "yt" });
-var database = mysql.createPool(mysqlLogin);
-var query = util.promisify(database.query).bind(database);
+import * as components from "../components/ytstream.js";
 
-const yt = { dl: ytdl, pl: ytpl, sr: ytsr };
+let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }),
+	database = mysql.createPool(mysqlLogin),
+	query = util.promisify(database.query).bind(database);
+
+let yt = { dl: ytdl, pl: ytpl, sr: ytsr };
 
 async function getVideoDetails(id, cookie) {
-    const db = (await query("SELECT * FROM `videos` WHERE id=?", [id]))[0];
-    if (db && db.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) {
-        return { success: true, formats: JSON.parse(decodeURIComponent(db.formats)), author: decodeURIComponent(db.author), title: decodeURIComponent(db.title), description: decodeURIComponent(db.description), length: db.length, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
-    }
+	let video = (await query("SELECT * FROM `videos` WHERE id=?", [ id ]))[0];
+	if (video && video.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) return { code: 200, id, title: JSON.parse(decodeURIComponent(video.title)), description: JSON.parse(decodeURIComponent(video.description)), author: JSON.parse(decodeURIComponent(video.author)), formats: JSON.parse(decodeURIComponent(video.formats)) };
 
-    var videoInfo;
-    if (cookie) {
-        try {
-            videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie } } });
-        } catch (e) {
-            return { success: false, message: "invalid_cookie", code: 403 };
-        }
-    } else {
-        try {
-            videoInfo = await yt.dl.getInfo(id);
-        } catch (e) {
-            if (e.statusCode == 410) return { success: false, message: "cookies_required", code: 410 };
-            return { success: false, e };
-        }
-    }
-    
-    var hd;
-    try { hd = videoInfo.formats.find(x => x.itag == 22).url; } catch (e) {}
-    var sd = videoInfo.formats.find(x => x.itag == 18).url;
-    var audio = videoInfo.formats.find(x => x.itag == 140).url;
-    var formats = { hd, sd, audio };
-    
-    if ((await query("SELECT * FROM `videos` WHERE video=?", [id]))[0]) {
-        if (!videoInfo.videoDetails.isPrivate) await query("UPDATE `videos` SET author=?, title=?, description=?, length=?, formats=? WHERE video=?", [encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description) || "", videoInfo.videoDetails.lengthSeconds, JSON.stringify(formats), id]);
-    } else {
-        await query("ALTER TABLE `videos` AUTO_INCREMENT=?", [(await query("SELECT MAX(`id`) AS max FROM `videos`"))[0].max]);
-        if (!videoInfo.videoDetails.isPrivate) await query("INSERT INTO `videos`(`video`, `author`, `title`, `description`, `formats`) VALUES (?,?,?,?,?)", [id, encodeURIComponent(videoInfo.videoDetails.author.name), encodeURIComponent(videoInfo.videoDetails.title), encodeURIComponent(videoInfo.videoDetails.description) || "", videoInfo.videoDetails.lengthSeconds, JSON.stringify(formats)])
-    }
+	let videoInfo;
+	try { videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
+	catch (e) {
+		if (e.toString().indexOf("private video") != -1) return { code: cookie ? 403 : 401, error: cookie ? "invalid cookie" : "this video is private" };
+		else if (e.toString().indexOf("video id found") != -1 || e.toString().indexOf("unavailable") != -1) return { code: 404, error: "video not found" };
+		else return { code: 500, error: "an unknown error occurred" };
+	}
 
-    return { success: true, formats: formats, info: { author: videoInfo.videoDetails.author.name, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, length: videoInfo.videoDetails.lengthSeconds, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` } };
+	let formats = { download: videoInfo.formats.filter(video => video.hasVideo && video.hasAudio).sort((a, b) => b.height * b.width - a.height * a.width)[0].url, video: videoInfo.formats.filter(video => video.hasVideo && !video.hasAudio).sort((a, b) => b.height * b.width - a.height * a.width)[0].url, audio: videoInfo.formats.filter(x => !x.hasVideo && x.hasAudio).sort((a, b) => b.audioBitrate - a.audioBitrate)[0].url };
+	if (videoInfo.videoDetails.isPrivate);
+	else if ((await query("SELECT * FROM `videos` WHERE id=?", [id]))[0]) await query("UPDATE `videos` SET `title`=?, `description`=?, `author`=?, `formats`=?, `timestamp`=? WHERE `id`=?", [ encodeURIComponent(JSON.stringify(videoInfo.videoDetails.title)), encodeURIComponent(JSON.stringify(videoInfo.videoDetails.description)), encodeURIComponent(JSON.stringify({ display: videoInfo.videoDetails.author.name, username: videoInfo.videoDetails.author.user })), encodeURIComponent(JSON.stringify(formats)), Math.round(new Date().getTime() / 1000), id ]);
+	else await query("INSERT INTO `videos`(`id`, `title`, `description`, `author`, `formats`, `timestamp`) VALUES (?,?,?,?,?,?)", [ id, encodeURIComponent(JSON.stringify(videoInfo.videoDetails.title)), encodeURIComponent(JSON.stringify(videoInfo.videoDetails.description)), encodeURIComponent(JSON.stringify({ display: videoInfo.videoDetails.author.name, username: videoInfo.videoDetails.author.user })), encodeURIComponent(JSON.stringify(formats)), Math.round(new Date().getTime() / 1000) ]);
+
+	return { code: 200, id, title: videoInfo.videoDetails.title, description: videoInfo.videoDetails.description, author: { display: videoInfo.videoDetails.author.name, username: videoInfo.videoDetails.author.user }, formats };
 }
 
-const connections = new Map();
-
+let connections = new Map();
 export default async function (client, interaction, options) {
-    await interaction.deferReply({ ephemeral: true });
+	await interaction.deferReply({ ephemeral: true });
 
-    const vc = interaction.member.voice.channel;
+	let vc = interaction.member.voice.channel;
+	if (!vc) return await interaction.editReply("you are not in a voice channel");
 
-    if (!vc) return await interaction.editReply("You are not in a voice channel.");
-    
-    switch (interaction.options._subcommand) {
-        case "alias":
-            break;
-        case "endloop":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-            
-            audioManager.loop(vc, audioManager.looptypes.off);
+	let audioManager = connections.get(vc);
+	switch (interaction.options._subcommand) {
+		case "endloop":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			audioManager.loop(vc, audioManager.looptypes.off);
+			await interaction.editReply("stopped loop");
+			break;
+		case "loop":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			audioManager.loop(vc, audioManager.looptypes.loop);
+			await interaction.editReply(`looping "${(await audioManager.queue(vc))[0].title}"`);
+			break;
+		case "loopqueue":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			audioManager.loop(vc, audioManager.looptypes.off);
+			await interaction.editReply("looping queue");
+			break;
+		case "play":
+			let songID = options.find(x => x.name == "song").value;
+			try { songID = yt.dl.getURLVideoID(songID); }
+			catch (e) { return await interaction.editReply("no song id found in url"); }
+			let song = await getVideoDetails(songID);
 
-            await interaction.editReply("Stopped loop");
+			audioManager = audioManager || new discordaudio.AudioManager();
+			if (connections.get(vc) && audioManager.queue(vc).find(x => x.url == options.find(x => x.name == "song").value)) return await interaction.editReply("the song submitted is already in the queue or is playing");
 
-            break;
-        case "loop":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+			let manager = await audioManager.play(vc, options.find(x => x.name == "song").value, { autoleave: true, quality: "high" });
+			connections.set(vc, audioManager);
+			audioManager.on("end", vc => connections.delete(vc));
+			if (!manager) await interaction.editReply(`playing "${song.title}" in :loud_sound: ${client.channels.cache.get(vc.id).name}`);
+			else await interaction.editReply(`added "${song.title}" to queue`);
 
-            audioManager.loop(vc, audioManager.looptypes.loop);
+			break;
+		case "playlist":
+			let playlistID = options.find(x => x.name == "playlist").value;
+			try { playlistID = await yt.pl.getPlaylistID(playlistID); }
+			catch (e) { return await interaction.editReply("no playlist id found in url"); }
+			let { title, items } = (await yt.pl(playlistID, { limit: Infinity, pages: Infinity }));
 
-            var playing = (await audioManager.queue(vc))[0].title;
-            await interaction.editReply(`Looping "${playing}"`);
+			audioManager = audioManager || new discordaudio.AudioManager();
+			for await (let item of items.map(item => item.shortUrl))
+				if (!connections.get(vc) || !audioManager.queue(vc).find(x => x.url == item)) await audioManager.play(vc, song);
+			connections.set(vc, audioManager);
+			audioManager.on("end", vc => connections.delete(vc));
+			await interaction.editReply(`added ${items.length} songs from "${title}" to queue`);
 
-            break;
-        case "loopqueue":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
+			break;
+		case "pause":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			await interaction.editReply(`paused "${(await audioManager.queue(vc))[0].title}"`);
+			audioManager.pause(vc);
+			break;
+		case "resume":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			await interaction.editReply(`resumed "${(await audioManager.queue(vc))[0].title}"`);
+			audioManager.resume(vc);
+			break;
+		case "skip":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			await interaction.editReply(`skipped "${(await audioManager.queue(vc))[0].title}"`);
+			if (audioManager.queue(vc).length == 1) connections.delete(vc);
+			await audioManager.skip(vc);
+			break;
+		case "stop":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
+			await audioManager.stop(vc);
+			await interaction.editReply("stopped");
+			connections.delete(vc);
+			break;
+		case "queue":
+			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
 
-            audioManager.loop(vc, audioManager.looptypes.off);
+			async function generateEmbed(selection = 0, ended) {
+				if (!connections.get(vc)) return { components: [], content: "queue is empty", embeds: [] };
+				let queue = audioManager.queue(vc),
+					description = "";
+				queue.forEach((song, index) => description += `${(index == selection) ? "**" : ""}${index + 1}${(index == selection) ? "**" : ""} - [${song.title}](${song.url})${index == 0 ? " - now playing" : ""}\n` );
+				let queueEmbed = components.queueEmbed(description),
+					row = components.queueButtons(ended, selection, queue);
+				return { components: [ row ], embeds: [ queueEmbed ] };
+			}
+			await interaction.editReply(await generateEmbed());
 
-            await interaction.editReply("Looping queue");
+			let selection = 0;
+			(async function updateEmbed() {
+				try {
+					let buttonInteraction = (await client.channels.cache.get(interaction.channelId).awaitMessageComponent({ componentType: ComponentType.Button, time: 10000 }));
+					switch (buttonInteraction.customId) {
+						case "end":
+							await buttonInteraction.update(await generateEmbed(selection, true));
+							break;
+						case "remove":
+							await audioManager.deletequeue(vc, audioManager.queue(vc)[selection].url);
+							if (selection > audioManager.queue(vc).length - 1) selection = audioManager.queue(vc).length - 1;
+							await buttonInteraction.update(await generateEmbed(selection));
+							return updateEmbed();
+						case "next":
+							selection++;
+							await buttonInteraction.update(await generateEmbed(selection));
+							return updateEmbed();
+						case "prev":
+							selection--;
+							await buttonInteraction.update(await generateEmbed(selection));
+							return updateEmbed();
+					}
+				} catch (err) {
+					await interaction.editReply(await generateEmbed(selection, true));
+					await interaction.followUp({ components: [], content: "interaction ended due to inactivity", embeds: [], ephemeral: true })
+				}
+			})();
 
-            break;
-        case "play":
-            if (!yt.dl.validateURL(options.find(x => x.name == "song").value)) return await interaction.editReply("The song submitted does not exist.");
-
-            var id = yt.dl.getVideoID(options.find(x => x.name == "song").value);
-            
-            const songInfo = (await getVideoDetails(id)).info;
-            
-            var audioManager = connections.get(vc) || new discordaudio.AudioManager();
-            
-            if (connections.get(vc) && audioManager.queue(vc).find(x => x.url == options.find(x => x.name == "song").value)) return await interaction.editReply("The song submitted is already in the queue or is playing.");
-            
-            const manager = await audioManager.play(vc, options.find(x => x.name == "song").value, { // You're probably wondering why I'm using a 3rd party library for streaming the actual song. The reason is whenever I do it from the URL I get it just cuts out randomly. I don't know how this does it better (hopefully not by downloading it) but it works.
-                autoleave: true,
-                quality: "high"
-            });
-            
-            connections.set(vc, audioManager);
-
-            audioManager.on("end", vc => connections.delete(vc));
-
-            if (!manager) await interaction.editReply(`Playing "${songInfo.title}" in :loud_sound: ${client.channels.cache.get(vc.id).name}`);
-            else await interaction.editReply(`Added "${songInfo.title}" to queue`);
-
-            break;
-        case "pause":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            audioManager.pause(vc);
-
-            var playing = (await audioManager.queue(vc))[0].title;
-            await interaction.editReply(`Paused "${playing}"`);
-
-            break;
-        case "resume":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            audioManager.resume(vc);
-
-            var playing = (await audioManager.queue(vc))[0].title;
-            await interaction.editReply(`Resumed "${playing}"`);
-
-            break;
-        case "skip":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            var playing = (await audioManager.queue(vc))[0].title;
-
-            await audioManager.skip(vc);
-
-            await interaction.editReply(`Skipped "${playing}"`);
-
-            break;
-        case "stop":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            await audioManager.stop(vc);
-            await interaction.editReply("Stopped");
-
-            connections.delete(vc);
-            break;
-        case "queue":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            async function generateEmbed(selection = 0, ended) {
-                const queue = audioManager.queue(vc);
-
-                const queueEmbed = new EmbedBuilder()
-                    .setTitle("Queue");
-
-                var description = "";
-                queue.forEach((x, i) => description += `${(i == selection) ? "**" : ""}${i + 1}${(i == selection) ? "**" : ""} - [${x.title}](${x.url})${i == 0 ? " - Now Playing" : ""}\n` );
-                queueEmbed.setDescription(description);
-
-                const row = new ActionRowBuilder()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId("prev")
-                            .setEmoji("937226629439176725")
-                            .setStyle(ButtonStyle.Primary)
-                            .setDisabled(ended || selection == 0),
-                        new ButtonBuilder()
-                            .setCustomId("next")
-                            .setEmoji("937226629581791252")
-                            .setStyle(ButtonStyle.Primary)
-                            .setDisabled(ended || selection == queue.length - 1),
-                        new ButtonBuilder()
-                            .setCustomId("remove")
-                            .setEmoji("937227759904780299")
-                            .setStyle(ButtonStyle.Danger)
-                            .setDisabled(ended || selection == 0),
-                        new ButtonBuilder()
-                            .setCustomId("end")
-                            .setLabel("End Interaction")
-                            .setStyle(ButtonStyle.Danger)
-                            .setDisabled(ended || false),
-                    )
-
-                return { components: [ row ], embeds: [ queueEmbed ] };
-            }
-
-            await interaction.editReply(await generateEmbed());
-
-            var selection = 0;
-
-            (async function updateEmbed() {
-                try {
-                    const buttonInteraction = (await client.channels.cache.get(interaction.channelId).awaitMessageComponent({ componentType: "BUTTON", time: 10000 }));
-                    
-                    const btn = buttonInteraction.customId;
-
-                    switch (btn) {
-                        case "end":
-                            await buttonInteraction.update(await generateEmbed(selection, true));
-                            break;
-                        case "remove":
-                            await audioManager.deletequeue(vc, audioManager.queue(vc)[selection].url);
-                            if (selection > audioManager.queue(vc).length - 1) selection = audioManager.queue(vc).length - 1;
-                            await buttonInteraction.update(await generateEmbed(selection));
-                            return updateEmbed();
-                        case "next":
-                            selection++;
-                            await buttonInteraction.update(await generateEmbed(selection));
-                            return updateEmbed();
-                        case "prev":
-                            selection--;
-                            await buttonInteraction.update(await generateEmbed(selection));
-                            return updateEmbed();
-                    }
-                } catch (err) {
-                    await interaction.editReply(await generateEmbed(selection, true));
-                    await interaction.followUp({ components: [ ], content: "Interaction ended due to inactivity", embeds: [ ], ephemeral: true })
-                }
-            })();
-
-            break;
-        case "volume":
-            var audioManager = connections.get(vc);
-            if (!audioManager) return await interaction.editReply("I'm not playing anything in the voice channel you're in.");
-
-            audioManager.volume(vc, options.find(x => x.name == "new").value);
-            break;
-    }
+			break;
+	}
 }

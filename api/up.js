@@ -1,0 +1,1 @@
+export default (req, res) => res.status(200).json({ success: true, code: 200, args: req.query });

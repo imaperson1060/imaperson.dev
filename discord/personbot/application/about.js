@@ -4,4 +4,4 @@ export let requires = [];
 
 export let data = new SlashCommandBuilder()
 	.setName("about")
-	.setDescription("Information about the bot.")
+	.setDescription("information about the bot");

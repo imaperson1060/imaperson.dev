@@ -1,542 +1,269 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
-    <head>
-        <title>imaperson.dev | personbot</title>
-        <meta name="description" content="my sad, sad attempt at a discord bot">
-        <meta name="keywords" content="imaperson, imaperson1060, discord, personbot, discord bot">
-        <meta name="author" content="imaperson">
-        <meta property="og:image" content="personbot.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <link rel="stylesheet" href="/style.css">
+	<head>
+		<title>imaperson.dev | personbot</title>
+		<meta name="description" content="my sad, sad attempt at a discord bot">
+		<meta name="keywords" content="imaperson, imaperson1060, imaperson.dev, discord, personbot, discord bot">
+		<meta name="author" content="imaperson">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:image" content="personbot.png">
+		<link rel="icon" href="https://avatars.githubusercontent.com/u/68653653">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <script src="/socket.io.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+	</head>
 
-        <script src="/script.js"></script>
-        <script src="/nav.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>personbot</h1>
-            <p class="lead">one of the most <strike>useless</strike> useful discord bots</p>
+	<body class="mb-5">
+		<div class="mb-4" hx-get="/nav.html" hx-trigger="load"></div>
 
-            <br>
+		<div class="container">
+			<h1>personbot</h1>
+			<p class="lead">one of the most <strike>useless</strike> useful discord bots</p>
 
-            <h5>features:</h5>
-            <ul>
-                <li>url shortener</li>
-                <li>youtube downloader</li>
-                <li>youtube streaming</li>
-            </ul>
-            
-            <p class="lead"><strike>that... that's it?</strike></p>
+			<h5 class="mt-4">features:</h5>
+			<ul>
+				<li>url shortener</li>
+				<li>youtube downloader</li>
+				<li>youtube streaming</li>
+			</ul>
+			
+			<p class="lead"><strike>that... that's it?</strike></p>
 
-            <br>
+			<h5 class="mt-4"><a href="https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=2150632448&scope=bot%20applications.commands" target="_blank">invite personbot</a></h5>
+			<p class="lead">or don't, it's not like i'll ever know.</p>
+			<p class="mt-2 lead">okay, fine, it just does the stuff my website does, but in your discord server. i'm too lazy to add anything new.</p>
 
-            <h5><a href="https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=2150632448&scope=bot%20applications.commands" target="_blank">invite personbot</a></h5>
-            <p class="lead">or don't, it's not like i'll ever know.</p>
+			<h5 class="mt-4">customize personbot</h5>
+			<p class="lead">run /update to generate the slash commands for your guild based on the permissions defined below. (if @everyone has a permission, personbot will have it too)</p>
+			<b>your custom invite link: </b><a id="customInvite" href="#" target="_blank"></a><br>
 
-            <br>
-
-            <p class="lead">okay, fine, it just does the stuff my website does, but in your discord server. i'm too lazy to add anything new.</p>
-
-            <br>
-
-            <h5>customize personbot</h5>
-            <p class="lead">run /update to generate the slash commands for your guild based on the permissions defined below. (if @everyone has a permission, personbot will have it too)</p>
-            <a id="customInvite" href="#" target="_blank"></a>
-            <br>
-            <button class="btn btn-primary btn-sm" onclick="hideUnused()">show/hide unused permissions</button>
-            <!--
-            <button class="btn btn-primary btn-sm" onclick="enableAll()">enable all permissions</button>
-            <button class="btn btn-primary btn-sm" onclick="disableAll()">disable all permissions</button>
-            -->
-            <button class="btn btn-primary btn-sm" onclick="resetAll()">reset</button>
-            <table class="table table-bordered table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">enabled</th>
-                        <th scope="col">permission / command</th>
-                        <th scope="col">description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalAdministrator" class="form-check-input" type="checkbox" value="8">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalAdministrator').click();">administrator</td>
-                        <td id="generalAdministrator_requiredby" onclick="$('#generalAdministrator').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalViewAuditLog" class="form-check-input" type="checkbox" value="128">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalViewAuditLog').click();">view audit log</td>
-                        <td id="generalViewAuditLog_requiredby" onclick="$('#generalViewAuditLog').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalViewGuildInsights" class="form-check-input" type="checkbox" value="524288">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalViewGuildInsights').click();">view server insights</td>
-                        <td id="generalViewGuildInsights_requiredby" onclick="$('#generalViewGuildInsights').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageGuild" class="form-check-input" type="checkbox" value="32">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageGuild').click();">manage server</td>
-                        <td id="generalManageGuild_requiredby" onclick="$('#generalManageGuild').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageRoles" class="form-check-input" type="checkbox" value="268435456">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageRoles').click();">manage roles</td>
-                        <td id="generalManageRoles_requiredby" onclick="$('#generalManageRoles').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageChannels" class="form-check-input" type="checkbox" value="16">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageChannels').click();">manage channels</td>
-                        <td id="generalManageChannels_requiredby" onclick="$('#generalManageChannels').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalKickMembers" class="form-check-input" type="checkbox" value="2">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalKickMembers').click();">kick members</td>
-                        <td id="generalKickMembers_requiredby" onclick="$('#generalKickMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalBanMembers" class="form-check-input" type="checkbox" value="4">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalBanMembers').click();">ban members</td>
-                        <td id="generalBanMembers_requiredby" onclick="$('#generalBanMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalCreateInvite" class="form-check-input" type="checkbox" value="1">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalCreateInvite').click();">create instant invite</td>
-                        <td id="generalCreateInvite_requiredby" onclick="$('#generalCreateInvite').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalChangeNickname" class="form-check-input" type="checkbox" value="67108864">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalChangeNickname').click();">change nickname</td>
-                        <td id="generalChangeNickname_requiredby" onclick="$('#generalChangeNickname').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageNicknames" class="form-check-input" type="checkbox" value="134217728">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageNicknames').click();">manage nicknames</td>
-                        <td id="generalManageNicknames_requiredby" onclick="$('#generalManageNicknames').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageEmojis" class="form-check-input" type="checkbox" value="1073741824">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageEmojis').click();">manage emojis and Stickers</td>
-                        <td id="generalManageEmojis_requiredby" onclick="$('#generalManageEmojis').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageWebhooks" class="form-check-input" type="checkbox" value="536870912">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageWebhooks').click();">manage webhooks</td>
-                        <td id="generalManageWebhooks_requiredby" onclick="$('#generalManageWebhooks').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalViewChannels" class="form-check-input" type="checkbox" value="1024">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalViewChannels').click();">read messages / view channels</td>
-                        <td id="generalViewChannels_requiredby" onclick="$('#generalViewChannels').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalManageEvents" class="form-check-input" type="checkbox" value="8589934592">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalManageEvents').click();">manage events</td>
-                        <td id="generalManageEvents_requiredby" onclick="$('#generalManageEvents').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="generalModerateMembers" class="form-check-input" type="checkbox" value="1099511627776">
-                            </div>
-                        </th>
-                        <td onclick="$('#generalModerateMembers').click();">moderate members</td>
-                        <td id="generalModerateMembers_requiredby" onclick="$('#generalModerateMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textSendMessages" class="form-check-input" type="checkbox" value="2048">
-                            </div>
-                        </th>
-                        <td onclick="$('#textSendMessages').click();">send messages</td>
-                        <td id="textSendMessages_requiredby" onclick="$('#textSendMessages').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textCreatePublicThreads" class="form-check-input" type="checkbox" value="34359738368">
-                            </div>
-                        </th>
-                        <td onclick="$('#textCreatePublicThreads').click();">create public threads</td>
-                        <td id="textCreatePublicThreads_requiredby" onclick="$('#textCreatePublicThreads').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textCreatePrivateThreads" class="form-check-input" type="checkbox" value="68719476736">
-                            </div>
-                        </th>
-                        <td onclick="$('#textCreatePrivateThreads').click();">create private threads</td>
-                        <td id="textCreatePrivateThreads_requiredby" onclick="$('#textCreatePrivateThreads').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textSendMessagesThreads" class="form-check-input" type="checkbox" value="274877906944">
-                            </div>
-                        </th>
-                        <td onclick="$('#textSendMessagesThreads').click();">send messages in threads</td>
-                        <td id="textSendMessagesThreads_requiredby" onclick="$('#textSendMessagesThreads').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textSendTTSMessages" class="form-check-input" type="checkbox" value="274877906944">
-                            </div>
-                        </th>
-                        <td onclick="$('#textSendTTSMessages').click();">send tts messages</td>
-                        <td id="textSendTTSMessages_requiredby" onclick="$('#textSendTTSMessages').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textManageMessages" class="form-check-input" type="checkbox" value="8192">
-                            </div>
-                        </th>
-                        <td onclick="$('#textManageMessages').click();">manage messages</td>
-                        <td id="textManageMessages_requiredby" onclick="$('#textManageMessages').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textManageThreads" class="form-check-input" type="checkbox" value="17179869184">
-                            </div>
-                        </th>
-                        <td onclick="$('#textManageThreads').click();">manage threads</td>
-                        <td id="textManageThreads_requiredby" onclick="$('#textManageThreads').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textEmbedLinks" class="form-check-input" type="checkbox" value="16384">
-                            </div>
-                        </th>
-                        <td onclick="$('#textEmbedLinks').click();">embed links</td>
-                        <td id="textEmbedLinks_requiredby" onclick="$('#textEmbedLinks').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textAttachFiles" class="form-check-input" type="checkbox" value="32768">
-                            </div>
-                        </th>
-                        <td onclick="$('#textAttachFiles').click();">attach files</td>
-                        <td id="textAttachFiles_requiredby" onclick="$('#textAttachFiles').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textReadMessageHistory" class="form-check-input" type="checkbox" value="65536">
-                            </div>
-                        </th>
-                        <td onclick="$('#textReadMessageHistory').click();">read message history</td>
-                        <td id="textReadMessageHistory_requiredby" onclick="$('#textReadMessageHistory').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textMentionEveryone" class="form-check-input" type="checkbox" value="131072">
-                            </div>
-                        </th>
-                        <td onclick="$('#textMentionEveryone').click();">mention everyone</td>
-                        <td id="textMentionEveryone_requiredby" onclick="$('#textMentionEveryone').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textUseExternalEmojis" class="form-check-input" type="checkbox" value="262144">
-                            </div>
-                        </th>
-                        <td onclick="$('#textUseExternalEmojis').click();">use external emojis</td>
-                        <td id="textUseExternalEmojis_requiredby" onclick="$('#textUseExternalEmojis').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textUseExternalStickers" class="form-check-input" type="checkbox" value="137438953472">
-                            </div>
-                        </th>
-                        <td onclick="$('#textUseExternalStickers').click();">use external stickers</td>
-                        <td id="textUseExternalStickers_requiredby" onclick="$('#textUseExternalStickers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textAddReactions" class="form-check-input" type="checkbox" value="64">
-                            </div>
-                        </th>
-                        <td onclick="$('#textAddReactions').click();">add reactions</td>
-                        <td id="textAddReactions_requiredby" onclick="$('#textAddReactions').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="textUseSlashCommands" class="form-check-input" type="checkbox" value="2147483648">
-                            </div>
-                        </th>
-                        <td onclick="$('#textUseSlashCommands').click();">use slash commands</td>
-                        <td id="textUseSlashCommands_requiredby" onclick="$('#textUseSlashCommands').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceConnect" class="form-check-input" type="checkbox" value="1048576">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceConnect').click();">connect to voice channels</td>
-                        <td id="voiceConnect_requiredby" onclick="$('#voiceConnect').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceSpeak" class="form-check-input" type="checkbox" value="2097152">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceSpeak').click();">speak in voice channels</td>
-                        <td id="voiceSpeak_requiredby" onclick="$('#voiceSpeak').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceStream" class="form-check-input" type="checkbox" value="512">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceStream').click();">stream in voice channels</td>
-                        <td id="voiceStream_requiredby" onclick="$('#voiceStream').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceMuteMembers" class="form-check-input" type="checkbox" value="4194304">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceMuteMembers').click();">mute members</td>
-                        <td id="voiceMuteMembers_requiredby" onclick="$('#voiceMuteMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceDeafenMembers" class="form-check-input" type="checkbox" value="8388608">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceDeafenMembers').click();">deafen members</td>
-                        <td id="voiceDeafenMembers_requiredby" onclick="$('#voiceDeafenMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceMoveMembers" class="form-check-input" type="checkbox" value="16777216">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceMoveMembers').click();">move members</td>
-                        <td id="voiceMoveMembers_requiredby" onclick="$('#voiceMoveMembers').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voiceUseVAD" class="form-check-input" type="checkbox" value="33554432">
-                            </div>
-                        </th>
-                        <td onclick="$('#voiceUseVAD').click();">use voice activity</td>
-                        <td id="voiceUseVAD_requiredby" onclick="$('#voiceUseVAD').click();">required by nothing</td>
-                    </tr>
-                    <tr class="permission">
-                        <th scope="row">
-                            <div class="form-check form-switch">
-                                <input id="voicePrioritySpeaker" class="form-check-input" type="checkbox" value="256">
-                            </div>
-                        </th>
-                        <td onclick="$('#voicePrioritySpeaker').click();">priority speaker</td>
-                        <td id="voicePrioritySpeaker_requiredby" onclick="$('#voicePrioritySpeaker').click();">required by nothing</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <script>
-            /*var perms = {
-	            generalAdministrator: 8,
-	            generalViewAuditLog: 128,
-	            generalViewGuildInsights: 524288,
-	            generalManageGuild: 32,
-	            generalManageRoles: 268435456,
-	            generalManageChannels: 16,
-	            generalKickMembers: 2,
-	            generalBanMembers: 4,
-                generalCreateInvite: 1,
-	            generalChangeNickname: 67108864,
-	            generalManageNicknames: 134217728,
-	            generalManageEmojis: 1073741824,
-	            generalManageWebhooks: 536870912,
-                generalViewChannels: 1024,
-	            generalManageEvents: 8589934592,
-                generalModerateMembers: 1099511627776,
-	            textSendMessages: 2048,
-	            textCreatePublicThreads: 34359738368,
-	            textCreatePrivateThreads: 68719476736,
-	            textSendMessagesThreads: 274877906944,
-	            textSendTTSMessages: 4096,
-	            textManageMessages: 8192,
-	            textManageThreads: 17179869184,
-	            textEmbedLinks: 16384,
-	            textAttachFiles: 32768,
-	            textReadMessageHistory: 65536,
-	            textMentionEveryone: 131072,
-	            textUseExternalEmojis: 262144,
-	            textUseExternalStickers: 137438953472,
-	            textAddReactions: 64,
-	            textUseSlashCommands: 2147483648,
-	            voiceConnect: 1048576,
-	            voiceSpeak: 2097152,
-	            voiceStream: 512,
-	            voiceMuteMembers: 4194304,
-	            voiceDeafenMembers: 8388608,
-	            voiceMoveMembers: 16777216,
-	            voiceUseVAD: 33554432,
-	            voicePrioritySpeaker: 256
-            } for anyone who needs it */
-
-            const required = [ { name: "generalViewChannels", requiredby: [ "/ytstream" ] }, { name: "voiceConnect", requiredby: [ "/ytstream" ] }, { name: "voiceSpeak", requiredby: [ "/ytstream" ] } ];
-
-            function hideUnused() { $(".permission").each((i, x) => { if (!required.find(x => x.name == $(".form-check-input")[i].id)) $(x).toggle() }); }
-            function enableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", true)); updatePermissions(); }
-            function disableAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", false)); updatePermissions(); }
-            function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (!!required.find(y => y.name == x.id)))); updatePermissions(); }
-
-            hideUnused();
-            resetAll();
-            $(".form-check-input").each((i, x) => $(`#${x.id}_requiredby`).html(required.find(y => y.name == x.id) ? `Required by <code>${required.find(y => y.name == x.id).requiredby.join("</code>, <code>")}</code>`.replace(/,([^,]*)$/, ", and $1").replace(/,([^,]*)$/, ",$1") : "required by nothing"));
-
-            function updatePermissions() {
-                var permissions = 0;
-                $(".form-check-input").each((i, x) => { if ($(x).is(":checked")) permissions += parseInt($(x).val()) });
-                $("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
-                $("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
-                if ($("#generalAdministrator").is(":checked")) {
-                    $("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
-                    $("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
-                    $(".form-check-input").each((i, x) => { if (x.id != "generalAdministrator") $(x).prop("disabled", true) });
-                } else {
-                    $(".form-check-input").each((i, x) => $(x).prop("disabled", false));
-                }
-            }
-
-            updatePermissions();
-
-            $(".form-check-input").click(() => updatePermissions());
-        </script>
-
-        <script type="application/ld+json">
-            [
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "personbot"
-                        }
-                    ]
-                },
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "random",
-                            "item": "https://imaperson.dev/random"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 3,
-                            "name": "personbot"
-                        }
-                    ]
-                }
-            ]
-        </script>
-    </body>
+			<button class="btn btn-primary btn-sm" onclick="hideUnused()">show/hide unused permissions</button>
+			<button class="btn btn-primary btn-sm" onclick="resetAll()">reset</button>
+			<table class="table table-bordered table-hover mt-3">
+				<thead><tr><th scope="col">enabled</th><th scope="col">permission / command</th><th scope="col">description</th></tr></thead>
+				<tbody>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalAdministrator" class="form-check-input" type="checkbox" value="8"></div></th>
+						<td onclick="$('#generalAdministrator').click();">administrator</td>
+						<td id="generalAdministrator_requiredby" onclick="$('#generalAdministrator').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalViewAuditLog" class="form-check-input" type="checkbox" value="128"></div></th>
+						<td onclick="$('#generalViewAuditLog').click();">view audit log</td>
+						<td id="generalViewAuditLog_requiredby" onclick="$('#generalViewAuditLog').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalViewGuildInsights" class="form-check-input" type="checkbox" value="524288"></div></th>
+						<td onclick="$('#generalViewGuildInsights').click();">view server insights</td>
+						<td id="generalViewGuildInsights_requiredby" onclick="$('#generalViewGuildInsights').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageGuild" class="form-check-input" type="checkbox" value="32"></div></th>
+						<td onclick="$('#generalManageGuild').click();">manage server</td>
+						<td id="generalManageGuild_requiredby" onclick="$('#generalManageGuild').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageRoles" class="form-check-input" type="checkbox" value="268435456"></div></th>
+						<td onclick="$('#generalManageRoles').click();">manage roles</td>
+						<td id="generalManageRoles_requiredby" onclick="$('#generalManageRoles').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageChannels" class="form-check-input" type="checkbox" value="16"></div></th>
+						<td onclick="$('#generalManageChannels').click();">manage channels</td>
+						<td id="generalManageChannels_requiredby" onclick="$('#generalManageChannels').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalKickMembers" class="form-check-input" type="checkbox" value="2"></div></th>
+						<td onclick="$('#generalKickMembers').click();">kick members</td>
+						<td id="generalKickMembers_requiredby" onclick="$('#generalKickMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalBanMembers" class="form-check-input" type="checkbox" value="4"></div></th>
+						<td onclick="$('#generalBanMembers').click();">ban members</td>
+						<td id="generalBanMembers_requiredby" onclick="$('#generalBanMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalCreateInvite" class="form-check-input" type="checkbox" value="1"></div></th>
+						<td onclick="$('#generalCreateInvite').click();">create instant invite</td>
+						<td id="generalCreateInvite_requiredby" onclick="$('#generalCreateInvite').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalChangeNickname" class="form-check-input" type="checkbox" value="67108864"></div></th>
+						<td onclick="$('#generalChangeNickname').click();">change nickname</td>
+						<td id="generalChangeNickname_requiredby" onclick="$('#generalChangeNickname').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageNicknames" class="form-check-input" type="checkbox" value="134217728"></div></th>
+						<td onclick="$('#generalManageNicknames').click();">manage nicknames</td>
+						<td id="generalManageNicknames_requiredby" onclick="$('#generalManageNicknames').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageEmojis" class="form-check-input" type="checkbox" value="1073741824"></div></th>
+						<td onclick="$('#generalManageEmojis').click();">manage emojis and Stickers</td>
+						<td id="generalManageEmojis_requiredby" onclick="$('#generalManageEmojis').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageWebhooks" class="form-check-input" type="checkbox" value="536870912"></div></th>
+						<td onclick="$('#generalManageWebhooks').click();">manage webhooks</td>
+						<td id="generalManageWebhooks_requiredby" onclick="$('#generalManageWebhooks').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalViewChannels" class="form-check-input" type="checkbox" value="1024"></div></th>
+						<td onclick="$('#generalViewChannels').click();">read messages / view channels</td>
+						<td id="generalViewChannels_requiredby" onclick="$('#generalViewChannels').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalManageEvents" class="form-check-input" type="checkbox" value="8589934592"></div></th>
+						<td onclick="$('#generalManageEvents').click();">manage events</td>
+						<td id="generalManageEvents_requiredby" onclick="$('#generalManageEvents').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="generalModerateMembers" class="form-check-input" type="checkbox" value="1099511627776"></div></th>
+						<td onclick="$('#generalModerateMembers').click();">moderate members</td>
+						<td id="generalModerateMembers_requiredby" onclick="$('#generalModerateMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textSendMessages" class="form-check-input" type="checkbox" value="2048"></div></th>
+						<td onclick="$('#textSendMessages').click();">send messages</td>
+						<td id="textSendMessages_requiredby" onclick="$('#textSendMessages').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textCreatePublicThreads" class="form-check-input" type="checkbox" value="34359738368"></div></th>
+						<td onclick="$('#textCreatePublicThreads').click();">create public threads</td>
+						<td id="textCreatePublicThreads_requiredby" onclick="$('#textCreatePublicThreads').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textCreatePrivateThreads" class="form-check-input" type="checkbox" value="68719476736"></div></th>
+						<td onclick="$('#textCreatePrivateThreads').click();">create private threads</td>
+						<td id="textCreatePrivateThreads_requiredby" onclick="$('#textCreatePrivateThreads').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textSendMessagesThreads" class="form-check-input" type="checkbox" value="274877906944"></div></th>
+						<td onclick="$('#textSendMessagesThreads').click();">send messages in threads</td>
+						<td id="textSendMessagesThreads_requiredby" onclick="$('#textSendMessagesThreads').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textSendTTSMessages" class="form-check-input" type="checkbox" value="274877906944"></div></th>
+						<td onclick="$('#textSendTTSMessages').click();">send tts messages</td>
+						<td id="textSendTTSMessages_requiredby" onclick="$('#textSendTTSMessages').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textManageMessages" class="form-check-input" type="checkbox" value="8192"></div></th>
+						<td onclick="$('#textManageMessages').click();">manage messages</td>
+						<td id="textManageMessages_requiredby" onclick="$('#textManageMessages').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textManageThreads" class="form-check-input" type="checkbox" value="17179869184"></div></th>
+						<td onclick="$('#textManageThreads').click();">manage threads</td>
+						<td id="textManageThreads_requiredby" onclick="$('#textManageThreads').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textEmbedLinks" class="form-check-input" type="checkbox" value="16384"></div></th>
+						<td onclick="$('#textEmbedLinks').click();">embed links</td>
+						<td id="textEmbedLinks_requiredby" onclick="$('#textEmbedLinks').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textAttachFiles" class="form-check-input" type="checkbox" value="32768"></div></th>
+						<td onclick="$('#textAttachFiles').click();">attach files</td>
+						<td id="textAttachFiles_requiredby" onclick="$('#textAttachFiles').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textReadMessageHistory" class="form-check-input" type="checkbox" value="65536"></div></th>
+						<td onclick="$('#textReadMessageHistory').click();">read message history</td>
+						<td id="textReadMessageHistory_requiredby" onclick="$('#textReadMessageHistory').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textMentionEveryone" class="form-check-input" type="checkbox" value="131072"></div></th>
+						<td onclick="$('#textMentionEveryone').click();">mention everyone</td>
+						<td id="textMentionEveryone_requiredby" onclick="$('#textMentionEveryone').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textUseExternalEmojis" class="form-check-input" type="checkbox" value="262144"></div></th>
+						<td onclick="$('#textUseExternalEmojis').click();">use external emojis</td>
+						<td id="textUseExternalEmojis_requiredby" onclick="$('#textUseExternalEmojis').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textUseExternalStickers" class="form-check-input" type="checkbox" value="137438953472"></div></th>
+						<td onclick="$('#textUseExternalStickers').click();">use external stickers</td>
+						<td id="textUseExternalStickers_requiredby" onclick="$('#textUseExternalStickers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textAddReactions" class="form-check-input" type="checkbox" value="64"></div></th>
+						<td onclick="$('#textAddReactions').click();">add reactions</td>
+						<td id="textAddReactions_requiredby" onclick="$('#textAddReactions').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="textUseSlashCommands" class="form-check-input" type="checkbox" value="2147483648"></div></th>
+						<td onclick="$('#textUseSlashCommands').click();">use slash commands</td>
+						<td id="textUseSlashCommands_requiredby" onclick="$('#textUseSlashCommands').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceConnect" class="form-check-input" type="checkbox" value="1048576"></div></th>
+						<td onclick="$('#voiceConnect').click();">connect to voice channels</td>
+						<td id="voiceConnect_requiredby" onclick="$('#voiceConnect').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceSpeak" class="form-check-input" type="checkbox" value="2097152"></div></th>
+						<td onclick="$('#voiceSpeak').click();">speak in voice channels</td>
+						<td id="voiceSpeak_requiredby" onclick="$('#voiceSpeak').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceStream" class="form-check-input" type="checkbox" value="512"></div></th>
+						<td onclick="$('#voiceStream').click();">stream in voice channels</td>
+						<td id="voiceStream_requiredby" onclick="$('#voiceStream').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceMuteMembers" class="form-check-input" type="checkbox" value="4194304"></div></th>
+						<td onclick="$('#voiceMuteMembers').click();">mute members</td>
+						<td id="voiceMuteMembers_requiredby" onclick="$('#voiceMuteMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceDeafenMembers" class="form-check-input" type="checkbox" value="8388608"></div></th>
+						<td onclick="$('#voiceDeafenMembers').click();">deafen members</td>
+						<td id="voiceDeafenMembers_requiredby" onclick="$('#voiceDeafenMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceMoveMembers" class="form-check-input" type="checkbox" value="16777216"></div></th>
+						<td onclick="$('#voiceMoveMembers').click();">move members</td>
+						<td id="voiceMoveMembers_requiredby" onclick="$('#voiceMoveMembers').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voiceUseVAD" class="form-check-input" type="checkbox" value="33554432"></div></th>
+						<td onclick="$('#voiceUseVAD').click();">use voice activity</td>
+						<td id="voiceUseVAD_requiredby" onclick="$('#voiceUseVAD').click();">required by nothing</td>
+					</tr>
+					<tr class="permission">
+						<th scope="row"><div class="form-check form-switch"><input id="voicePrioritySpeaker" class="form-check-input" type="checkbox" value="256"></div></th>
+						<td onclick="$('#voicePrioritySpeaker').click();">priority speaker</td>
+						<td id="voicePrioritySpeaker_requiredby" onclick="$('#voicePrioritySpeaker').click();">required by nothing</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<script>
+			let required = [ { name: "generalViewChannels", requiredby: [ "/ytstream" ] }, { name: "voiceConnect", requiredby: [ "/ytstream" ] }, { name: "voiceSpeak", requiredby: [ "/ytstream" ] } ];
+			function hideUnused() { $(".permission").each((i, x) => { if (!required.find(x => x.name == $(".form-check-input")[i].id)) $(x).toggle() }); }
+			function resetAll() { $(".form-check-input").each((i, x) => $(x).prop("checked", (!!required.find(y => y.name == x.id)))); updatePermissions(); }
+			hideUnused();
+			resetAll();
+			$(".form-check-input").each((i, x) => $(`#${x.id}_requiredby`).html(required.find(y => y.name == x.id) ? `required by <code>${required.find(y => y.name == x.id).requiredby.join("</code>, <code>")}</code>`.replace(/,([^,]*)$/, ", and $1").replace(/,([^,]*)$/, ",$1") : "required by nothing"));
+			function updatePermissions() {
+				var permissions = 0;
+				$(".form-check-input").each((i, x) => { if ($(x).is(":checked")) permissions += parseInt($(x).val()) });
+				$("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
+				$("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=${permissions}&scope=bot%20applications.commands`);
+				if ($("#generalAdministrator").is(":checked")) {
+					$("#customInvite").prop("href", `https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
+					$("#customInvite").html(`https://discord.com/api/oauth2/authorize?client_id=882471379910426664&permissions=8&scope=bot%20applications.commands`);
+					$(".form-check-input").each((i, x) => { if (x.id != "generalAdministrator") $(x).prop("disabled", true) });
+				} else $(".form-check-input").each((i, x) => $(x).prop("disabled", false));
+			}
+			updatePermissions();
+			$(".form-check-input").click(() => updatePermissions());
+		</script>
+	</body>
 </html>

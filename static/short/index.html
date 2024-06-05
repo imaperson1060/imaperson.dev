@@ -1,262 +1,109 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
-    <head>
-        <title>imaperson.dev | url shortener</title>
-        <meta name="description" content="shorten urls for free">
-        <meta name="keywords" content="imaperson, imaperson1060, url shortener">
-        <meta name="author" content="imaperson">
-        <meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="https://avatars.githubusercontent.com/u/68653653?v=4">
-        <link rel="stylesheet" href="/style.css">
+	<head>
+		<title>imaperson.dev | url shortener</title>
+		<meta name="description" content="shorten urls for free">
+		<meta name="keywords" content="imaperson, imaperson1060, imaperson.dev url shortener">
+		<meta name="author" content="imaperson">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:image" content="https://avatars.githubusercontent.com/u/68653653">
+		<link rel="icon" href="https://avatars.githubusercontent.com/u/68653653">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <script src="/socket.io.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" onload="$.getScript('/downAlert.js')"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/ext/client-side-templates.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+	</head>
 
-        <script src="/script.js"></script>
-        <script src="/nav.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>url shortener</h1>
+	<body class="mb-5" hx-ext="client-side-templates">
+		<div class="mb-4" hx-get="/nav.html" hx-trigger="load"></div>
 
-            <div class="mb-3">
-                <label for="httpLabel" class="form-label">url <span style="color: #ff2825">*</span></label>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="protocol">http://</span>
-                    <input id="url" class="form-control" maxlength="2000" placeholder="URL to be shortened...">
-                </div>
-            </div>
+		<div class="container">
+			<h1>url shortener</h1>
 
-            <label for="domain-gray" class="form-label">domain</label>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="domain-gray">imaurl.</span>
-                <select id="domain" class="input-group form-select" aria-label="form-select-sm">
-                    <option id="tk" value="tk" selected>tk</option>
-                    <option id="ml" value="ml">ml</option>
-                    <option id="gq" value="gq">gq</option>
-                    <option id="cf" value="cf">cf</option>
-                </select>
-            </div>
+			<form class="mt-5" hx-post="/api/short" hx-target="#alert" mustache-template="alertTemplate">
+				<label class="form-label">url <span style="color: #ff2825">*</span></label>
+				<div class="input-group mb-3 w-75">
+					<span id="protocol" class="input-group-text">http://</span>
+					<input id="url" name="url" class="form-control clear" maxlength="2000" placeholder="URL to be shortened..."
+						onkeyup="this.setCustomValidity(''); $('#protocol').html($(this).val().indexOf('http:\/\/') == 0 ? 'http:\/\/' : $(this).val().indexOf('https:\/\/') == 0 ? 'https:\/\/' : $('#protocol').html()); if ($(this).val().indexOf('http:\/\/') == 0) $(this).val($(this).val().substr(7)); if ($(this).val().indexOf('https:\/\/') == 0) $(this).val($(this).val().substr(8));"
+						hx-on:htmx:validation:validate="if (!/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(this.value)) { this.setCustomValidity('a valid url must be supplied'); htmx.find('#form').reportValidity(); }"
+						onchange="if ($(this).val().slice(-1) == '/') $(this).val($(this).val().slice(0, -1));">
+				</div>
 
-            <div class="mb-3">
-                <label for="customurl" class="form-label">custom url (optional)</label>
-                <input id="customurl" class="form-control" maxlength="32" placeholder="custom url...">
-            </div>
+				<label class="form-label">domain</label>
+				<div class="input-group mb-3 w-75">
+					<span class="input-group-text">imaurl.</span>
+					<select id="domain" name="domain" class="input-group form-select" aria-label="form-select-sm">
+						<option value="tk" selected>tk</option>
+						<option value="cf">cf</option>
+						<option value="gq">gq</option>
+					</select>
+				</div>
 
-            <label for="expiration" class="form-label">expiration</label>
-            <div class="mb-3">
-                <select id="expiration" class="form-select">
-                    <option id="12h" value="12h" selected>12 hours</option>
-                    <option id="1d" value="1d">1 day (24 hours)</option>
-                    <option id="1w" value="1w">1 week (7 days)</option>
-                    <option id="1m" value="1m">1 month (4 weeks)</option>
-                    <option id="6m" value="6m">6 months (24 weeks)</option>
-                    <option id="1y" value="1y">1 year (365 days)</option>
-                    <option id="∞" value="∞">∞</option>
-                    <option id="custom" value="c">custom...</option>
-                </select>
-            </div>
+				<div class="mb-3 w-75">
+					<label class="form-label">custom id (optional)</label>
+					<div class="input-group">
+						<input id="custom" name="custom" class="form-control clear" maxlength="32" placeholder="custom id..." oninput="$('#edit').attr('disabled', true); $('#custom').val($('#custom').val().replaceAll(' ', '-').replace(/[^a-z0-9_-]/gi, ''));">
+						<input id="edit" name="edit" class="form-control clear" maxlength="32" placeholder="edit key..." disabled>
+					</div>
+				</div>
 
-            <div id="customExpirationdiv" class="mb-3"></div>
+				<label class="form-label">expiration</label>
+				<div class="w-75">
+					<select name="expiration" class="form-select">
+						<option value="12h" selected>12 hours</option>
+						<option value="1d">1 day</option>
+						<option value="1w">1 week</option>
+						<option value="1m">1 month</option>
+						<option value="6m">6 months</option>
+						<option value="1y">1 year</option>
+						<option value="max">indefinite (in this case, largest 32-bit integer)</option>
+					</select>
+				</div>
 
-            <button id="submit" class="btn btn-primary" value="submit">submit</button>
+				<button class="btn btn-primary mt-4">submit</button>
+			</form>
 
-            <br>
-            <br>
+			<div id="alert" class="mt-5"></div>
+		</div>
+	</body>
 
-            <div id="warnings" role="alert"></div>
-        </div>
+	<template id="alertTemplate">
+		{{ #success }}
+			<div class="alert alert-success alert-dismissible fade show">
+				<strong>success!</strong> your url: <a href="https://imaurl.{{ domain }}/{{ id }}" target="_blank">https://imaurl.{{ domain }}/{{ id }}</a>. your edit key: <code>{{ editkey }}</code>. this url will expire <span id="expiration-span"></span><script>$("#expiration-span").html(moment().to(moment.unix("{{ expiration }}")));</script>.
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+			</div>
+		{{ /success }}
+		{{ ^success }}
+			<div class="alert alert-danger alert-dismissible fade show">
+				<strong>error!</strong> {{ error }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+			</div>
+		{{ /success }}
+	</template>
 
-        <script>
-            function HTMLError(text) { return `<div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Error!</strong> ${text} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>`; }
-            
-            async function shorten(expires) {
-                var creator = undefined;
-
-                if (localStorage.getItem("auth")) {
-                    creator = JSON.parse(localStorage.getItem("auth")).username;
-                }
-
-                socket.emit("short", "new", { url: encodeURIComponent($("#url").val()), customid: !!$("#customurl").val() ? $("#customurl").val() : undefined, domain: $("#domain").val(), expires, creator });
-            }
-            
-            $("#url").on("input", async function() {
-                if ($("#url").val().substr(0, 8) == "https://") {
-                    $("#url").val($("#url").val().replace("https://", ""));
-                    $("#protocol").html("https://");
-                }
-
-                if ($("#url").val().substr(0, 7) == "http://") {
-                    $("#url").val($("#url").val().replace("http://", ""));
-                    $("#protocol").html("http://");
-                }
-
-                function validURL(str) {
-                    var pattern = new RegExp("^(https?:\\/\\/)?"+ // protocol
-                                             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|"+ // domain name
-                                             "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-                                             "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-                                             "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-                                             "(\\#[-a-z\\d_]*)?$","i"); // fragment locator
-                    return !!pattern.test(str);
-                }
-
-                if (validURL($("#url").val())) {
-                    const protocol = await fetch("https://bot.imaperson.dev/url", { method: "POST", body: $("#url").val() });
-                    res = await protocol.json();
-                    if (res.https) {
-                        $("#url").val($("#url").val().replace("https://", ""));
-                        $("#protocol").html("https://");
-                    } else {
-                        $("#url").val($("#url").val().replace("http://", ""));
-                        $("#protocol").html("http://");
-                    }
-                }
-            });
-
-            $("#customurl").on("input", function() {
-                $("#customurl").val($("#customurl").val().replace(" ", "-"));
-                $("#customurl").val($("#customurl").val().replace(/[^a-z0-9_-]/gi, ""));
-
-                const urls = [ "tk", "ml", "gq", "cf" ];
-                var prefix = "/";
-
-                if (!$("#customurl").val()) {
-                    prefix = "";
-                }
-
-                for (var i = 0; i < urls.length; i++) {
-                    $(`#${urls[i]}`).html(`${urls[i]}${prefix}${$("#customurl").val()}`);
-                }
-            });
-
-            $("#expiration").on("change", function () {
-                if ($("#expiration").val() == "c") {
-                    $("#customExpirationdiv").html(`<label for="customExpiration" class="form-label">custom expiration time</label><input id="customExpiration" class="form-control" maxlength="10" placeholder="epoch timestamp...">`);
-                } else {
-                    $("#customExpirationdiv").html("");
-                }
-            });
-
-            $("#submit").on("click", function() {
-                if ($("#url").val()) {
-                    if (!$("#customExpiration").length) {
-                        var expires;
-
-                        switch (expiration.value) {
-                            case "∞":
-                                expires = "2147483647";
-                                break;
-                            case "12h":
-                                expires = Math.round(new Date().getTime() / 1000) + 43200;
-                                break;
-                            case "1d":
-                                expires = Math.round(new Date().getTime() / 1000) + 86400;
-                                break;
-                            case "1w":
-                                expires = Math.round(new Date().getTime() / 1000) + 604800;
-                                break;
-                            case "1m":
-                                expires = Math.round(new Date().getTime() / 1000) + 2419200;
-                                break;
-                            case "6m":
-                                expires = Math.round(new Date().getTime() / 1000) + 14515200;
-                                break;
-                            case "1y":
-                                expires = Math.round(new Date().getTime() / 1000) + 31536000;
-                        }
-
-                        return shorten(expires);
-                    }
-
-                    if (isNaN($("#customExpiration").val())) {
-                        $("#warnings").html(HTMLError("this custom timestamp has to be a number."));
-                    } else {
-                        if (!$("#customExpiration").val() == "") {
-                            if ($("#customExpiration").val() > Math.round(new Date().getTime() / 1000)) {
-                                if (($("#customExpiration").val() - 600) > Math.round(new Date().getTime() / 1000)) {
-                                    if ($("#customExpiration").val() > 2147483647) {
-                                        warnings.innerHTML = HTMLError("this time exceeds the maximum epoch timestamp.");
-                                    } else {
-                                        shorten($("#customExpiration").val())
-                                    }
-                                } else {
-                                    $("#warnings").html(HTMLError("this time will happen in less than 10 minutes."));
-                                }
-                            } else {
-                                $("#warnings").html(HTMLError("this time already happened."));
-                            }
-                        } else {
-                            $("#warnings").html(HTMLError("enter a timestamp."));
-                        }
-                    }
-                } else {
-                    $("#warnings").html(HTMLError("fill out the url field."));
-                }
-            });
-
-            socket.on("short-new", (data) => {
-                if (data.success) {
-                    $("#warnings").html(`<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong>success!</strong> your url: <a href="https://imaurl.${$("#domain").val()}/${data.message}" target="_blank">imaurl.${$("#domain").val()}/${data.message}/</a>. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button> </div>`);
-                } else {
-                    $("#warnings").html(HTMLError(`the servers returned the following error: ${data.message}`));
-                }
-            });
-
-            $(document).keypress(function(event) {
-                if ((event.keyCode ? event.keyCode : event.which) == "13") {
-                    $("#submit").click();
-                }
-            });
-        </script>
-
-        <script type="application/ld+json">
-            [
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "url shortener"
-                        }
-                    ]
-                },
-                {
-                    "@context": "https://schema.org",
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "home",
-                            "item": "https://imaperson.dev"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "utilities",
-                            "item": "https://imaperson.dev/utils"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 3,
-                            "name": "url shortener"
-                        }
-                    ]
-                }
-            ]
-        </script>
-    </body>
+	<script>
+		$(document.body).on("htmx:beforeSwap", evt => {
+			if (evt.detail.xhr.status == 409) evt.detail.shouldSwap = true;
+			else $(".clear").val("");
+			$("#edit").attr("disabled", evt.detail.xhr.status != 409);
+		});
+		$(document.body).on("htmx:configRequest", evt => {
+			if (evt.detail.path != "/api/short") return;
+			evt.detail.parameters.url = `${$("#protocol").html()}${evt.detail.parameters.url}`;
+			evt.detail.parameters.expiration =
+				evt.detail.parameters.expiration == "12h" ? moment().add(12, "h").unix() :
+				evt.detail.parameters.expiration == "1d" ? moment().add(1, "d").unix() :
+				evt.detail.parameters.expiration == "1w" ? moment().add(1, "w").unix() :
+				evt.detail.parameters.expiration == "1m" ? moment().add(1, "M").unix() :
+				evt.detail.parameters.expiration == "6m" ? moment().add(6, "M").unix():
+				evt.detail.parameters.expiration == "1y" ? moment().add(1, "y").unix() : 2147483647;
+		});
+	</script>
 </html>

@@ -4,45 +4,43 @@ export let requires = [];
 
 export let data = new SlashCommandBuilder()
 	.setName("shorten")
-	.setDescription("Shorten a URL quickly and easily!")
+	.setDescription("shorten urls for free")
 	.addStringOption(option =>
 		option.setName("url")
-			.setDescription("The URL you want to shorten.")
+			.setDescription("the url to be shortened")
 			.setRequired(true)
 	)
 	.addStringOption(option =>
 		option.setName("expiration")
-			.setDescription("Amount of time until the link expires.")
+			.setDescription("amount of time until the link expires")
 			.addChoices(
 				{ name: "12 Hours", value: "12h" },
-				{ name: "1 Day (24 Hours)", value: "1d" },
-				{ name: "1 Week (7 Days)", value: "1w" },
-				{ name: "1 Month (4 Weeks)", value: "1m" },
-				{ name: "6 Months (24 Weeks)", value: "6m" },
-				{ name: "1 Year (365 Days)", value: "1y" },
-				{ name: "∞", value: "∞" }
+				{ name: "1 Day", value: "1d" },
+				{ name: "1 Week", value: "1w" },
+				{ name: "1 Month", value: "1m" },
+				{ name: "6 Months", value: "6m" },
+				{ name: "1 Year", value: "1y" },
+				{ name: "indefinite (in this case, largest 32-bit integer)", value: "max" }
 			)
 			.setRequired(true)
 	)
 	.addStringOption(option =>
 		option.setName("domain")
-			.setDescription("Choose between 5 different domains for your URL.")
+			.setDescription("choose between 3 different domains for your url")
 			.addChoices(
 				{ name: "imaurl.tk", value: "tk" },
-				{ name: "imaurl.gq", value: "gq" },
 				{ name: "imaurl.cf", value: "cf" },
-				{ name: "imaurl.ga", value: "ga" },
-				{ name: "imaurl.ml", value: "ml" }
+				{ name: "imaurl.gq", value: "gq" }
 			)
 			.setRequired(true)
 	)
 	.addStringOption(option =>
 		option.setName("id")
-			.setDescription("Leave blank for a random 5 digit ID.")
+			.setDescription("leave blank for a random 5 digit id")
 			.setRequired(false)
 	)
-	.addBooleanOption(option =>
-		option.setName("hide")
-			.setDescription("Hide the response message from everybody but you.")
+	.addStringOption(option =>
+		option.setName("editkey")
+			.setDescription("input your edit key if you have one")
 			.setRequired(false)
-	)
+	);

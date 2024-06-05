@@ -4,4 +4,4 @@ export let requires = [];
 
 export let data = new SlashCommandBuilder()
 	.setName("update")
-	.setDescription("Update your server's slash commands based on PersonBot's permissions")
+	.setDescription("update your server's slash commands based on personbot's permissions");

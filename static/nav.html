@@ -1,116 +1,89 @@
-<nav class="navbar navbar-expand-lg sticky-top bg-primary" role="navigation">
-    <div class="container-fluid">
-        <a class="navbar-brand text-white" href="/">
-            <img width="35" height="35" src="https://avatars.githubusercontent.com/u/68653653?v=4" alt="strange person picture" style="border-radius:50%;">
-            &nbsp;&nbsp;
-            <span style="display: inline-block; width: 150px;"><span id="imapersontext"></span><span id="imapersonext"></span></span>
-            <span id="notmobile">|</span>
-        </a>
+<nav class="navbar navbar-expand-lg sticky-top bg-primary">
+	<div class="container-fluid">
+		<a class="navbar-brand text-white" href="/">
+			<img width="35" height="35" src="https://avatars.githubusercontent.com/u/68653653" alt="strange person picture" style="border-radius:50%;">
+			&nbsp;&nbsp;
+			<span style="display: inline-block; width: 150px;"><span id="imapersontext"></span><span id="imapersonext"></span></span>
+		</a>
 
-        <button class="navbar-toggler bg-success" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+		<button class="navbar-toggler bg-success" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-expanded="false"><span class="navbar-toggler-icon"></span></button>
 
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" id="navbarDropdownUtils" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        utilites
-                    </a>
-                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownUtils">
-                        <li><a class="dropdown-item" href="/utils/">all utilities</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/yt/"><i class="bi bi-star-fill"></i> youtube downloader</a></li>
-                        <li><a class="dropdown-item" href="/short/"><i class="bi bi-star-fill"></i> url shortener</a></li>
-                        <li><a class="dropdown-item" href="/limelight/"><i class="bi bi-star-fill"></i> limelight database</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" id="navbarDropdownRand" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        random
-                    </a>
-                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownRand">
-                        <li><a class="dropdown-item" href="/random/">all projects</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/commits/"><i class="bi bi-star-fill"></i> commit history</a></li>
-                        <li><a class="dropdown-item" href="/personbot/"><i class="bi bi-star-fill"></i> personbot</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" id="navbarDropdownBlog" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        blog
-                    </a>
-                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownBlog">
-                        <li><a class="dropdown-item" href="/blog/">all posts</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/floats/"><i class="bi bi-star-fill"></i> floating point math</a></li>
-                        <li><a class="dropdown-item" href="/segments/"><i class="bi bi-star-fill"></i> graphing line segments</a></li>
-                        <li><a class="dropdown-item" href="/onetime/"><i class="bi bi-star-fill"></i> exploiting whatsapp</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" id="navbarDropdownSrc" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        source
-                    </a>
-                    <ul class="dropdown-menu bg-success" aria-labelledby="navbarDropdownSrc">
-                        <li><a class="dropdown-item" href="/source/">all projects</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/static" target="_blank">website source</a></li>
-                        <li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev" target="_blank">backend source</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/socket/yt" target="_blank"><i class="bi bi-star-fill"></i> youtube downloader source</a></li>
-                        <li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/socket/short" target="_blank"><i class="bi bi-star-fill"></i> url shortener source</a></li>
-                        <li><a class="dropdown-item" href="https://github.com/imaperson1060/limelight" target="_blank"><i class="bi bi-star-fill"></i> limelight source</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="https://github.com/imaperson1060" target="_blank">github</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/contact/">contact</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/about/">about</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">utilites</a>
+					<ul class="dropdown-menu bg-success">
+						<li><a class="dropdown-item" href="/utils">all utilities</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="/yt"><i class="bi bi-star-fill"></i> youtube downloader</a></li>
+						<li><a class="dropdown-item" href="/short"><i class="bi bi-star-fill"></i> url shortener</a></li>
+						<li><a class="dropdown-item" href="/limelight"><i class="bi bi-star-fill"></i> limelight database</a></li>
+					</ul>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">random</a>
+					<ul class="dropdown-menu bg-success">
+						<li><a class="dropdown-item" href="/random">all projects</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="/commits"><i class="bi bi-star-fill"></i> update log</a></li>
+						<li><a class="dropdown-item" href="/personbot"><i class="bi bi-star-fill"></i> personbot</a></li>
+					</ul>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">blog</a>
+					<ul class="dropdown-menu bg-success">
+						<li><a class="dropdown-item" href="/blog/">all posts</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="/ftc"><i class="bi bi-star-fill"></i> ftc: thinking like a programmer</a></li>
+						<li><a class="dropdown-item" href="/segments"><i class="bi bi-star-fill"></i> graphing line segments</a></li>
+						<li><a class="dropdown-item" href="/onetime"><i class="bi bi-star-fill"></i> exploiting whatsapp</a></li>
+					</ul>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">source</a>
+					<ul class="dropdown-menu bg-success">
+						<li><a class="dropdown-item" href="/source">all projects</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/static" target="_blank">website source</a></li>
+						<li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev" target="_blank">backend source</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/socket/yt" target="_blank"><i class="bi bi-star-fill"></i> youtube downloader source</a></li>
+						<li><a class="dropdown-item" href="https://github.com/imaperson1060/imaperson.dev/tree/main/socket/short" target="_blank"><i class="bi bi-star-fill"></i> url shortener source</a></li>
+						<li><a class="dropdown-item" href="https://github.com/imaperson1060/limelight" target="_blank"><i class="bi bi-star-fill"></i> limelight source</a></li>
+					</ul>
+				</li>
+				<li class="nav-item"><a class="nav-link text-white" href="https://github.com/imaperson1060" target="_blank">github</a></li>
+				<li class="nav-item"><a class="nav-link text-white" href="/contact">contact</a></li>
+				<li class="nav-item"><a class="nav-link text-white" href="/about">about</a></li>
+			</ul>
+		</div>
+	</div>
 </nav>
 
 <script>
-    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (mobile) $("#notmobile").remove();
+	async function changeText(text, element) {
+		return new Promise(resolve => {
+			let originalText = currentText = element.html();
+			let newText = "";
+			for (var i = 0; i < originalText.length; i++) setTimeout(() => element.html(currentText = currentText.slice(0, -1)), (i + 1) * 100);
+			for (var i = 0; i < text.length; i++) setTimeout(() => element.html(newText = text.substr(0, newText.length + 1)), (i * 100) + (originalText.length * 100) + 300);
+			setTimeout(() => resolve(), (text.length * 100) + (originalText.length * 100) + 300);
+		});
+	}
 
-    async function changeText(text, element) {
-        return new Promise(resolve => {
-            let originalText = currentText = element.html();
-            let newText = "";
-
-            for (var i = 0; i < originalText.length; i++) setTimeout(() => element.html(currentText = currentText.slice(0, -1)), (i + 1) * 100);
-            for (var i = 0; i < text.length; i++) setTimeout(() => element.html(newText = text.substr(0, newText.length + 1)), (i * 100) + (originalText.length * 100) + 300);
-
-            setTimeout(() => resolve(), (text.length * 100) + (originalText.length * 100) + 300);
-        });
-    }
-
-    $(document).ready(async () => {
-        if (window.location.pathname == "/" || window.location.pathname == "/index.html") {
-            $("#imapersontext").html("imaperson.");
-            $("#imapersonext").html("dev");
-            return;
-        }
-
-        await changeText("imaperson.", $("#imapersontext"))
-
-        let extensions =  [ "cs", "exe", "go", "html", "js", "py" ];
-
-        for await (const i of new Array(3)) {
-            let ext = extensions[Math.floor(Math.random() * extensions.length)];
-            extensions = extensions.filter(x => x != ext);
-
-            await changeText(ext, $("#imapersonext"));
-        }
-
-        await changeText("dev", $("#imapersonext"));
-    });
+	$(document).ready(async () => {
+		if (window.location.pathname == "/" || window.location.pathname == "/index.html") {
+			$("#imapersontext").html("imaperson.");
+			$("#imapersonext").html("dev");
+			return;
+		}
+		await changeText("imaperson.", $("#imapersontext"))
+		let extensions =  [ "cs", "exe", "go", "html", "java", "js", "py" ];
+		for await (const i of new Array(3)) {
+			let ext = extensions[Math.floor(Math.random() * extensions.length)];
+			extensions = extensions.filter(x => x != ext);
+			await changeText(ext, $("#imapersonext"));
+		}
+		await changeText("dev", $("#imapersonext"));
+	});
 </script>
