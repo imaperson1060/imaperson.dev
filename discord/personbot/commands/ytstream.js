@@ -82,7 +82,7 @@ export default async function (client, interaction, options) {
 
 			audioManager = audioManager || new discordaudio.AudioManager();
 			for await (let item of items.map(item => item.shortUrl))
-				if (!connections.get(vc) || !audioManager.queue(vc).find(x => x.url == item)) await audioManager.play(vc, song);
+				if (!connections.get(vc) || !audioManager.queue(vc).find(x => x.url == item)) await audioManager.play(vc, item);
 			connections.set(vc, audioManager);
 			audioManager.on("end", vc => connections.delete(vc));
 			await interaction.editReply(`added ${items.length} songs from "${title}" to queue`);
