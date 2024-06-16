@@ -8,7 +8,7 @@ let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "short
 
 export default async (req, res) => {
 	(await query("SELECT * from `urls` WHERE `expiration`<?", [ moment().unix() ]))
-		.forEach(async url => await query("DELETE FROM `urls` WHERE `id`=?", [ url.id ]));
+		.forEach(async url => await query("DELETE FROM `urls` WHERE `name`=?", [ url.name ]));
 	switch (req.method) {
 		case "GET":
 			if (!req.query.id) return res.status(400).json({ success: false, code: 400, error: "no id provided", args: req.query });

@@ -12,7 +12,7 @@ export default async function (client, interaction, options) {
 	await interaction.deferReply({ ephemeral: true });
 
 	(await query("SELECT * from `urls` WHERE `expiration`<?", [ moment().unix() ]))
-		.forEach(async url => await query("DELETE FROM `urls` WHERE `id`=?", [ url.id ]));
+		.forEach(async url => await query("DELETE FROM `urls` WHERE `name`=?", [ url.name ]));
 
 	let url = options.find(x => x.name == "url").value,
 		domain = options.find(x => x.name == "domain").value,
