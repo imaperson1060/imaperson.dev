@@ -53,7 +53,15 @@
 	</body>
 
 	<template id="buttonsTemplate">
-		{{ #success }} <a class="btn btn-primary download" href="{{ video.formats.download }}" target="_blank">download now <div class="spinner spinner-border spinner-border-sm text-light" style="display: none;"></div></a> {{ /success }}
+		{{ #success }}
+			<span class="dropdown">
+				<button class="btn btn-primary dropdown-toggle download" data-bs-toggle="dropdown">download now<div class="spinner spinner-border spinner-border-sm text-light" style="display: none;"></div></button>
+				<ul class="dropdown-menu">
+					<li><a class="dropdown-item" href="{{ video.formats.download }}" target="_blank"><i class="bi bi-play-fill"></i> video</a></li>
+					<li><a class="dropdown-item" href="{{ video.formats.audio }}" target="_blank"><i class="bi bi-music-note"></i> audio</a></li>
+				</ul>
+			</span>
+		{{ /success }}
 		{{ #success }}
 			<span class="dropdown">
 				<button class="btn btn-secondary dropdown-toggle download" data-bs-toggle="dropdown">download highest quality<div class="spinner spinner-border spinner-border-sm text-light" style="display: none;"></div></button>
