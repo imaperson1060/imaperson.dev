@@ -11,11 +11,14 @@ export default async (req, res) => {
 		.forEach(async url => await query("DELETE FROM `urls` WHERE `name`=?", [ url.name ]));
 	switch (req.method) {
 		case "GET":
-			if (!req.query.id) return res.status(400).json({ success: false, code: 400, error: "no id provided", args: req.query });
-			let result = (await query("SELECT * FROM `urls` WHERE `name`=?", [ req.query.id ]))[0];
+			if (!req.query.id || !req.query.ext) {
+				if (req.query.go) return res.redirect("/short");
+				else return res.status(400).json({ success: false, code: 400, error: "no id or domain provided", args: req.query })
+			}
+			let result = (await query("SELECT * FROM `urls` WHERE `name`=? AND `domain`=?", [ req.query.id, req.query.ext ]))[0];
 			if (req.query.go) return res.redirect(result ? decodeURIComponent(result.longurl) : "/404");
 			else if (!result) return res.status(404).json({ success: false, code: 404, error: "id not found in database", args: req.query });
-			else return res.status(200).json({ success: true, code: 200, id: req.query.id, longurl: result.longurl, expiration: result.expiration, args: req.query });
+			else return res.status(200).json({ success: true, code: 200, id: req.query.id, longurl: result.longurl, domain: result.domain, expiration: result.expiration, args: req.query });
 		case "POST":
 			if (!req.body.url || !req.body.expiration || (req.body.expiration - 600) < moment.unix() || !req.body.domain || ([ "tk", "cf", "gq" ].indexOf(req.body.domain) == -1)) return res.status(400).json({ success: false, code: 400, error: "invalid request", args: req.body });
 			if (req.body.custom) {
