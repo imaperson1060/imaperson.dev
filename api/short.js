@@ -32,7 +32,7 @@ export default async (req, res) => {
 					editkey = Math.random().toString(36).slice(-10);
 					await query("INSERT INTO `urls`(`name`, `editkey`, `longurl`, `domain`, `expiration`) VALUES (?,?,?,?,?)", [ req.body.custom, editkey, req.body.url, req.body.domain, req.body.expiration ]);
 				}
-				return res.json({ success: true, id: req.body.custom, editkey, longurl: req.body.url, domain: req.body.domain, expiration: req.body.expiration, args: req.body });
+				return res.status(200).json({ success: true, id: req.body.custom, editkey, longurl: req.body.url, domain: req.body.domain, expiration: req.body.expiration, args: req.body });
 			} else {
 				while (true) {
 					let id = Math.random().toString(36).slice(-5);
