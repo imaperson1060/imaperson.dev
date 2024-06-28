@@ -16,7 +16,7 @@ export default async (req, res) => {
 				else return res.status(400).json({ success: false, code: 400, error: "no id or domain provided", args: req.query })
 			}
 			let result = (await query("SELECT * FROM `urls` WHERE `name`=? AND `domain`=?", [ req.query.id, req.query.ext ]))[0];
-			if (req.query.go) return res.redirect(result ? decodeURIComponent(result.longurl) : "/404");
+			if (req.query.go) return res.redirect(result ? decodeURIComponent(result.longurl) : "/short");
 			else if (!result) return res.status(404).json({ success: false, code: 404, error: "id not found in database", args: req.query });
 			else return res.status(200).json({ success: true, code: 200, id: req.query.id, longurl: result.longurl, domain: result.domain, expiration: result.expiration, args: req.query });
 		case "POST":
