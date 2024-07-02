@@ -36,6 +36,9 @@ routes.forEach(route => {
 	);
 	console.log(moment().format(), chalk.green("registered", chalk.magenta(`"/api/${route.split(".")[0]}"`), "route"));
 });
+app.get("/api/*", (req, res) => res.status(404).json({ success: false, code: 404, error: "route not found", args: req.query }));
+app.get("/*", (req, res) => res.sendFile("404.html", { root: "./static" }));
+app.all("/*", (req, res) => res.status(405).json({ success: false, code: 405, error: "method not allowed", args: req.body }));
 
 app.listen(process.env.PORT, async () => {
 	console.log(moment().format(), chalk.green("api ready"), chalk.blue(`(listening on port ${process.env.PORT})`));
