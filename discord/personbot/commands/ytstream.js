@@ -83,7 +83,6 @@ export default async function (client, interaction, options) {
 			connections.set(vc, audioManager);
 			audioManager.on("end", vc => connections.delete(vc));
 			await interaction.editReply(`added ${items.length} songs from "${title}" to queue`);
-			await interaction.editReply("this feature is currently unavailable");
 			break;
 		case "pause":
 			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");
