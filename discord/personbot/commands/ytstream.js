@@ -2,9 +2,8 @@ import discordaudio from "discordaudio";
 import { ComponentType } from "discord.js";
 import mysql from "mysql";
 import util from "util";
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import ytpl from "ytpl";
-import ytsr from "ytsr";
 
 import * as components from "../components/ytstream.js";
 
@@ -12,14 +11,12 @@ let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }
 	database = mysql.createPool(mysqlLogin),
 	query = util.promisify(database.query).bind(database);
 
-let yt = { dl: ytdl, pl: ytpl, sr: ytsr };
-
 async function getVideoDetails(id, cookie) {
 	let video = (await query("SELECT * FROM `videos` WHERE id=?", [ id ]))[0];
 	if (video && video.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) return { code: 200, id, title: JSON.parse(decodeURIComponent(video.title)), description: JSON.parse(decodeURIComponent(video.description)), author: JSON.parse(decodeURIComponent(video.author)), formats: JSON.parse(decodeURIComponent(video.formats)) };
 
 	let videoInfo;
-	try { videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
+	try { videoInfo = await ytdl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
 	catch (e) {
 		if (e.toString().indexOf("private video") != -1) return { code: cookie ? 403 : 401, error: cookie ? "invalid cookie" : "this video is private" };
 		else if (e.toString().indexOf("video id found") != -1 || e.toString().indexOf("unavailable") != -1) return { code: 404, error: "video not found" };
@@ -60,7 +57,7 @@ export default async function (client, interaction, options) {
 			break;
 		case "play":
 			let songID = options.find(x => x.name == "song").value;
-			try { songID = yt.dl.getURLVideoID(songID); }
+			try { songID = ytdl.getURLVideoID(songID); }
 			catch (e) { return await interaction.editReply("no song id found in url"); }
 			let song = await getVideoDetails(songID);
 
@@ -76,9 +73,9 @@ export default async function (client, interaction, options) {
 			break;
 		case "playlist":
 			let playlistID = options.find(x => x.name == "playlist").value;
-			try { playlistID = await yt.pl.getPlaylistID(playlistID); }
+			try { playlistID = await ytpl.getPlaylistID(playlistID); }
 			catch (e) { return await interaction.editReply("no playlist id found in url"); }
-			let { title, items } = (await yt.pl(playlistID, { limit: Infinity, pages: Infinity }));
+			let { title, items } = (await ytpl(playlistID, { limit: Infinity, pages: Infinity }));
 
 			audioManager = audioManager || new discordaudio.AudioManager();
 			for await (let item of items.map(item => item.shortUrl))
@@ -86,7 +83,7 @@ export default async function (client, interaction, options) {
 			connections.set(vc, audioManager);
 			audioManager.on("end", vc => connections.delete(vc));
 			await interaction.editReply(`added ${items.length} songs from "${title}" to queue`);
-
+			await interaction.editReply("this feature is currently unavailable");
 			break;
 		case "pause":
 			if (!audioManager) return await interaction.editReply("nothing is playing in the voice channel you're in");

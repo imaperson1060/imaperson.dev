@@ -1,21 +1,17 @@
 import mysql from "mysql";
 import util from "util";
-import ytdl from "ytdl-core";
-import ytpl from "ytpl";
-import ytsr from "ytsr";
+import ytdl from "@distube/ytdl-core";
 
 let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }),
 	database = mysql.createPool(mysqlLogin),
 	query = util.promisify(database.query).bind(database);
-
-let yt = { dl: ytdl, pl: ytpl, sr: ytsr };
 
 export async function getVideoDetails(id, cookie) {
 	let video = (await query("SELECT * FROM `videos` WHERE id=?", [ id ]))[0];
 	if (video && video.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) return { code: 200, id, title: JSON.parse(decodeURIComponent(video.title)), description: JSON.parse(decodeURIComponent(video.description)), author: JSON.parse(decodeURIComponent(video.author)), formats: JSON.parse(decodeURIComponent(video.formats)) };
 
 	let videoInfo;
-	try { videoInfo = await yt.dl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
+	try { videoInfo = await ytdl.getInfo(id, { requestOptions: { headers: { cookie: cookie ?? null } } }); }
 	catch (e) {
 		if (e.toString().indexOf("private video") != -1) return { code: cookie ? 403 : 401, error: cookie ? "invalid cookie" : "this video is private" };
 		else if (e.toString().indexOf("video id found") != -1 || e.toString().indexOf("unavailable") != -1) return { code: 404, error: "video not found" };
@@ -35,7 +31,7 @@ export default async (req, res) => {
 		case "GET":
 			let id, cookie = req.get("auth"); // cookies are stored in temporary cache and *never* permanently saved
 			if (req.query.url) {
-				try { id = yt.dl.getURLVideoID(req.query.url); }
+				try { id = ytdl.getURLVideoID(req.query.url); }
 				catch (e) { return res.status(400).json({ success: false, code: 400, error: "no video id found in url", args: req.query }); }
 			} else id = req.query.id;
 			if (!id) return res.status(400).json({ success: false, code: 400, error: "no video id provided", args: req.query });

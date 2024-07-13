@@ -1,9 +1,7 @@
 import { ComponentType } from "discord.js";
 import mysql from "mysql";
 import util from "util";
-import ytdl from "ytdl-core";
-import ytpl from "ytpl";
-import ytsr from "ytsr";
+import ytdl from "@distube/ytdl-core";
 
 import * as components from "../components/ytdownload.js";
 
@@ -11,14 +9,12 @@ let mysqlLogin = Object.assign(JSON.parse(process.env.MYSQL), { database: "yt" }
 	database = mysql.createPool(mysqlLogin),
 	query = util.promisify(database.query).bind(database);
 
-let yt = { dl: ytdl, pl: ytpl, sr: ytsr };
-
 async function getVideoDetails(id) {
 	let video = (await query("SELECT * FROM `videos` WHERE id=?", [ id ]))[0];
 	if (video && video.timestamp + 21600 >= Math.round(new Date().getTime() / 1000)) return { code: 200, id, title: JSON.parse(decodeURIComponent(video.title)), description: JSON.parse(decodeURIComponent(video.description)), author: JSON.parse(decodeURIComponent(video.author)), formats: JSON.parse(decodeURIComponent(video.formats)) };
 
 	let videoInfo;
-	try { videoInfo = await yt.dl.getInfo(id); }
+	try { videoInfo = await ytdl.getInfo(id); }
 	catch (e) {
 		if (e.toString().indexOf("private video") != -1) return { code: 401, error: "this video is private" };
 		else if (e.toString().indexOf("video id found") != -1 || e.toString().indexOf("unavailable") != -1) return { code: 404, error: "video not found" };
@@ -37,7 +33,7 @@ export default async function (client, interaction, options) {
 	await interaction.deferReply({ ephemeral: true });
 
 	let id = options.find(x => x.name == "video").value;
-	try { id = yt.dl.getURLVideoID(id); }
+	try { id = ytdl.getURLVideoID(id); }
 	catch (e) { return await interaction.editReply("no video id found in url"); }
 	let video = await getVideoDetails(id);
 
