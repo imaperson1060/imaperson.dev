@@ -26,6 +26,7 @@ export default async (req, res) => {
 				if (shortURL && !req.body.edit) return res.status(409).json({ success: false, code: 409, error: "id already exists, edit key is required" });
 				else if (shortURL && req.body.domain != shortURL.domain) return res.status(409).json({ success: false, code: 409, error: "domain cannot be changed" });
 				else if (shortURL && req.body.edit != shortURL.editkey) return res.status(409).json({ success: false, code: 409, error: "edit key is incorrect" });
+				else if (req.body.custom.length > 16) return res.status(400).json({ success: false, code: 400, error: "id is too long" });
 				let editkey = shortURL?.editkey;
 				if (shortURL) await query("UPDATE `urls` SET `longurl`=?, `expiration`=? WHERE `name`=?", [ req.body.url, req.body.expiration, req.body.custom ]);
 				else {

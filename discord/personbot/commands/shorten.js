@@ -27,6 +27,7 @@ export default async function (client, interaction, options) {
 		if (shortURL && !editkey) return await interaction.editReply("id already exists, edit key is required");
 		else if (shortURL && domain != shortURL.domain) return await interaction.editReply("domain cannot be changed");
 		else if (shortURL && editkey != shortURL.editkey) return await interaction.editReply("edit key is incorrect");
+		else if (id.length > 16) return await interaction.editReply("id is too long");
 		if (shortURL) await query("UPDATE `urls` SET `longurl`=?, `expiration`=? WHERE `name`=?", [ url, expiration, id ]);
 		else {
 			editkey = Math.random().toString(36).slice(-10);
