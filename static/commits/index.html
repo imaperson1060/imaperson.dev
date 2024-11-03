@@ -23,7 +23,7 @@
 		<div class="mb-4" hx-get="/nav.html" hx-trigger="load"></div>
 
 		<div class="container">
-			<h1>recent commits (<span id="recent"><div class="spinner-border spinner-border-sm fs-6 align-middle"></div></span>) - <a href="https://github.com/imaperson1060/imaperson.dev" target="_blank">view repository</a> • <a href="https://skyline.github.com/imaperson1060" target="_blank">view skyline</a></h1>
+			<h1>recent commits (<span id="recent"><div class="spinner-border spinner-border-sm fs-6 align-middle"></div></span>) - <a href="https://github.com/imaperson1060/imaperson.dev" target="_blank">view repository</a></h1>
 			<p class="lead" onselectstart="return false"><i class="bi bi-arrow-left-short" title="move date selector backwards 1 week" onclick="moveDateBack();" style="cursor: pointer;"></i> from <span id="since"></span> to <span id="until"></span> <i class="bi bi-arrow-right-short" title="move date selector forward 1 week" onclick="moveDateForward();" style="cursor: pointer;"></i> <i class="bi bi-caret-right-fill" title="Reset date selector" onclick="resetDate();" style="cursor: pointer;"></i></p>
 
 			<div id="commits" hx-get="/api/github" hx-trigger="rangeChanged" mustache-template="commit"></div>
